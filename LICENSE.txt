@@ -36,7 +36,7 @@ If you got this:
     because you used this product
 
 1: DECLARATION OF COPYRIGHT
-   This Product is copyright [COMPANY NAME] (c) [4-DIGIT YEAR] BH-1-PS
+   This Product is copyright Blue Husky Studios (c) 2016 BH-1-PS
 
 2: DEFINITIONS
  - "License": this text
