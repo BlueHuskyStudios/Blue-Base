@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package org.bh.tools.base
+package org.bh.tools.base.collections
 
 /**
  * An array with extended capabilities. Designed to be subclassed!
@@ -15,15 +15,23 @@ open class BHArray<T>(protected var backend: Array<T>) {
      * @param index the location of a value in this array
      * @return The value at `index`
      */
-    fun get(index: Int): T {
+    open fun get(index: Int): T {
         return backend[index]
     }
 
     /**
      * The number of items in this array.
      */
-    val length: Int get() = backend.size
+    public val length: Int get() = backend.size
+
+    public fun toString(prefix: CharSequence = "", glue: CharSequence, suffix: CharSequence = ""): String {
+        return this.backend.joinToString(separator = glue, prefix = prefix, postfix = suffix)
+    }
 }
+
+public val BHArray<*>.size: Int get() = this.length
+public val BHArray<*>.count: Int get() = this.length
+
 
 
 /**
