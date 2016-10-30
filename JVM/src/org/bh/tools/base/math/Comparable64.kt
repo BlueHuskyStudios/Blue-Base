@@ -1,7 +1,7 @@
 package org.bh.tools.base.math
 
 /**
- * Comparable64, made for BHToolbox, is made by and copyrighted to Blue Husky Programming, ©2012 BH-1-PS <hr/>
+ * Comparable64, made for BHToolbox, is made by and copyrighted to Blue Husky Software, ©2012 BH-1-PS <hr/>
  *
  * The general behavior of any object that implements {@code Comparable64} should be equal to that of one that implements
  * {@link Comparable}, but using 64-bit integers instead of 32-bit ones

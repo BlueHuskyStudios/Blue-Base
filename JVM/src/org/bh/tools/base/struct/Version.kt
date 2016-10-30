@@ -12,9 +12,9 @@ import org.bh.tools.base.struct.VersionChannel.*
 typealias VersionStage = Long
 
 /**
- * Version, made for BHToolbox, is copyright Blue Husky Programming ©2014 BH-1-PS
+ * Version, made for BHToolbox, is copyright Blue Husky Software ©2014 BH-1-PS
  *
- * @author Kyli and Ben of Blue Husky Programming
+ * @author Kyli and Ben of Blue Husky Software
  *
  * @version 3.0.0
  *     - 3.0.0 (2016-10-21) - Kyli Rouge updated to Kotlin
@@ -25,7 +25,8 @@ typealias VersionStage = Long
  *
  * @since 2014-09-22
  */
-data class Version(val stages: Array<VersionStage>, val channel: VersionChannel)
+data class Version
+(val stages: Array<VersionStage>, val channel: VersionChannel = STABLE)
 : Comparable<Version>, Comparable64<Version> {
 
     private var cache: String? = null
@@ -37,14 +38,14 @@ data class Version(val stages: Array<VersionStage>, val channel: VersionChannel)
 //     */
 //    constructor(vararg initStages: VersionStage) : this(initStages, STABLE)
 
-//    /**
-//     * Creates a version with the given channel and stages. For instance, if it's version 1.2.3 β, you would call
-//     * `Version(1,2,3, β)`
-//     * @param initChannel The channel of the version
-//     * @param initStages  The stages (number) of the version
-//     */
-//    constructor(vararg initStages: VersionStage, initChannel: VersionChannel) :
-//        this(stages = initStages, channel = initChannel)
+    /**
+     * Creates a version with the given channel and stages. For instance, if it's version 1.2.3 β, you would call
+     * `Version(1,2,3, β)`
+     * @param initChannel The channel of the version
+     * @param initStages  The stages (number) of the version
+     */
+    constructor(vararg initStages: VersionStage, initChannel: VersionChannel = STABLE) :
+        this(stages = initStages.toTypedArray(), channel = initChannel)
 
     /**
      * @return a string representation of the version, like: `&quot;1.2.3β&quot;`
