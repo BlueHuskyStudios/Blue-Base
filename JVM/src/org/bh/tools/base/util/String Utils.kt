@@ -73,3 +73,8 @@ fun concat(lhs: Any, rhs: CharSequence): CharSequence {
 fun CharSequence.containsIgnoreCase(cs: CharSequence): Boolean
         = this.toString().toLowerCase().contains(cs.toString().toLowerCase())
 
+
+/**
+ * Repeats the given string `rhs` times.
+ */
+operator fun String.times(rhs: Int): String = (0..rhs).map { this }.reduce { old, current -> old + current }
