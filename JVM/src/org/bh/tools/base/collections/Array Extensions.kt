@@ -80,3 +80,10 @@ fun <ElementType, OutputType>
             .map { predicateTransform(it) }
             .filter(Pair<Boolean, () -> OutputType>::first)
             .map { it.second() }
+
+
+/**
+ * Allows you to reduce a possibly-empty array. If the array is empty, the block is never called and `null` is always returned
+ */
+inline fun <S, T: S> Array<out T>.safeReduce(operation: (S, T) -> S): S?
+        = if (isEmpty()) null else reduce(operation)
