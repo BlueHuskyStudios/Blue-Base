@@ -23,7 +23,7 @@ interface UIViewController<out UIViewType: UIView> {
     /**
      * The UI View that this UI View Controller controls
      */
-    val uiView: UIViewType
+    val view: UIViewType
 }
 
 /**
