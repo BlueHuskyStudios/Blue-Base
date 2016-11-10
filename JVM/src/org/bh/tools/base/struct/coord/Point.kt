@@ -2,7 +2,8 @@
 
 package org.bh.tools.base.struct.coord
 
-import org.bh.tools.base.abstraction.*
+import org.bh.tools.base.abstraction.BHFloat
+import org.bh.tools.base.abstraction.BHInt
 
 /**
  * Copyright BHStudios ©2016 BH-1-PS. Made for BH Tic Tac Toe IntelliJ Project.
@@ -29,3 +30,10 @@ typealias Float32Point = Point<Float>
 typealias Float64Point = Point<Double>
 typealias BHFloatPoint = Point<BHFloat>
 typealias FloatPoint = Point<BHFloat>
+
+
+
+infix operator fun IntPoint.times(rhs: IntPoint): IntPoint
+        = IntPoint(x * rhs.x, y * rhs.y)
+infix operator fun IntPoint.times(rhs: IntSize): IntPoint
+        = IntPoint(x * rhs.width, y * rhs.height)
