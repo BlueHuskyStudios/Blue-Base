@@ -37,3 +37,5 @@ infix operator fun IntPoint.times(rhs: IntPoint): IntPoint
         = IntPoint(x * rhs.x, y * rhs.y)
 infix operator fun IntPoint.times(rhs: IntSize): IntPoint
         = IntPoint(x * rhs.width, y * rhs.height)
+infix operator fun IntPoint.times(rhs: Int): IntPoint
+        = IntPoint(x * rhs, y * rhs)
