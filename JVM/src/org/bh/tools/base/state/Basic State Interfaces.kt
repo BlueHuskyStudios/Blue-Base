@@ -13,12 +13,22 @@ package org.bh.tools.base.state
 
 /**
  * Represents a state, large or small.
+ *
+ * @param SameType Just put the same name of the class here, like `class Foo: State<Foo>`. This is a band-aid for the
+ *                 JVM not allowing for interface class reflection.
+ *                 See also: http://stackoverflow .com/questions/40645590/kotlin-function-returns-implementation-type
  */
-interface State
+interface State<SameType: State<SameType>> {
+    /**
+     * This state, as if it were a complete change.
+     */
+    val changeValue: StateChange<SameType>
+}
+
 
 /**
  * Represents a change in a state, large or small.
  *
  * @param StateType The type of state that has changed
  */
-interface StateChange<StateType: State>
+interface StateChange<StateType: State<StateType>>

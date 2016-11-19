@@ -13,7 +13,7 @@ package org.bh.tools.base.state
  * @author Kyli Rouge
  * @since 2016-11-09
  */
-interface StateStore<StateType: State, in StateChangeType: StateChange<StateType>> {
+interface StateStore<StateType: State<StateType>, in StateChangeType: StateChange<StateType>> {
     /**
      * Pushes a new state into the store using the given changes. Memory-restricted or simplistic stores may
      * immediately flatten after this operation.
