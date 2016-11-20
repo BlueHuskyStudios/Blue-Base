@@ -14,7 +14,10 @@ package org.bh.tools.base.state
  * @author Kyli Rouge
  * @since 2016-11-09
  */
-interface StateMutator<StateType: State, in ActionType, out StateChangeType: StateChange<StateType>> {
+interface StateMutator
+        <StateType: ChangeableState<StateType, StateChangeType>,
+            in ActionType,
+            StateChangeType: StateChange<StateChangeType, StateType>> {
     /**
      * Taking in a state and an action, produces a new state
      *

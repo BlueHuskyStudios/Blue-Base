@@ -13,7 +13,8 @@ package org.bh.tools.base.state
  * @author Kyli Rouge
  * @since 2016-11-09
  */
-interface StateStore<StateType: State<StateType>, in StateChangeType: StateChange<StateType>> {
+interface StateStore<StateType: ChangeableState<StateType, StateChangeType>, StateChangeType: StateChange<StateChangeType,
+        StateType>> {
     /**
      * Pushes a new state into the store using the given changes. Memory-restricted or simplistic stores may
      * immediately flatten after this operation.
@@ -37,6 +38,8 @@ interface StateStore<StateType: State<StateType>, in StateChangeType: StateChang
 
     /**
      * Flattens all the changes to the state, so that [currentState] is the base state
+     *
+     * @return The flattened state with all changes applied
      */
-    fun flattenState()
+    fun flattenState(): StateType
 }
