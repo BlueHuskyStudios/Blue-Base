@@ -50,3 +50,10 @@ fun<NumberType: Comparable<NumberType>> max(a: NumberType, b: NumberType, vararg
 
     return max(lhs = a, rhs = max(lhs = b, rhs = highestN))
 }
+
+/**
+ * Returns the clamped value between `low` and `high`, such that ideally `value` is returned, but never will the
+ * returned number be less than `low` or greater than `high`.
+ */
+fun<NumberType: Comparable<NumberType>> clamp(low: NumberType, value: NumberType, high: NumberType): NumberType
+    = max(low, min(value, high))
