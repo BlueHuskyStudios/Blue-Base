@@ -4,6 +4,7 @@ import org.bh.tools.base.math.max
 import org.bh.tools.base.math.min
 import org.bh.tools.base.struct.ClosedRange
 import org.bh.tools.base.struct.IndexRange
+import java.util.*
 
 /* Array Extensions, made for Blue Base, is copyright Blue Husky Software ©2016 BH-1-PS.
  *
@@ -35,9 +36,15 @@ val Array<*>.length: Int get() = this.size
 val List<Any>.count: Int get() = this.size
 val List<Any>.length: Int get() = this.size
 
+
+fun <T> Array<T>.deepEquals(other: Array<T>): Boolean {
+    return Arrays.deepEquals(this, other)
+}
+
+
 fun <ElementType> Array<ElementType>.inserting(elements: ElementType, index: Index): Array<ElementType> {
-    val left = this.sliceArray(IntRange(start = 0, endInclusive = index-1))
-    val right = this.sliceArray(kotlin.ranges.IntRange(start = index-1, endInclusive = length-1))
+    val left = this.sliceArray(IntRange(start = 0, endInclusive = index - 1))
+    val right = this.sliceArray(kotlin.ranges.IntRange(start = index - 1, endInclusive = length - 1))
 
     return left + elements + right
 }
@@ -47,8 +54,8 @@ fun <ElementType> Array<ElementType>.removing(index: Index): Array<ElementType> 
 }
 
 fun <ElementType> Array<ElementType>.removing(range: IndexRange): Array<ElementType> {
-    val left = this.sliceArray(IntRange(start = 0, endInclusive = max(0, range.start-1)))
-    val right = this.sliceArray(IntRange(start = min(length-1, range.endInclusive-1), endInclusive = length-1))
+    val left = this.sliceArray(IntRange(start = 0, endInclusive = max(0, range.start - 1)))
+    val right = this.sliceArray(IntRange(start = min(length - 1, range.endInclusive - 1), endInclusive = length - 1))
 
     return left + right
 }
@@ -62,3 +69,21 @@ fun <ElementType> Array<ElementType>.removing(indices: IndexSet): Array<ElementT
 fun <ElementType> Array<ElementType>.removing(indices: IntArray): Array<ElementType> {
     return removing(indices.indexSetValue)
 }
+
+/**
+ * Returns an array where those you decide to keep are kept, and then transformed as you decide to transform them
+ */
+fun <ElementType, OutputType>
+        Array<ElementType>.filterMap(predicateTransform: (ElementType) -> Pair<Boolean, () -> OutputType>)
+        : List<OutputType>
+        = this
+            .map { predicateTransform(it) }
+            .filter(Pair<Boolean, () -> OutputType>::first)
+            .map { it.second() }
+
+
+/**
+ * Allows you to reduce a possibly-empty array. If the array is empty, the block is never called and `null` is always returned
+ */
+inline fun <S, T: S> Array<out T>.safeReduce(operation: (S, T) -> S): S?
+        = if (isEmpty()) null else reduce(operation)

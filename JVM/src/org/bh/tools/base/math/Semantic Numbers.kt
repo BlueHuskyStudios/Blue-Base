@@ -11,3 +11,6 @@ package org.bh.tools.base.math
 
 val Int.Companion.min: Int get() = Int.MIN_VALUE
 val Int.Companion.max: Int get() = Int.MAX_VALUE
+
+val Long.Companion.min: Long get() = Long.MIN_VALUE
+val Long.Companion.max: Long get() = Long.MAX_VALUE

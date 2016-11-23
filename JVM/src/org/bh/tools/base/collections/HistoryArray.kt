@@ -8,11 +8,21 @@ package org.bh.tools.base.collections
  * @author Kyli
  * @since 2016-09-15
  */
-class HistoryArray<ElementType>(var selectionMode: HistoryArraySelectionMode): BHMutableArray<ElementType>() {
+open class HistoryArray<ElementType>(var selectionMode: HistoryArraySelectionMode): BHMutableArray<ElementType>() {
 
 }
 
+/**
+ * How selections work in [HistoryArray]
+ */
 enum class HistoryArraySelectionMode {
+    /**
+     * Select items as they are pushed onto the array
+     */
     SelectNewlyPushed,
+
+    /**
+     * Attempt to keep the same selection even as the array contents changes
+     */
     PersistSelection
 }
