@@ -26,5 +26,5 @@ interface StateMutator
      *
      * @return The changes that were made to the state
      */
-    fun mutate(state: StateType, action: ActionType): StateChangeType
+    fun mutating(state: StateType, action: ActionType): StateChangeType
 }

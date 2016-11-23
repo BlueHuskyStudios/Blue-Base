@@ -13,6 +13,21 @@ package org.bh.tools.base.collections
  * @return the first element matching the given [predicate], or `null` if no such element is found.
  */
 inline fun <T> Iterable<T>.safeFirst(predicate: (T) -> Boolean): T? {
-    for (element in this) if (predicate(element)) return element
-    return null
+    try {
+        return first(predicate)
+    } catch (_: Throwable) {
+        return null
+    }
+}
+
+
+/**
+ * @return the first element, or `null` if there are no elements.
+ */
+inline val <T> Iterable<T>.safeFirst: T? get() {
+    try {
+        return first()
+    } catch (_: Throwable) {
+        return null
+    }
 }
