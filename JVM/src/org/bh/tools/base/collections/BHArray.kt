@@ -203,11 +203,9 @@ open class BHMutableArray<ElementType>(vararg backend: ElementType) : BHArray<El
                 }
             }
 
-            all -> for (i in 0..backend.length - 1) {
-                if (oldVal === backend[i] || Objects.equals(oldVal, backend[i])) {
-                    remove(i)
-                }
-            }
+            all -> (0 until backend.length)
+                    .filter { oldVal === backend[it] || Objects.equals(oldVal, backend[it]) }
+                    .forEach { remove(it) }
 
             solely -> if (this.contains(solely, oldVal)) {
                 clear()
