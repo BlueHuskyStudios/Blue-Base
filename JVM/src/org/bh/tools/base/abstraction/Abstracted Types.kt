@@ -12,6 +12,8 @@ package org.bh.tools.base.abstraction
  * @since 2016-10-31
  */
 
+// MARK: - Native Numbers
+
 /**
  * An integer represented as an 8-bit signed two's-compliment number
  */
@@ -37,47 +39,6 @@ typealias Int64 = Long
  */
 typealias BHInt = Int64
 
-/**
- * The floating-point value of this [Int8]
- */
-val Int8.floatValue: BHFloat get() = this.toDouble()
-
-/**
- * The floating-point value of this [Int16]
- */
-val Int16.floatValue: BHFloat get() = this.toDouble()
-
-/**
- * The floating-point value of this [Int32]
- */
-val Int32.floatValue: BHFloat get() = this.toDouble()
-
-/**
- * The floating-point value of this [Int64]
- */
-val Int64.floatValue: BHFloat get() = this.toDouble()
-
-
-/**
- * The ideal integer value of this [Int8]
- */
-val Int8.integerValue: BHInt get() = this.toLong()
-
-/**
- * The ideal integer value of this [Int16]
- */
-val Int16.integerValue: BHInt get() = this.toLong()
-
-/**
- * The ideal integert value of this [Int32]
- */
-val Int32.integerValue: BHInt get() = this.toLong()
-
-/**
- * The ideal integer value of this [Int64]
- */
-val Int64.integerValue: BHInt get() = this.toLong()
-
 
 
 /**
@@ -95,22 +56,19 @@ typealias Float64 = Double
  */
 typealias BHFloat = Float64
 
-/**
- * The integer value of this [Float32]
- */
-val Float32.integerValue: BHInt get() = this.toLong()
 
-/**
- * The integer value of this [Float64]
- */
-val Float64.integerValue: BHInt get() = this.toLong()
 
-/**
- * The integer value of this [Float32]
- */
-val Float32.floatValue: BHFloat get() = this.toDouble()
+// MARK: - Collections
 
-/**
- * The integer value of this [Float64]
- */
-val Float64.floatValue: BHFloat get() = this.toDouble()
+typealias Int8Array = ByteArray
+typealias Int16Array = ShortArray
+typealias Int32Array = IntArray
+typealias Int64Array = LongArray
+typealias BHIntArray = Int64Array
+typealias IntegerArray = BHIntArray
+
+
+typealias Float32Array = FloatArray
+typealias Float64Array = DoubleArray
+typealias BHFloatArray = Float64Array
+typealias FractionArray = BHFloatArray

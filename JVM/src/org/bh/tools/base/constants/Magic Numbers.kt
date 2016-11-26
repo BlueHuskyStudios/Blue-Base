@@ -1,8 +1,10 @@
+@file:Suppress("unused")
+
 /* Magic Numbers, made for Blue Base, is copyright Blue Husky Software ©2016 BH-1-PS.
- *
- * For when real values aren't good enough.
- * Created by Kyli Rouge on 2016-10-24.
- */
+*
+* For when real values aren't good enough.
+* Created by Kyli Rouge on 2016-10-24.
+*/
 
 /**
  * Indicates that something could not be found. If this needs to be communicated without optionals, use [NotFoundNumber]
@@ -40,24 +42,37 @@ enum class ComparisonResult(
     /**
      * This enum as a native type
      */
-    public typealias NativeType = Int
+    typealias NativeType = Int
     /**
      * The value of this result as a native type
      */
-    public val nativeValue: Int get() = intValue
+    val nativeValue: Int get() = intValue
 
     companion object {
         /**
          * Indicates that the **left** item is greater/higher than the right
          */
-        public val left: ComparisonResult get() = descending
+        val left: ComparisonResult get() = descending
+
         /**
          * Indicates that **neither** item is greater/higher than the other
          */
-        public val equal: ComparisonResult get() = same
+        val equal: ComparisonResult get() = same
+
         /**
          * Indicates that the **right** item is greater/higher than the left
          */
-        public val right: ComparisonResult get() = ascending
+        val right: ComparisonResult get() = ascending
+
+
+        /**
+         * Indicates that the **left** item is greater/higher than the right
+         */
+        val greaterThan: ComparisonResult get() = descending
+
+        /**
+         * Indicates that the **left** item is less/lower than the right
+         */
+        val lessThan: ComparisonResult get() = ascending
     }
 }

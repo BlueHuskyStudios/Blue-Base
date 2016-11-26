@@ -95,17 +95,17 @@ private typealias ___SetBlock<PropertyType, ReturnType> = (oldValue: PropertyTyp
 /**
  * A non-functioning [WillSetBlock] that would otherwise do something before setting
  */
-fun <PropertyType> NullWSB(): WillSetBlock<PropertyType> = { a, b -> }
+fun <PropertyType> NullWSB(): WillSetBlock<PropertyType> = { _, _ -> }
 
 /**
  * A non-functioning [ShouldSetBlock] that would otherwise do something after setting
  */
-fun <PropertyType> NullSSB(): ShouldSetBlock<PropertyType> = { a, b -> true }
+fun <PropertyType> NullSSB(): ShouldSetBlock<PropertyType> = { _, _ -> true }
 
 /**
  * A non-functioning [DidSetBlock] that would otherwise do something after setting
  */
-fun <PropertyType> NullDSB(): DidSetBlock<PropertyType> = { a, b -> }
+fun <PropertyType> NullDSB(): DidSetBlock<PropertyType> = { _, _ -> }
 
 
 /**
