@@ -88,10 +88,10 @@ fun <ElementType> BHArray<ElementType>.indexOf(needle: ElementType?,
         when (near) {
             start -> (1 until length)
                     .filter { needle == get(it) }
-                    .safeFirst
+                    .firstOrNull
             end -> (length downTo 1)
                     .filter { needle == get(it) }
-                    .safeFirst
+                    .firstOrNull
         }
 }
 
@@ -105,7 +105,7 @@ fun <ElementType> BHArray<ElementType>.indicesOf(vararg needles: ElementType, ne
         }.indexSetValue
 
 private fun <ElementType> BHArray<ElementType>.indexOfNull(near: ArrayPosition): Int? =
-        (0 until length).safeFirst { get(it) == null }
+        (0 until length).firstOrNull { get(it) == null }
 
 
 /**
