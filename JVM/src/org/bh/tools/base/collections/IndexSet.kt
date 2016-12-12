@@ -2,8 +2,6 @@
 
 package org.bh.tools.base.collections
 
-import org.bh.tools.base.abstraction.BHInt
-import org.bh.tools.base.abstraction.BHIntArray
 import org.bh.tools.base.math.integerValue
 import org.bh.tools.base.struct.*
 

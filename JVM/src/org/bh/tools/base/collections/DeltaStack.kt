@@ -39,7 +39,7 @@ open class DeltaStack<ContentType, DeltaType>
         _cachedCurrentState = newState
     }
 
-    private fun _recreateCachedState(): ContentType {
+    private fun _flattenedState(): ContentType {
         val flattenedState = _baseState.applyingChange(_stack.reduce { previous, current ->
             previous.applyingChange(current)
         })
@@ -53,7 +53,7 @@ open class DeltaStack<ContentType, DeltaType>
             if (state != null) {
                 return state
             } else {
-                state = _recreateCachedState()
+                state = _flattenedState()
                 _resetCachedState(state)
                 return state
             }

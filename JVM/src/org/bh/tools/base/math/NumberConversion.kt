@@ -12,9 +12,16 @@ import org.bh.tools.base.abstraction.*
  */
 
 /**
+ * Implementing classes can be converted to a number
+ */
+interface NumberConvertible<out NumberType: Number> {
+    val numberValue: NumberType
+}
+
+/**
  * The ideal native floating-point value of this [Number]
  */
-val Number.floatValue: BHFloat get() = this.toDouble()
+val Number.floatValue: BHFloat get() = this.float64Value
 
 /**
  * The 32-bit floating-point value of this [Number]
@@ -30,7 +37,7 @@ val Number.float64Value: Float64 get() = this.toDouble()
 /**
  * The ideal integer value of this [Number]
  */
-val Number.integerValue: BHInt get() = this.toLong()
+val Number.integerValue: BHInt get() = this.int64Value
 
 /**
  * The 8-bit integer value of this [Number]
@@ -64,5 +71,11 @@ val Number.isNativeFraction: Boolean get()
         else -> false
     }
 
+/**
+ * This native floating-point number as a native integer, clamped to guard against overflow. That is to say, if this
+ * number is larger than the largest native int value, the largest native int value is returned. Likewise for the
+ * smallest native int value. If it is within the range of valid native ints, its value is returned rounded to an int
+ * using the default rounding method.
+ */
 val BHFloat.clampedIntegerValue: BHInt get()
     = clamp(low = BHInt.min.floatValue, value = this, high = BHInt.max.floatValue).integerValue

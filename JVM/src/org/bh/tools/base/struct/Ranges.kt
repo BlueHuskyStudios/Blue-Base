@@ -3,8 +3,8 @@
 package org.bh.tools.base.struct
 
 import org.bh.tools.base.collections.Index
-import org.bh.tools.base.math.*
-import java.util.*
+import org.bh.tools.base.math.max
+import org.bh.tools.base.math.min
 import kotlin.reflect.isSuperclassOf
 
 /**

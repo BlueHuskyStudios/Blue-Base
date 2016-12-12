@@ -1,50 +1,43 @@
 @file:Suppress("unused")
 
-package org.bh.tools.base.struct.coord
+package org.bh.tools.base.math.geometry
 
-import org.bh.tools.base.abstraction.*
+import org.bh.tools.base.abstraction.Float64
+import org.bh.tools.base.abstraction.Int64
 import org.bh.tools.base.math.*
+import java.awt.geom.Point2D
 
 /**
  * Copyright BHStudios ©2016 BH-1-PS. Made for BH Tic Tac Toe IntelliJ Project.
  *
+ * A point which uses a number of any type
+ *
  * @author Ben Leggiero
  * @since 2016-09-29
  */
-open class Point<out NumberType : Number>(val x: NumberType, val y: NumberType) {
-    @Suppress("UNCHECKED_CAST") // types checked manually
-    constructor(from: Point<*>) : this(from.x as NumberType, from.y as NumberType) {
-//        if (from.x is Int8 && from.y is Int8) {
-//            Int8Point(from.x, from.y)
-//        } else if (from.x is Int16 && from.y is Int16) {
-//            Int16Point(from.x, from.y)
-//        } else if (from.x is Int32 && from.y is Int32) {
-//            Int32Point(from.x, from.y)
-//        } else if (from.x is Int64 && from.y is Int64) {
-//            Int64Point(from.x, from.y)
-//        }
-//
-//        else if (from.x is Float32 && from.y is Float32) {
-//            Float32Point(from.x, from.y)
-//        } else if (from.x is Float64 && from.y is Float64) {
-//            Float64Point(from.x, from.y)
-//        }
-//
-//        else {
-//            throw PointOperatorUnavailableApology("multiplication", x.javaClass, y.javaClass)
-//        }
-    }
+open class Point<out NumberType : Number>(val x: NumberType, val y: NumberType) : Cloneable {
+    constructor(from: Point<NumberType>) : this(from.x, from.y)
 
     companion object {
         val zero: Point<*> = Point(0, 0)
+    }
+
+    override fun toString(): String {
+        return "($x, $y)"
+    }
+
+    val stringValue get() = toString()
+
+    override public fun clone(): Point<NumberType> {
+        return Point(x, y)
     }
 }
 
 typealias Coordinate<NumberType> = Point<NumberType>
 
 val <NumberType : Number> Point<NumberType>.pairValue: Pair<NumberType, NumberType> get() = Pair(x, y)
-val <NumberType : Number> Point<NumberType>.integerValue: IntPoint get() = IntPoint(x.integerValue, y.integerValue)
-val <NumberType : Number> Point<NumberType>.floatValue: FloatPoint get() = FloatPoint(x.floatValue, y.floatValue)
+val <NumberType : Number> Point<NumberType>.integerValue: BHIntPoint get() = BHIntPoint(x.integerValue, y.integerValue)
+val <NumberType : Number> Point<NumberType>.floatValue: Float64Point get() = Float64Point(x.floatValue, y.floatValue)
 
 
 // MARK: - Computations
@@ -105,10 +98,10 @@ class Int64Point(x: Int64, y: Int64) : ComputablePoint<Int64>(x, y) {
 
     override infix operator fun <OtherType : Number> plus(rhs: Pair<OtherType, OtherType>): Int64Point =
             (if (rhs.first.isNativeInteger) {
-                Int64Point(x + (rhs.first as BHInt), y + (rhs.second as BHInt))
+                Int64Point(x + rhs.first.integerValue, y + rhs.second.integerValue)
             } else if (rhs.first.isNativeFraction) {
-                Int64Point((x + (rhs.first as BHFloat)).clampedIntegerValue,
-                        (y + (rhs.second as BHFloat)).clampedIntegerValue)
+                Int64Point((x + rhs.first.floatValue).clampedIntegerValue,
+                        (y + rhs.second.floatValue).clampedIntegerValue)
             } else {
                 throw apology("addition",
                         otherMainType = Pair::class.java,
@@ -118,10 +111,10 @@ class Int64Point(x: Int64, y: Int64) : ComputablePoint<Int64>(x, y) {
 
     override infix operator fun <OtherType : Number> minus(rhs: Pair<OtherType, OtherType>): Int64Point =
             (if (rhs.first.isNativeInteger) {
-                Int64Point(x - (rhs.first as BHInt), y - (rhs.second as BHInt))
+                Int64Point(x - rhs.first.integerValue, y - rhs.second.integerValue)
             } else if (rhs.first.isNativeFraction) {
-                Int64Point((x - (rhs.first as BHFloat)).clampedIntegerValue,
-                        (y - (rhs.second as BHFloat)).clampedIntegerValue)
+                Int64Point((x - rhs.first.floatValue).clampedIntegerValue,
+                        (y - rhs.second.floatValue).clampedIntegerValue)
             } else {
                 throw apology("subtraction",
                         otherMainType = Pair::class.java,
@@ -131,10 +124,10 @@ class Int64Point(x: Int64, y: Int64) : ComputablePoint<Int64>(x, y) {
 
     override infix operator fun <OtherType : Number> times(rhs: Pair<OtherType, OtherType>): Int64Point =
             (if (rhs.first.isNativeInteger) {
-                Int64Point(x * (rhs.first as BHInt), y * (rhs.second as BHInt))
+                Int64Point(x * rhs.first.integerValue, y * rhs.second.integerValue)
             } else if (rhs.first.isNativeFraction) {
-                Int64Point((x * (rhs.first as BHFloat)).clampedIntegerValue,
-                        (y * (rhs.second as BHFloat)).clampedIntegerValue)
+                Int64Point((x * rhs.first.floatValue).clampedIntegerValue,
+                        (y * rhs.second.floatValue).clampedIntegerValue)
             } else {
                 throw apology("multiplication",
                         otherMainType = Pair::class.java,
@@ -144,10 +137,10 @@ class Int64Point(x: Int64, y: Int64) : ComputablePoint<Int64>(x, y) {
 
     override infix operator fun <OtherType : Number> div(rhs: Pair<OtherType, OtherType>): Int64Point =
             (if (rhs.first.isNativeInteger) {
-                Int64Point(x / (rhs.first as BHInt), y / (rhs.second as BHInt))
+                Int64Point(x / rhs.first.integerValue, y / rhs.second.integerValue)
             } else if (rhs.first.isNativeFraction) {
-                Int64Point((x / (rhs.first as BHFloat)).clampedIntegerValue,
-                        (y / (rhs.second as BHFloat)).clampedIntegerValue)
+                Int64Point((x / rhs.first.floatValue).clampedIntegerValue,
+                        (y / rhs.second.floatValue).clampedIntegerValue)
             } else {
                 throw apology("division",
                         otherMainType = Pair::class.java,
@@ -160,27 +153,28 @@ class Int64Point(x: Int64, y: Int64) : ComputablePoint<Int64>(x, y) {
 typealias BHIntPoint = Int64Point
 typealias IntPoint = BHIntPoint
 
-class FloatPoint(x: BHFloat, y: BHFloat) : ComputablePoint<BHFloat>(x, y) {
-    constructor(x: BHInt, y: BHInt) : this(x.floatValue, y.floatValue)
+class Float64Point(x: Float64, y: Float64) : ComputablePoint<Float64>(x, y) {
+    constructor(x: Int64, y: Int64) : this(x.floatValue, y.floatValue)
+    constructor(awtValue: Point2D) : this(awtValue.x, awtValue.y)
 
-    override infix operator fun <OtherType : Number> plus(rhs: Point<OtherType>): FloatPoint = plus(Pair(rhs.x, rhs.y))
-    override infix operator fun <OtherType : Number> minus(rhs: Point<OtherType>): FloatPoint = minus(Pair(rhs.x, rhs.y))
-    override infix operator fun <OtherType : Number> times(rhs: Point<OtherType>): FloatPoint = times(Pair(rhs.x, rhs.y))
-    override infix operator fun <OtherType : Number> div(rhs: Point<OtherType>): FloatPoint = div(Pair(rhs.x, rhs.y))
-
-
-    override infix operator fun <OtherType : Number> plus(rhs: OtherType): FloatPoint = plus(Pair(rhs, rhs))
-    override infix operator fun <OtherType : Number> minus(rhs: OtherType): FloatPoint = minus(Pair(rhs, rhs))
-    override infix operator fun <OtherType : Number> times(rhs: OtherType): FloatPoint = times(Pair(rhs, rhs))
-    override infix operator fun <OtherType : Number> div(rhs: OtherType): FloatPoint = div(Pair(rhs, rhs))
+    override infix operator fun <OtherType : Number> plus(rhs: Point<OtherType>): Float64Point = plus(Pair(rhs.x, rhs.y))
+    override infix operator fun <OtherType : Number> minus(rhs: Point<OtherType>): Float64Point = minus(Pair(rhs.x, rhs.y))
+    override infix operator fun <OtherType : Number> times(rhs: Point<OtherType>): Float64Point = times(Pair(rhs.x, rhs.y))
+    override infix operator fun <OtherType : Number> div(rhs: Point<OtherType>): Float64Point = div(Pair(rhs.x, rhs.y))
 
 
-    override infix operator fun <OtherType : Number> plus(rhs: Pair<OtherType, OtherType>): FloatPoint =
+    override infix operator fun <OtherType : Number> plus(rhs: OtherType): Float64Point = plus(Pair(rhs, rhs))
+    override infix operator fun <OtherType : Number> minus(rhs: OtherType): Float64Point = minus(Pair(rhs, rhs))
+    override infix operator fun <OtherType : Number> times(rhs: OtherType): Float64Point = times(Pair(rhs, rhs))
+    override infix operator fun <OtherType : Number> div(rhs: OtherType): Float64Point = div(Pair(rhs, rhs))
+
+
+    override infix operator fun <OtherType : Number> plus(rhs: Pair<OtherType, OtherType>): Float64Point =
             (if (rhs.first.isNativeInteger) {
-                FloatPoint(x + (rhs.first as BHInt), y + (rhs.second as BHInt))
+                Float64Point(x + rhs.first.integerValue, y + rhs.second.integerValue)
             } else if (rhs.first.isNativeFraction) {
-                FloatPoint((x + (rhs.first as BHFloat)).clampedIntegerValue,
-                        (y + (rhs.second as BHFloat)).clampedIntegerValue)
+                Float64Point((x + rhs.first.floatValue).clampedIntegerValue,
+                        (y + rhs.second.floatValue).clampedIntegerValue)
             } else {
                 throw apology("addition",
                         otherMainType = Pair::class.java,
@@ -188,12 +182,12 @@ class FloatPoint(x: BHFloat, y: BHFloat) : ComputablePoint<BHFloat>(x, y) {
                         otherTypeB = rhs.second::class.java)
             })
 
-    override infix operator fun <OtherType : Number> minus(rhs: Pair<OtherType, OtherType>): FloatPoint =
+    override infix operator fun <OtherType : Number> minus(rhs: Pair<OtherType, OtherType>): Float64Point =
             (if (rhs.first.isNativeInteger) {
-                FloatPoint(x - (rhs.first as BHInt), y - (rhs.second as BHInt))
+                Float64Point(x - rhs.first.integerValue, y - rhs.second.integerValue)
             } else if (rhs.first.isNativeFraction) {
-                FloatPoint((x - (rhs.first as BHFloat)).clampedIntegerValue,
-                        (y - (rhs.second as BHFloat)).clampedIntegerValue)
+                Float64Point((x - rhs.first.floatValue).clampedIntegerValue,
+                        (y - rhs.second.floatValue).clampedIntegerValue)
             } else {
                 throw apology("subtraction",
                         otherMainType = Pair::class.java,
@@ -201,12 +195,12 @@ class FloatPoint(x: BHFloat, y: BHFloat) : ComputablePoint<BHFloat>(x, y) {
                         otherTypeB = rhs.second::class.java)
             })
 
-    override infix operator fun <OtherType : Number> times(rhs: Pair<OtherType, OtherType>): FloatPoint =
+    override infix operator fun <OtherType : Number> times(rhs: Pair<OtherType, OtherType>): Float64Point =
             (if (rhs.first.isNativeInteger) {
-                FloatPoint(x * (rhs.first as BHInt), y * (rhs.second as BHInt))
+                Float64Point(x * rhs.first.integerValue, y * rhs.second.integerValue)
             } else if (rhs.first.isNativeFraction) {
-                FloatPoint((x * (rhs.first as BHFloat)).clampedIntegerValue,
-                        (y * (rhs.second as BHFloat)).clampedIntegerValue)
+                Float64Point((x * rhs.first.floatValue).clampedIntegerValue,
+                        (y * rhs.second.floatValue).clampedIntegerValue)
             } else {
                 throw apology("multiplication",
                         otherMainType = Pair::class.java,
@@ -214,12 +208,12 @@ class FloatPoint(x: BHFloat, y: BHFloat) : ComputablePoint<BHFloat>(x, y) {
                         otherTypeB = rhs.second::class.java)
             })
 
-    override infix operator fun <OtherType : Number> div(rhs: Pair<OtherType, OtherType>): FloatPoint =
+    override infix operator fun <OtherType : Number> div(rhs: Pair<OtherType, OtherType>): Float64Point =
             (if (rhs.first.isNativeInteger) {
-                FloatPoint(x / (rhs.first as BHInt), y / (rhs.second as BHInt))
+                Float64Point(x / rhs.first.integerValue, y / rhs.second.integerValue)
             } else if (rhs.first.isNativeFraction) {
-                FloatPoint((x / (rhs.first as BHFloat)).clampedIntegerValue,
-                        (y / (rhs.second as BHFloat)).clampedIntegerValue)
+                Float64Point((x / rhs.first.floatValue).clampedIntegerValue,
+                        (y / rhs.second.floatValue).clampedIntegerValue)
             } else {
                 throw apology("division",
                         otherMainType = Pair::class.java,
@@ -227,6 +221,10 @@ class FloatPoint(x: BHFloat, y: BHFloat) : ComputablePoint<BHFloat>(x, y) {
                         otherTypeB = rhs.second::class.java)
             })
 }
+typealias BHFloatPoint = Float64Point
+typealias FloatPoint = BHFloatPoint
+
+
 
 //infix operator fun IntPoint.times(rhs: IntPoint): IntPoint
 //        = IntPoint(x * rhs.x, y * rhs.y)

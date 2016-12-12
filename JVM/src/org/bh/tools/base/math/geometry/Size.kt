@@ -1,8 +1,9 @@
-package org.bh.tools.base.struct.coord
+package org.bh.tools.base.math.geometry
 
-import org.bh.tools.base.abstraction.*
+import org.bh.tools.base.abstraction.BHFloat
+import org.bh.tools.base.abstraction.BHInt
+import org.bh.tools.base.abstraction.Int64
 import org.bh.tools.base.math.*
-import org.bh.tools.base.util.plus
 import java.util.*
 
 /**
@@ -18,9 +19,6 @@ open class Size<out NumberType>(val width: NumberType, val height: NumberType) w
 val <NumberType : Number> Size<NumberType>.pairValue: Pair<NumberType, NumberType> get() = Pair(width, height)
 
 typealias Dimension<NumberType> = Size<NumberType>
-
-val java.awt.Dimension.sizeValue: IntSize get() = IntSize(width = width.integerValue, height = height.integerValue)
-val IntSize.awtValue: java.awt.Dimension get() = java.awt.Dimension(width.int32Value, height.int32Value)
 
 
 // MARK: - Computations
@@ -85,10 +83,10 @@ class Int64Size(width: Int64, height: Int64) : ComputableSize<Int64>(width, heig
 
     override infix operator fun <OtherType : Number> plus(rhs: Pair<OtherType, OtherType>): Int64Size =
             (if (rhs.first.isNativeInteger) {
-                Int64Size(width + (rhs.first as BHInt), height + (rhs.second as BHInt))
+                Int64Size(width + (rhs.first.integerValue), height + (rhs.second.integerValue))
             } else if (rhs.first.isNativeFraction) {
-                Int64Size((width + (rhs.first as BHFloat)).clampedIntegerValue,
-                        (height + (rhs.second as BHFloat)).clampedIntegerValue)
+                Int64Size((width + (rhs.first.floatValue)).clampedIntegerValue,
+                        (height + (rhs.second.floatValue)).clampedIntegerValue)
             } else {
                 throw apology("addition",
                         otherMainType = Pair::class.java,
@@ -98,10 +96,10 @@ class Int64Size(width: Int64, height: Int64) : ComputableSize<Int64>(width, heig
 
     override infix operator fun <OtherType : Number> minus(rhs: Pair<OtherType, OtherType>): Int64Size =
             (if (rhs.first.isNativeInteger) {
-                Int64Size(width - (rhs.first as BHInt), height - (rhs.second as BHInt))
+                Int64Size(width - (rhs.first.integerValue), height - (rhs.second.integerValue))
             } else if (rhs.first.isNativeFraction) {
-                Int64Size((width - (rhs.first as BHFloat)).clampedIntegerValue,
-                        (height - (rhs.second as BHFloat)).clampedIntegerValue)
+                Int64Size((width - (rhs.first.floatValue)).clampedIntegerValue,
+                        (height - (rhs.second.floatValue)).clampedIntegerValue)
             } else {
                 throw apology("subtraction",
                         otherMainType = Pair::class.java,
@@ -111,10 +109,10 @@ class Int64Size(width: Int64, height: Int64) : ComputableSize<Int64>(width, heig
 
     override infix operator fun <OtherType : Number> times(rhs: Pair<OtherType, OtherType>): Int64Size =
             (if (rhs.first.isNativeInteger) {
-                Int64Size(width * (rhs.first as BHInt), height * (rhs.second as BHInt))
+                Int64Size(width * (rhs.first.integerValue), height * (rhs.second.integerValue))
             } else if (rhs.first.isNativeFraction) {
-                Int64Size((width * (rhs.first as BHFloat)).clampedIntegerValue,
-                        (height * (rhs.second as BHFloat)).clampedIntegerValue)
+                Int64Size((width * (rhs.first.floatValue)).clampedIntegerValue,
+                        (height * (rhs.second.floatValue)).clampedIntegerValue)
             } else {
                 throw apology("multiplication",
                         otherMainType = Pair::class.java,
@@ -124,10 +122,10 @@ class Int64Size(width: Int64, height: Int64) : ComputableSize<Int64>(width, heig
 
     override infix operator fun <OtherType : Number> div(rhs: Pair<OtherType, OtherType>): Int64Size =
             (if (rhs.first.isNativeInteger) {
-                Int64Size(width / (rhs.first as BHInt), height / (rhs.second as BHInt))
+                Int64Size(width / (rhs.first.integerValue), height / (rhs.second.integerValue))
             } else if (rhs.first.isNativeFraction) {
-                Int64Size((width / (rhs.first as BHFloat)).clampedIntegerValue,
-                        (height / (rhs.second as BHFloat)).clampedIntegerValue)
+                Int64Size((width / (rhs.first.floatValue)).clampedIntegerValue,
+                        (height / (rhs.second.floatValue)).clampedIntegerValue)
             } else {
                 throw apology("division",
                         otherMainType = Pair::class.java,
@@ -139,6 +137,11 @@ class Int64Size(width: Int64, height: Int64) : ComputableSize<Int64>(width, heig
 }
 typealias BHIntSize = Int64Size
 typealias IntSize = BHIntSize
+
+val java.awt.Dimension.sizeValue: IntSize get() = IntSize(width = width.integerValue, height = height.integerValue)
+val IntSize.awtValue: java.awt.Dimension get() = java.awt.Dimension(width.int32Value, height.int32Value)
+
+
 
 class FloatSize(width: BHFloat, height: BHFloat) : ComputableSize<BHFloat>(width, height) {
     constructor(width: BHInt, height: BHInt) : this(width.floatValue, height.floatValue)
@@ -157,10 +160,10 @@ class FloatSize(width: BHFloat, height: BHFloat) : ComputableSize<BHFloat>(width
 
     override infix operator fun <OtherType : Number> plus(rhs: Pair<OtherType, OtherType>): FloatSize =
             (if (rhs.first.isNativeInteger) {
-                FloatSize(width + (rhs.first as BHInt), height + (rhs.second as BHInt))
+                FloatSize(width + (rhs.first.integerValue), height + (rhs.second.integerValue))
             } else if (rhs.first.isNativeFraction) {
-                FloatSize((width + (rhs.first as BHFloat)).clampedIntegerValue,
-                        (height + (rhs.second as BHFloat)).clampedIntegerValue)
+                FloatSize((width + (rhs.first.floatValue)).clampedIntegerValue,
+                        (height + (rhs.second.floatValue)).clampedIntegerValue)
             } else {
                 throw apology("addition",
                         otherMainType = Pair::class.java,
@@ -170,10 +173,10 @@ class FloatSize(width: BHFloat, height: BHFloat) : ComputableSize<BHFloat>(width
 
     override infix operator fun <OtherType : Number> minus(rhs: Pair<OtherType, OtherType>): FloatSize =
             (if (rhs.first.isNativeInteger) {
-                FloatSize(width - (rhs.first as BHInt), height - (rhs.second as BHInt))
+                FloatSize(width - (rhs.first.integerValue), height - (rhs.second.integerValue))
             } else if (rhs.first.isNativeFraction) {
-                FloatSize((width - (rhs.first as BHFloat)).clampedIntegerValue,
-                        (height - (rhs.second as BHFloat)).clampedIntegerValue)
+                FloatSize((width - (rhs.first.floatValue)).clampedIntegerValue,
+                        (height - (rhs.second.floatValue)).clampedIntegerValue)
             } else {
                 throw apology("subtraction",
                         otherMainType = Pair::class.java,
@@ -183,10 +186,10 @@ class FloatSize(width: BHFloat, height: BHFloat) : ComputableSize<BHFloat>(width
 
     override infix operator fun <OtherType : Number> times(rhs: Pair<OtherType, OtherType>): FloatSize =
             (if (rhs.first.isNativeInteger) {
-                FloatSize(width * (rhs.first as BHInt), height * (rhs.second as BHInt))
+                FloatSize(width * (rhs.first.integerValue), height * (rhs.second.integerValue))
             } else if (rhs.first.isNativeFraction) {
-                FloatSize((width * (rhs.first as BHFloat)).clampedIntegerValue,
-                        (height * (rhs.second as BHFloat)).clampedIntegerValue)
+                FloatSize((width * (rhs.first.floatValue)).clampedIntegerValue,
+                        (height * (rhs.second.floatValue)).clampedIntegerValue)
             } else {
                 throw apology("multiplication",
                         otherMainType = Pair::class.java,
@@ -196,10 +199,10 @@ class FloatSize(width: BHFloat, height: BHFloat) : ComputableSize<BHFloat>(width
 
     override infix operator fun <OtherType : Number> div(rhs: Pair<OtherType, OtherType>): FloatSize =
             (if (rhs.first.isNativeInteger) {
-                FloatSize(width / (rhs.first as BHInt), height / (rhs.second as BHInt))
+                FloatSize(width / (rhs.first.integerValue), height / (rhs.second.integerValue))
             } else if (rhs.first.isNativeFraction) {
-                FloatSize((width / (rhs.first as BHFloat)).clampedIntegerValue,
-                        (height / (rhs.second as BHFloat)).clampedIntegerValue)
+                FloatSize((width / (rhs.first.floatValue)).clampedIntegerValue,
+                        (height / (rhs.second.floatValue)).clampedIntegerValue)
             } else {
                 throw apology("division",
                         otherMainType = Pair::class.java,
@@ -207,6 +210,11 @@ class FloatSize(width: BHFloat, height: BHFloat) : ComputableSize<BHFloat>(width
                         otherTypeB = rhs.second::class.java)
             })
 }
+typealias Float64Size = FloatSize
+typealias BHFloatSize = Float64Size
+
+val FloatSize.integerValue: IntSize get() = IntSize(width.integerValue, height.integerValue)
+
 
 
 val <NumberType : Number> Size<NumberType>.floatValue: FloatSize get() = FloatSize(width.floatValue, height.floatValue)

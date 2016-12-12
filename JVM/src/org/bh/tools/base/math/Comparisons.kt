@@ -1,7 +1,5 @@
 package org.bh.tools.base.math
 
-import java.util.*
-
 /* Comparisons, made for Blue Base, is copyright Blue Husky Software ©2016 BH-1-PS.
  *
  * For comparing stuffs.
