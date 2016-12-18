@@ -36,8 +36,8 @@ open class Point<out NumberType : Number>(val x: NumberType, val y: NumberType) 
 typealias Coordinate<NumberType> = Point<NumberType>
 
 val <NumberType : Number> Point<NumberType>.pairValue: Pair<NumberType, NumberType> get() = Pair(x, y)
-val <NumberType : Number> Point<NumberType>.integerValue: BHIntPoint get() = BHIntPoint(x.integerValue, y.integerValue)
-val <NumberType : Number> Point<NumberType>.floatValue: Float64Point get() = Float64Point(x.floatValue, y.floatValue)
+val <NumberType : Number> Point<NumberType>.integerValue: BHIntPoint get() = if (this is BHIntPoint) this else BHIntPoint(x.integerValue, y.integerValue)
+val <NumberType : Number> Point<NumberType>.floatValue: BHFloatPoint get() = if (this is BHFloatPoint) this else BHFloatPoint(x.floatValue, y.floatValue)
 
 
 // MARK: - Computations
@@ -223,7 +223,6 @@ class Float64Point(x: Float64, y: Float64) : ComputablePoint<Float64>(x, y) {
 }
 typealias BHFloatPoint = Float64Point
 typealias FloatPoint = BHFloatPoint
-
 
 
 //infix operator fun IntPoint.times(rhs: IntPoint): IntPoint

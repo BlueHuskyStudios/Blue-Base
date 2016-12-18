@@ -11,15 +11,25 @@ package org.bh.tools.base.struct
  * Represents a UI View in the Blue Husky Software Structure.
  *
  * See also: https://drive.google.com/file/d/0B9plORbvSu2rQlVBUTQteldSams/view?usp=sharing
+ *
+ * @param RepresentedType The type of object that this view can represent. This is required because all views should
+ * contain no data, but instead directly represent them. For examples, an image view represents its image, a text view
+ * represents its text, a menu might represent the array it presents, a slider would represent the value it
+ * manipulates, an "OK" button represents the function that is called when it is pressed, etc.
  */
-interface UIView
+interface UIView<RepresentedType> {
+    /**
+     * The object that this view represents
+     */
+    var representedObject: RepresentedType
+}
 
 /**
  * Represents a UI View Controller in the Blue Husky Software Structure.
  *
  * See also: https://drive.google.com/file/d/0B9plORbvSu2rQlVBUTQteldSams/view?usp=sharing
  */
-interface UIViewController<out UIViewType: UIView> {
+interface UIViewController<out UIViewType : UIView<*>> {
     /**
      * The UI View that this UI View Controller controls
      */
@@ -31,7 +41,7 @@ interface UIViewController<out UIViewType: UIView> {
  *
  * See also: https://drive.google.com/file/d/0B9plORbvSu2rQlVBUTQteldSams/view?usp=sharing
  */
-interface DataViewController<out DataType: Data, out DataViewType: DataView<DataType>> {
+interface DataViewController<out DataType : Data, out DataViewType : DataView<DataType>> {
     /**
      * The Data View that this Data View Controller controls
      */
@@ -43,7 +53,7 @@ interface DataViewController<out DataType: Data, out DataViewType: DataView<Data
  *
  * See also: https://drive.google.com/file/d/0B9plORbvSu2rQlVBUTQteldSams/view?usp=sharing
  */
-interface DataView<out DataType: Data> {
+interface DataView<out DataType : Data> {
     /**
      * The Data that this Data View views
      */
@@ -62,7 +72,7 @@ interface Data
  *
  * See also: https://drive.google.com/file/d/0B9plORbvSu2rQlVBUTQteldSams/view?usp=sharing
  */
-interface DataAccessor<out DataType: Data, in AccessDetailType, out AccessStatusType> {
+interface DataAccessor<out DataType : Data, in AccessDetailType, out AccessStatusType> {
     /**
      * Accesses the data that this data accessor is meant to access
      *

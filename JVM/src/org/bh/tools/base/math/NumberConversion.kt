@@ -79,3 +79,21 @@ val Number.isNativeFraction: Boolean get()
  */
 val BHFloat.clampedIntegerValue: BHInt get()
     = clamp(low = BHInt.min.floatValue, value = this, high = BHInt.max.floatValue).integerValue
+
+/**
+ * This native floating-point number as a native integer, clamped to guard against overflow. That is to say, if
+ * this number is larger than the largest native 32-bit int value, the largest native 32-bit int value is returned.
+ * Likewise for the smallest native 32-bit int value. If it is within the range of valid native 32-bit ints, its value
+ * is returned rounded to a 32-bit int using the default rounding method.
+ */
+val BHFloat.clampedInt32Value: Int32 get()
+    = clamp(low = Int32.min.floatValue, value = this, high = Int32.max.floatValue).int32Value
+
+/**
+ * This native ideal-size integer as a native 32-bit integer, clamped to guard against overflow. That is to say, if
+ * this number is larger than the largest native 32-bit int value, the largest native 32-bit int value is returned.
+ * Likewise for the smallest native 32-bit int value. If it is within the range of valid native 32-bit ints, its value
+ * is returned unchanged.
+ */
+val BHInt.clampedInt32Value: Int32 get()
+    = clamp(low = Int32.min.integerValue, value = this, high = Int32.max.integerValue).int32Value
