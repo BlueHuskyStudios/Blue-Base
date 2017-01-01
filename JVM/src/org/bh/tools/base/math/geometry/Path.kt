@@ -159,7 +159,7 @@ private fun <ContentType> List<ContentType>.sortedQueueValue(sorter: Comparator<
 }
 
 inline fun <ContentType> List<ContentType>.sorted(crossinline sorter: Comparator<ContentType>): List<ContentType> =
-        this.sortedWith(kotlin.comparisons.Comparator<ContentType> { lhs, rhs ->
+        this.sortedWith(kotlin.Comparator<ContentType> { lhs, rhs ->
             (
                     if (lhs == null) ComparisonResult.right
                     else if (rhs == null) ComparisonResult.left
