@@ -16,7 +16,19 @@ package org.bh.tools.base.collections
  */
 inline val <ElementType> Iterable<ElementType>.firstOrNull: ElementType? get() = firstOrNull()
 
+
+/**
+ * Removes the first item in the list (if there is one) and returns it. If there is no first element in the list, no
+ * action is performed and `null` is returned
+ */
+@Suppress("NOTHING_TO_INLINE")
+inline fun <Element> MutableList<Element>.removeFirst(): Element? = removeAt(index = 0)
+
+
+
 data class Triad<out Type>(val a: Type, val b: Type, val c: Type)
+
+
 
 val <Type> Triad<Type>.left get() = a
 val <Type> Triad<Type>.center get() = b
