@@ -14,9 +14,22 @@ import java.util.*
  * @author Ben Leggiero
  * @since 2016-09-29
  */
-open class Size<out NumberType>(val width: NumberType, val height: NumberType) where NumberType : Number
+open class Size<out NumberType>(val width: NumberType, val height: NumberType) where NumberType : Number {
 
-val <NumberType : Number> Size<NumberType>.pairValue: Pair<NumberType, NumberType> get() = Pair(width, height)
+    val pairValue: Pair<NumberType, NumberType> get() = Pair(width, height)
+
+    override fun equals(other: Any?): Boolean {
+        return when {
+            this === other -> true
+            other !is Size<*> -> false
+            other.height != this.height -> false
+            other.width != this.width -> false
+            else -> true
+        }
+    }
+
+    override fun hashCode(): Int = 31 * width.hashCode() + height.hashCode()
+}
 
 typealias Dimension<NumberType> = Size<NumberType>
 
@@ -39,6 +52,8 @@ abstract class ComputableSize<out NumberType : Number>(width: NumberType, height
     abstract infix operator fun <OtherType : Number> minus(rhs: Pair<OtherType, OtherType>): Size<NumberType>
     abstract infix operator fun <OtherType : Number> times(rhs: Pair<OtherType, OtherType>): Size<NumberType>
     abstract infix operator fun <OtherType : Number> div(rhs: Pair<OtherType, OtherType>): Size<NumberType>
+
+    abstract val isEmpty: Boolean
 }
 
 
@@ -69,6 +84,10 @@ private fun Size<*>.apology(type: String,
 
 
 class Int64Size(width: Int64, height: Int64) : ComputableSize<Int64>(width, height) {
+
+    override val isEmpty: Boolean = this == zero
+
+
     override infix operator fun <OtherType : Number> plus(rhs: Size<OtherType>): Int64Size = plus(Pair(rhs.width, rhs.height))
     override infix operator fun <OtherType : Number> minus(rhs: Size<OtherType>): Int64Size = minus(Pair(rhs.width, rhs.height))
     override infix operator fun <OtherType : Number> times(rhs: Size<OtherType>): Int64Size = times(Pair(rhs.width, rhs.height))
@@ -94,6 +113,7 @@ class Int64Size(width: Int64, height: Int64) : ComputableSize<Int64>(width, heig
                         otherTypeB = rhs.second::class.java)
             })
 
+
     override infix operator fun <OtherType : Number> minus(rhs: Pair<OtherType, OtherType>): Int64Size =
             (if (rhs.first.isNativeInteger) {
                 Int64Size(width - (rhs.first.integerValue), height - (rhs.second.integerValue))
@@ -106,6 +126,7 @@ class Int64Size(width: Int64, height: Int64) : ComputableSize<Int64>(width, heig
                         otherTypeA = rhs.first::class.java,
                         otherTypeB = rhs.second::class.java)
             })
+
 
     override infix operator fun <OtherType : Number> times(rhs: Pair<OtherType, OtherType>): Int64Size =
             (if (rhs.first.isNativeInteger) {
@@ -120,6 +141,7 @@ class Int64Size(width: Int64, height: Int64) : ComputableSize<Int64>(width, heig
                         otherTypeB = rhs.second::class.java)
             })
 
+
     override infix operator fun <OtherType : Number> div(rhs: Pair<OtherType, OtherType>): Int64Size =
             (if (rhs.first.isNativeInteger) {
                 Int64Size(width / (rhs.first.integerValue), height / (rhs.second.integerValue))
@@ -133,7 +155,10 @@ class Int64Size(width: Int64, height: Int64) : ComputableSize<Int64>(width, heig
                         otherTypeB = rhs.second::class.java)
             })
 
-    companion object
+
+    companion object {
+        val zero = Int64Size(0, 0)
+    }
 }
 typealias BHIntSize = Int64Size
 typealias IntSize = BHIntSize
@@ -144,7 +169,17 @@ val IntSize.awtValue: java.awt.Dimension get() = java.awt.Dimension(width.int32V
 
 
 class FloatSize(width: BHFloat, height: BHFloat) : ComputableSize<BHFloat>(width, height) {
+
+    companion object {
+        val zero = FloatSize(0, 0)
+    }
+
+
     constructor(width: BHInt, height: BHInt) : this(width.floatValue, height.floatValue)
+
+
+    override val isEmpty: Boolean = this == zero
+
 
     override infix operator fun <OtherType : Number> plus(rhs: Size<OtherType>): FloatSize = plus(Pair(rhs.width, rhs.height))
     override infix operator fun <OtherType : Number> minus(rhs: Size<OtherType>): FloatSize = minus(Pair(rhs.width, rhs.height))
@@ -159,7 +194,7 @@ class FloatSize(width: BHFloat, height: BHFloat) : ComputableSize<BHFloat>(width
 
 
     override infix operator fun <OtherType : Number> plus(rhs: Pair<OtherType, OtherType>): FloatSize =
-            (if (rhs.first.isNativeInteger) {
+            if (rhs.first.isNativeInteger) {
                 FloatSize(width + (rhs.first.integerValue), height + (rhs.second.integerValue))
             } else if (rhs.first.isNativeFraction) {
                 FloatSize((width + (rhs.first.floatValue)).clampedIntegerValue,
@@ -169,10 +204,10 @@ class FloatSize(width: BHFloat, height: BHFloat) : ComputableSize<BHFloat>(width
                         otherMainType = Pair::class.java,
                         otherTypeA = rhs.first::class.java,
                         otherTypeB = rhs.second::class.java)
-            })
+            }
 
     override infix operator fun <OtherType : Number> minus(rhs: Pair<OtherType, OtherType>): FloatSize =
-            (if (rhs.first.isNativeInteger) {
+            if (rhs.first.isNativeInteger) {
                 FloatSize(width - (rhs.first.integerValue), height - (rhs.second.integerValue))
             } else if (rhs.first.isNativeFraction) {
                 FloatSize((width - (rhs.first.floatValue)).clampedIntegerValue,
@@ -182,10 +217,10 @@ class FloatSize(width: BHFloat, height: BHFloat) : ComputableSize<BHFloat>(width
                         otherMainType = Pair::class.java,
                         otherTypeA = rhs.first::class.java,
                         otherTypeB = rhs.second::class.java)
-            })
+            }
 
     override infix operator fun <OtherType : Number> times(rhs: Pair<OtherType, OtherType>): FloatSize =
-            (if (rhs.first.isNativeInteger) {
+            if (rhs.first.isNativeInteger) {
                 FloatSize(width * (rhs.first.integerValue), height * (rhs.second.integerValue))
             } else if (rhs.first.isNativeFraction) {
                 FloatSize((width * (rhs.first.floatValue)).clampedIntegerValue,
@@ -195,10 +230,10 @@ class FloatSize(width: BHFloat, height: BHFloat) : ComputableSize<BHFloat>(width
                         otherMainType = Pair::class.java,
                         otherTypeA = rhs.first::class.java,
                         otherTypeB = rhs.second::class.java)
-            })
+            }
 
     override infix operator fun <OtherType : Number> div(rhs: Pair<OtherType, OtherType>): FloatSize =
-            (if (rhs.first.isNativeInteger) {
+            if (rhs.first.isNativeInteger) {
                 FloatSize(width / (rhs.first.integerValue), height / (rhs.second.integerValue))
             } else if (rhs.first.isNativeFraction) {
                 FloatSize((width / (rhs.first.floatValue)).clampedIntegerValue,
@@ -208,7 +243,7 @@ class FloatSize(width: BHFloat, height: BHFloat) : ComputableSize<BHFloat>(width
                         otherMainType = Pair::class.java,
                         otherTypeA = rhs.first::class.java,
                         otherTypeB = rhs.second::class.java)
-            })
+            }
 }
 typealias Float64Size = FloatSize
 typealias BHFloatSize = Float64Size

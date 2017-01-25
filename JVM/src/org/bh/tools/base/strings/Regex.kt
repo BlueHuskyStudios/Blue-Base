@@ -1,6 +1,6 @@
-package org.bh.tools.base.parsing
+package org.bh.tools.base.strings
 
-import org.bh.tools.base.parsing.Regex.Companion.Options
+import org.bh.tools.base.strings.Regex.Companion.Options
 import java.util.regex.Pattern
 
 /**

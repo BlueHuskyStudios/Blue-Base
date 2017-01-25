@@ -2,59 +2,85 @@
 
 package org.bh.tools.base.math.geometry
 
-import org.bh.tools.base.abstraction.*
+import org.bh.tools.base.abstraction.Float64
+import org.bh.tools.base.abstraction.Int64
 import org.bh.tools.base.collections.firstOrNullComparingTriads
-import org.bh.tools.base.math.*
 import org.bh.tools.base.math.Comparator
+import org.bh.tools.base.math.ComparisonResult
 import java.util.*
 
 /**
+ * A path comprised of a set of points
+ *
  * @author Kyli
- * @since 017 2016 12 17.
+ * @since 2016-12-17
  */
+interface Path<out NumberType: Number, out PointType: Point<NumberType>> {
+    /**
+     * The points in the path
+     */
+    val points: List<PointType>
 
-interface Path<out NumberType: Number> {
-    val points: List<Point<NumberType>>
+    /**
+     * Indicates whether the last point connects to the first
+     */
     val isClosed: Boolean
 }
 
-interface ComputablePath<NumberType: Number> : Path<NumberType> {
+
+
+interface ComputablePath<NumberType: Number, PointType: ComputablePoint<NumberType>> : Path<NumberType, PointType> {
     /**
      * Indicates whether this path touches or crosses over itself at any point
      */
     val intersectsSelf: Boolean
 
+
     /**
      * Appends the given point to the end of the path
      */
-    operator fun plus(rhs: Point<NumberType>): ComputablePath<NumberType>
+    operator fun plus(rhs: PointType): ComputablePath<NumberType, PointType>
 }
 
-class Int64Path(override val points: List<Point<Int64>> = listOf(), override val isClosed: Boolean = false) : ComputablePath<Int64> {
+
+
+class Int64Path(override val points: List<ComputablePoint<Int64>> = listOf(), override val isClosed: Boolean = false) : ComputablePath<Int64, ComputablePoint<Int64>> {
 
     override val intersectsSelf: Boolean get() = null != points.firstOrNullComparingTriads { (left, current, right) ->
-        Int64LineSegment(left, current).intersects(Int64LineSegment(current, right))
+        return@firstOrNullComparingTriads when (Int64LineSegment(left, current).describeIntersection(Int64LineSegment(current, right))) {
+            is IntersectionDescription.none -> false
+            else -> true
+        }
     }
 
-    override operator fun plus(rhs: Point<Int64>): Int64Path {
+
+    override operator fun plus(rhs: ComputablePoint<Int64>): Int64Path {
         return Int64Path(points + rhs)
     }
 }
 typealias BHIntPath = Int64Path
 typealias IntegerPath = BHIntPath
 
-class Float64Path(override val points: List<Point<Float64>> = listOf(), override val isClosed: Boolean = false) : ComputablePath<Float64> {
+
+
+class Float64Path(override val points: List<ComputablePoint<Float64>> = listOf(), override val isClosed: Boolean = false) : ComputablePath<Float64, ComputablePoint<Float64>> {
 
     override val intersectsSelf: Boolean get() = null != this.points.firstOrNullComparingTriads { (left, current, right) ->
-        BHFloatLineSegment(left, current).intersects(BHFloatLineSegment(current, right))
+        return@firstOrNullComparingTriads when (FloatLineSegment(left, current).describeIntersection(FloatLineSegment(current, right))) {
+            is IntersectionDescription.none -> false
+            else -> true
+        }
     }
 
-    override operator fun plus(rhs: Point<Float64>): Float64Path {
+
+    override operator fun plus(rhs: ComputablePoint<Float64>): Float64Path {
         return Float64Path(points + rhs)
     }
 }
 typealias BHFloatPath = Float64Path
 typealias FloatPath = BHFloatPath
+
+
 
 ///**
 // * The Bentley–Ottmann algorithm: https://en.wikipedia.org/wiki/Bentley–Ottmann_algorithm

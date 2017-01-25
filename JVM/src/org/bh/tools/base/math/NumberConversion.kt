@@ -21,43 +21,43 @@ interface NumberConvertible<out NumberType: Number> {
 /**
  * The ideal native floating-point value of this [Number]
  */
-val Number.floatValue: BHFloat get() = this.float64Value
+inline val Number.floatValue: BHFloat get() = this.float64Value
 
 /**
  * The 32-bit floating-point value of this [Number]
  */
-val Number.float32Value: Float32 get() = this.toFloat()
+inline val Number.float32Value: Float32 get() = this.toFloat()
 
 /**
  * The 64-bit floating-point value of this [Number]
  */
-val Number.float64Value: Float64 get() = this.toDouble()
+inline val Number.float64Value: Float64 get() = this.toDouble()
 
 
 /**
  * The ideal integer value of this [Number]
  */
-val Number.integerValue: BHInt get() = this.int64Value
+inline val Number.integerValue: BHInt get() = this.int64Value
 
 /**
  * The 8-bit integer value of this [Number]
  */
-val Number.int8Value: Int8 get() = this.toByte()
+inline val Number.int8Value: Int8 get() = this.toByte()
 
 /**
  * The 16-bit integer value of this [Number]
  */
-val Number.int16Value: Int16 get() = this.toShort()
+inline val Number.int16Value: Int16 get() = this.toShort()
 
 /**
  * The 32-bit integer value of this [Number]
  */
-val Number.int32Value: Int32 get() = this.toInt()
+inline val Number.int32Value: Int32 get() = this.toInt()
 
 /**
  * The 64-bit integer value of this [Number]
  */
-val Number.int64Value: Int64 get() = this.toLong()
+inline val Number.int64Value: Int64 get() = this.toLong()
 
 val Number.isNativeInteger: Boolean get()
     = when (this) {

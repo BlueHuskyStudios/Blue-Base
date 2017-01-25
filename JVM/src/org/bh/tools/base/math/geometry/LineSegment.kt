@@ -1,12 +1,16 @@
+@file:Suppress("unused")
+
 package org.bh.tools.base.math.geometry
 
 import org.bh.tools.base.abstraction.BHFloat
 import org.bh.tools.base.abstraction.Float64
 import org.bh.tools.base.abstraction.Int64
-import org.bh.tools.base.math.max
-import org.bh.tools.base.math.min
+import org.bh.tools.base.math.defaultFractionCalculationTolerance
+import org.bh.tools.base.math.defaultIntegerCalculationTolerance
+import org.bh.tools.base.math.equals
+import org.bh.tools.base.math.floatValue
 import java.awt.geom.AffineTransform
-import java.lang.Math.abs
+import java.lang.Math.*
 
 
 /**
@@ -17,18 +21,12 @@ import java.lang.Math.abs
  * @author Kyli Rouge
  * @since 2016-12-11
  */
-open class LineSegment<out NumberType : Number>(val start: Point<NumberType>, val end: Point<NumberType>) : Cloneable {
+open class LineSegment<NumberType : Number, out PointType : Point<NumberType>>(val start: PointType, val end: PointType) : Cloneable {
 
-    companion object {
-        val zero: LineSegment<*> = LineSegment(0, 0, 0, 0)
-    }
-
-    constructor(x1: NumberType, y1: NumberType, x2: NumberType, y2: NumberType) : this(Point(x1, y1), Point(x2, y2))
-
-    val x1 get() = start.x
-    val y1 get() = start.y
-    val x2 get() = end.x
-    val y2 get() = end.y
+    inline val x1 get() = start.x
+    inline val y1 get() = start.y
+    inline val x2 get() = end.x
+    inline val y2 get() = end.y
 
     override fun toString(): String {
         return "{start: $start, end: $end}"
@@ -36,107 +34,264 @@ open class LineSegment<out NumberType : Number>(val start: Point<NumberType>, va
 
     val stringValue get() = toString()
 
-    override public fun clone(): LineSegment<NumberType> {
+    override public fun clone(): LineSegment<NumberType, Point<NumberType>> {
         return LineSegment(start.clone(), end.clone())
     }
 }
 
-abstract class ComputableLineSegment<NumberType : Number>(start: Point<NumberType>, end: Point<NumberType>) : LineSegment<NumberType>(start, end) {
+
+
+typealias AnyLineSegment = LineSegment<*, *>
+
+
+
+abstract class ComputableLineSegment<NumberType : Number>(start: ComputablePoint<NumberType>, end: ComputablePoint<NumberType>) : LineSegment<NumberType, ComputablePoint<NumberType>>(start, end) {
+
+    abstract val bounds: ComputableRect<NumberType, ComputablePoint<NumberType>, ComputableSize<NumberType>>
 
     /**
-     * Indicates whether the given point lies on this line
+     * Indicates whether the given point lies on this line segment
      *
      * @param point     The point to test
+     * @param tolerance _optional_ - How far the point can be before it's not considered on the line segment
+     *
+     * @return `true` iff the given point lies on this line segment
+     */
+    @Suppress("KDocUnresolvedReference")
+    abstract fun contains(point: ComputablePoint<NumberType>): Boolean
+
+
+    /**
+     * Indicates whether the given point lies on this line segment
+     *
+     * @param point     The point to test
+     * @param tolerance _optional_ - How far the point can be before it's not considered on the line segment
      *
      * @return `true` iff the given point lies on this line
      */
-    abstract fun contains(point: Point<NumberType>): Boolean
+    abstract fun contains(point: ComputablePoint<NumberType>, tolerance: NumberType): Boolean
+
 
     /**
-     * Indicates whether the given point lies on this line
+     * Indicates whether this line segment equals the other. That is, each point on this segment directly corresponds
+     * to each point on the other.
      *
-     * @param point     The point to test
-     * @param tolerance _optional_ - How far the point can be before it's not considered on the line.
+     * @param other     The other line segment to test
+     * @param tolerance _optional_ - How far the other segment can be before it's not considered equal to this one
      *
-     * @return `true` iff the given point lies on this line
+     * @return `true` iff the given line segment is equal to this one
      */
-    abstract fun contains(point: Point<NumberType>, tolerance: NumberType): Boolean
+    @Suppress("KDocUnresolvedReference")
+    abstract fun equals(other: ComputableLineSegment<NumberType>): Boolean
+
 
     /**
-     * Indicates whether this line intersects the given other one
+     * Indicates whether this line segment equals the other. That is, each point on this segment directly corresponds
+     * to each point on the other.
+     *
+     * @param other     The other line segment to test
+     * @param tolerance _optional_ - How far the other segment can be before it's not considered equal to this one
+     *
+     * @return `true` iff the given line segment is equal to this one
      */
-    abstract fun intersects(other: ComputableLineSegment<NumberType>): Boolean
+    abstract fun equals(other: ComputableLineSegment<NumberType>, tolerance: NumberType): Boolean
 
-    protected abstract fun orientation(p: Point<NumberType>, q: Point<NumberType>, r: Point<NumberType>): ThreePointOrientation
+
+    protected abstract fun orientation(p: ComputablePoint<NumberType>, q: ComputablePoint<NumberType>, r: ComputablePoint<NumberType>): ThreePointOrientation
+
 
     protected enum class ThreePointOrientation {
         collinear, clockwise, counterclockwise
     }
 
 
+    /**
+     * Calls [rawIntersection(other, tolerance)] with default tolerance
+     */
+    abstract fun rawIntersection(other: ComputableLineSegment<NumberType>): ComputablePoint<NumberType>?
+
 
     /**
-     * The main function that returns true if line segment 'p1q1' and 'p2q2' intersect.
+     * Finds where this line segment intersects the other one. Returns `null` if there is no such intersection.
      */
-    protected fun doIntersect(p1q1: LineSegment<NumberType>, p2q2: LineSegment<NumberType>): Boolean {
-        val p1 = p1q1.start
-        val q1 = p1q1.end
-        val p2 = p2q2.start
-        val q2 = p2q2.end
+    abstract fun rawIntersection(other: ComputableLineSegment<NumberType>, tolerance: NumberType): ComputablePoint<NumberType>?
 
-        // Find the four orientations needed for general and
-        // special cases
-        val o1 = orientation(p1, q1, p2)
-        val o2 = orientation(p1, q1, q2)
-        val o3 = orientation(p2, q2, p1)
-        val o4 = orientation(p2, q2, q1)
 
-        // General case
-        if (o1 != o2 && o3 != o4)
-            return true
+    /**
+     * Calls [describeIntersection(other: ComputableLineSegment<NumberType>, tolerance: NumberType)] with default tolerance
+     */
+    abstract fun describeIntersection(other: ComputableLineSegment<NumberType>): IntersectionDescription
 
-        // Special Cases
-        // p1, q1 and p2 are collinear and p2 lies on segment p1q1
-        if (o1 == ThreePointOrientation.collinear && onSegment(p1q1, p2)) return true
 
-        // p1, q1 and p2 are collinear and q2 lies on segment p1q1
-        if (o2 == ThreePointOrientation.collinear && onSegment(p1q1, q2)) return true
+    /**
+     * Discovers whether and how this line segments intersects another.
+     * This requires [contains] and [rawIntersection] to be implemented properly.
+     *
+     * @param
+     */
+    fun describeIntersection(other: ComputableLineSegment<NumberType>, tolerance: NumberType): IntersectionDescription {
 
-        // p2, q2 and p1 are collinear and p1 lies on segment p2q2
-        if (o3 == ThreePointOrientation.collinear && onSegment(p2q2, p1)) return true
+        // Easy win: If they're equal, they completely overlap and thus always intersect
 
-        // p2, q2 and q1 are collinear and q1 lies on segment p2q2
-        if (o4 == ThreePointOrientation.collinear && onSegment(p2q2, q1)) return true
+        if (this.equals(other, tolerance = tolerance)) {
+            return IntersectionDescription.completeOverlap(isStartAndEndFlipped = !this.start.equals(other.start, tolerance = tolerance))
+        }
 
-        return false // Doesn't fall in any of the above cases
+        val rawIntersection = this.rawIntersection(other, tolerance = tolerance)
+                ?: return IntersectionDescription.none
+
+//        // Check for a partial overlap
+//
+//        if (this.contains(other.start, tolerance = tolerance)) {
+//            if (this.contains(other.end, tolerance = tolerance)) {
+//                return IntersectionDescription.partialOverlap
+//            }
+//        }
+
+        // Check if the vertices intersect
+
+        if (this.start.equals(other.start, tolerance = tolerance)) {
+            return IntersectionDescription.leftVertexTouchesRightVertex(verticesLocation = this.start,
+                    isLeftStartVertex = true, isRightStartVertex = true)
+        }
+        if (this.start.equals(other.end, tolerance = tolerance)) {
+            return IntersectionDescription.leftVertexTouchesRightVertex(verticesLocation = this.start,
+                    isLeftStartVertex = true, isRightStartVertex = false)
+        }
+        if (this.end.equals(other.start, tolerance = tolerance)) {
+            return IntersectionDescription.leftVertexTouchesRightVertex(verticesLocation = this.end,
+                    isLeftStartVertex = false, isRightStartVertex = true)
+        }
+        if (this.end.equals(other.end, tolerance = tolerance)) {
+            return IntersectionDescription.leftVertexTouchesRightVertex(verticesLocation = this.end,
+                    isLeftStartVertex = false, isRightStartVertex = false)
+        }
+
+        // Check if a vertex touches an edge
+
+        if (other.contains(this.start, tolerance = tolerance)) {
+            return IntersectionDescription.leftVertexTouchesRightEdge(this.start, isLeftStartVertex = true)
+        }
+        if (other.contains(this.end, tolerance = tolerance)) {
+            return IntersectionDescription.leftVertexTouchesRightEdge(this.end, isLeftStartVertex = false)
+        }
+        if (this.contains(other.start, tolerance = tolerance)) {
+            return IntersectionDescription.rightVertexTouchesLeftEdge(other.start, isRightStartVertex = true)
+        }
+        if (this.contains(other.end, tolerance = tolerance)) {
+            return IntersectionDescription.rightVertexTouchesLeftEdge(other.end, isRightStartVertex = false)
+        }
+
+        // If we've gotten this far, it's your basic intersection
+
+        return IntersectionDescription.edgesCross(crossingLocation = rawIntersection)
     }
 
 
     /**
-     * Given three possibly collinear points p, q, r, the function checks if point q lies on line segment 'pr'
+     * Calls [intersects(other, tolerance)] with default tolerance
+     *
+     * @param other     The other line to inspect
+     * @param tolerance _optional_ - The distance this line can be from the other before they're not considered intersecting
+     *
+     * @param `true` iff the two lines intersect
      */
-    protected abstract fun onSegment(pr: LineSegment<NumberType>, q: Point<NumberType>): Boolean
+    @Suppress("KDocUnresolvedReference")
+    abstract fun intersects(other: ComputableLineSegment<NumberType>): Boolean
+
+
+    /**
+     * Indicates whether this line intersects the other one, with the given tolerance
+     *
+     * @param other     The other line to inspect
+     * @param tolerance _optional_ - The distance this line can be from the other before they're not considered intersecting
+     *
+     * @param `true` iff the two lines intersect with the given tolerance
+     */
+    fun intersects(other: ComputableLineSegment<NumberType>, tolerance: NumberType): Boolean {
+        return rawIntersection(other, tolerance = tolerance) != null
+    }
 }
 
 
-class Int64LineSegment(start: Point<Int64>, end: Point<Int64>) : ComputableLineSegment<Int64>(start, end) {
+/**
+ * Describes how and where two line segments intersect, if at all
+ */
+@Suppress("UNUSED_PARAMETER")
+sealed class IntersectionDescription {
+    /**
+     * The line segments do not intersect
+     */
+    object none : IntersectionDescription()
 
-    override fun contains(point: Point<Int64>): Boolean {
-        return contains(point, tolerance = 0)
-    }
+    /**
+     * One of the left line segment's vertices touches one of the right one's
+     *
+     * @param verticesLocation The location of the touching vertices
+     * @param isLeftStartVertex `true` iff the left line segment's vertex is its starting vertex
+     * @param isRightStartVertex `true` iff the right line segment's vertex is its starting vertex
+     */
+    class leftVertexTouchesRightVertex<out NumberType : Number>(val verticesLocation: Point<NumberType>, isLeftStartVertex: Boolean, isRightStartVertex: Boolean) : IntersectionDescription()
 
-    override fun contains(point: Point<Int64>, tolerance: Int64): Boolean {
+    /**
+     * One of the left line segment's vertices touches the right one's edge
+     *
+     * @param leftVertexLocation The location of the touching vertex
+     * @param isLeftStartVertex `true` iff the left line segment's touching vertex is its starting vertex
+     */
+    class leftVertexTouchesRightEdge<out NumberType : Number>(val leftVertexLocation: Point<NumberType>, isLeftStartVertex: Boolean) : IntersectionDescription()
+
+    /**
+     * One of the right line segment's vertices touches the left one's edge
+     *
+     * @param rightVertexLocation The location of the touching vertex
+     * @param isRightStartVertex `true` iff the right line segment's touching vertex is its starting vertex
+     */
+    class rightVertexTouchesLeftEdge<out NumberType : Number>(val rightVertexLocation: Point<NumberType>, isRightStartVertex: Boolean) : IntersectionDescription()
+
+    /**
+     * The left line segment and the right one cross, but their vertices don't touch
+     *
+     * @param crossingLocation The location of the crossing point
+     */
+    class edgesCross<out NumberType : Number>(val crossingLocation: Point<NumberType>) : IntersectionDescription()
+
+    /**
+     * The line segments completely overlap; both vertices on both line segments touch eachother and all points along
+     * both segments are shared exactly
+     *
+     * @param isStartAndEndFlipped `true` iff the starts touch ends and ends touch starts; `false` if the starts touch
+     *                             starts and ends touch ends.
+     */
+    class completeOverlap(val isStartAndEndFlipped: Boolean) : IntersectionDescription()
+}
+
+
+class Int64LineSegment(start: ComputablePoint<Int64>, end: ComputablePoint<Int64>) : ComputableLineSegment<Int64>(start, end) {
+
+    override fun contains(point: ComputablePoint<Int64>): Boolean = contains(point, tolerance = 0)
+
+    override fun contains(point: ComputablePoint<Int64>, tolerance: Int64): Boolean
+            = (point.x <= max(start.x, end.x) && point.x >= min(start.x, end.x)
+            && point.y <= max(start.y, end.y) && point.y >= min(start.y, end.y))
+    /* TODO: Evaluate whether the following approach would be better:
+    {
         val m = (end.y - start.y) / (end.x - start.x)
         val b = start.y - (m * start.x)
         return Math.abs(point.y - ((m * point.x) + b)) < tolerance // derived from y=mx+b
-    }
+    }*/
 
     /**
      * The smallest rectangle that contains all points in this line
      */
-    val bounds: Int64Rect = Int64Rect(start, Size(x2 - x1, y2 - y1))
+    override val bounds: Int64Rect = Int64Rect(start, Int64Size(x2 - x1, y2 - y1))
 
-    fun transformed(transform: AffineTransform?): Float64LineSegment {
+
+    /**
+     * Not yet supported. That said, if the given `transform` is `null` or the identity, [floatValue] is returned.
+     */
+    @Deprecated("Not yet supported")
+    fun transformed(transform: AffineTransform?): FloatLineSegment {
         if (transform == null || transform.isIdentity) {
             return floatValue
         }
@@ -162,48 +317,101 @@ class Int64LineSegment(start: Point<Int64>, end: Point<Int64>) : ComputableLineS
 
     // BEGIN: Code translated from http://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
 
-    override fun orientation(p: Point<Int64>, q: Point<Int64>, r: Point<Int64>): ThreePointOrientation {
+    override fun orientation(p: ComputablePoint<Int64>, q: ComputablePoint<Int64>, r: ComputablePoint<Int64>): ThreePointOrientation {
         val ret = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y)
 
         return when {
-            ret == 0L -> ThreePointOrientation.collinear
+            ret == defaultIntegerCalculationTolerance -> ThreePointOrientation.collinear
             ret > 0 -> ThreePointOrientation.clockwise
             else -> ThreePointOrientation.counterclockwise
         }
     }
 
-    override fun onSegment(pr: LineSegment<Int64>, q: Point<Int64>): Boolean
-            = (q.x <= max(pr.start.x, pr.end.x) && q.x >= min(pr.start.x, pr.end.x)
-            && q.y <= max(pr.start.y, pr.end.y) && q.y >= min(pr.start.y, pr.end.y))
-
     // END: Translated code
 
 
-    override fun intersects(other: ComputableLineSegment<Int64>): Boolean {
-        return doIntersect(this, other)
+    override fun equals(other: ComputableLineSegment<Int64>): Boolean
+            = equals(other, tolerance = defaultIntegerCalculationTolerance)
+
+
+    override fun equals(other: ComputableLineSegment<Int64>, tolerance: Int64): Boolean
+            = this.start.equals(other.start, tolerance = tolerance)
+            && this.end.equals(other.end, tolerance = tolerance)
+
+
+    override fun intersects(other: ComputableLineSegment<Int64>): Boolean
+            = intersects(other, tolerance = defaultIntegerCalculationTolerance)
+
+
+    override fun describeIntersection(other: ComputableLineSegment<Int64>): IntersectionDescription
+            = describeIntersection(other, tolerance = defaultIntegerCalculationTolerance)
+
+
+    override fun rawIntersection(other: ComputableLineSegment<Int64>): ComputablePoint<Int64>?
+            = rawIntersection(other, tolerance = defaultIntegerCalculationTolerance)
+
+
+    override fun rawIntersection(other: ComputableLineSegment<Int64>, tolerance: Int64): ComputablePoint<Int64>?
+            = findLineIntersection(this, other)
+
+    companion object {
+        fun findLineIntersection(line1: ComputableLineSegment<Int64>,
+                                 line2: ComputableLineSegment<Int64>,
+                                 tolerance: Int64 = defaultIntegerCalculationTolerance): ComputablePoint<Int64>? {
+
+            if (line1.equals(line2, tolerance = tolerance)) {
+                return line1.start
+            }
+
+            val line1XDelta = line1.start.x - line1.end.x
+            val line1YDelta = line1.end.y - line1.start.y
+            val line1Delta = (line1XDelta * line1.start.y) + (line1YDelta * line1.start.x)
+
+            val line2XDelta = line2.start.x - line2.end.x
+            val line2YDelta = line2.end.y - line2.start.y
+            val line2Delta = (line2XDelta * line2.start.y) + (line2YDelta * line2.start.x)
+
+            val angularDifference = abs((line2XDelta * line1YDelta) - (line1XDelta * line2YDelta))
+            val areParallel = angularDifference <= tolerance
+
+            return if (areParallel) {
+                null
+            } else {
+                Int64Point(((line2XDelta * line1Delta) - (line1XDelta * line2Delta)) / angularDifference,
+                           ((line1YDelta * line2Delta) - (line2YDelta * line1Delta)) / angularDifference)
+            }
+        }
     }
 }
 typealias BHIntLineSegment = Int64LineSegment
 typealias IntegerLineSegment = BHIntLineSegment
 
-class Float64LineSegment(start: Point<Float64>, end: Point<Float64>) : ComputableLineSegment<Float64>(start, end) {
+
+class Float64LineSegment(start: ComputablePoint<Float64>, end: ComputablePoint<Float64>) : ComputableLineSegment<Float64>(start, end) {
 
 
-    override fun contains(point: Point<Float64>): Boolean {
-        return contains(point, tolerance = 0.0)
+    override fun contains(point: ComputablePoint<Float64>): Boolean {
+        return contains(point, tolerance = defaultFractionCalculationTolerance)
     }
 
-    override fun contains(point: Point<BHFloat>, tolerance: BHFloat): Boolean {
+    override fun contains(point: ComputablePoint<BHFloat>, tolerance: BHFloat): Boolean
+            = (point.x <= max(start.x, end.x) && point.x >= min(start.x, end.x)
+            && point.y <= max(start.y, end.y) && point.y >= min(start.y, end.y))
+    /* TODO: Evaluate whether the following approach would be better:
+    {
         val m = (end.y - start.y) / (end.x - start.x)
         val b = start.y - (m * start.x)
         return Math.abs(point.y - ((m * point.x) + b)) < tolerance // derived from y=mx+b
-    }
+    }*/
 
     /**
      * The smallest rectangle that contains all points in this line
      */
-    val bounds: Float64Rect = Float64Rect(Point(x1, y1), Size(x2 - x1, y2 - y1))
+    override val bounds: Float64Rect = Float64Rect(Float64Point(x1, y1), Float64Size(x2 - x1, y2 - y1))
 
+    /**
+     * Not yet supported. That said, if the given `transform` is `null` or the identity, [floatValue] is returned.
+     */
     fun transformed(transform: AffineTransform?): Float64LineSegment {
         if (transform == null || transform.isIdentity) {
             return floatValue
@@ -230,15 +438,11 @@ class Float64LineSegment(start: Point<Float64>, end: Point<Float64>) : Computabl
 
     // BEGIN: Code translated from http://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
 
-    override fun onSegment(pr: LineSegment<Float64>, q: Point<Float64>): Boolean
-            = (q.x <= max(pr.start.x, pr.end.x) && q.x >= min(pr.start.x, pr.end.x)
-            && q.y <= max(pr.start.y, pr.end.y) && q.y >= min(pr.start.y, pr.end.y))
-
-    override fun orientation(p: Point<Float64>, q: Point<Float64>, r: Point<Float64>): ThreePointOrientation {
+    override fun orientation(p: ComputablePoint<Float64>, q: ComputablePoint<Float64>, r: ComputablePoint<Float64>): ThreePointOrientation {
         val ret = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y)
 
         return when {
-            abs(ret) <= 0.0001 -> ThreePointOrientation.collinear
+            abs(ret) <= defaultFractionCalculationTolerance -> ThreePointOrientation.collinear
             ret > 0 -> ThreePointOrientation.clockwise
             else -> ThreePointOrientation.counterclockwise
         }
@@ -247,11 +451,59 @@ class Float64LineSegment(start: Point<Float64>, end: Point<Float64>) : Computabl
     // END: Translated code
 
 
-    override fun intersects(other: ComputableLineSegment<Float64>): Boolean {
-        return doIntersect(this, other)
+    override fun equals(other: ComputableLineSegment<Float64>): Boolean = equals(other, tolerance = defaultFractionCalculationTolerance)
+
+
+    override fun equals(other: ComputableLineSegment<Float64>, tolerance: Float64): Boolean
+            = this.start.equals(other.start, tolerance = tolerance)
+            && this.end.equals(other.end, tolerance = tolerance)
+
+
+    override fun intersects(other: ComputableLineSegment<Float64>): Boolean
+            = intersects(other, tolerance = defaultFractionCalculationTolerance)
+
+
+    override fun describeIntersection(other: ComputableLineSegment<Float64>): IntersectionDescription
+            = describeIntersection(other, tolerance = defaultFractionCalculationTolerance)
+
+
+    override fun rawIntersection(other: ComputableLineSegment<Float64>): ComputablePoint<Float64>?
+            = rawIntersection(other, tolerance = defaultFractionCalculationTolerance)
+
+
+    override fun rawIntersection(other: ComputableLineSegment<Float64>, tolerance: Float64): ComputablePoint<Float64>?
+            = findLineIntersection(this, other)
+
+    companion object {
+        fun findLineIntersection(line1: ComputableLineSegment<Float64>,
+                                 line2: ComputableLineSegment<Float64>,
+                                 tolerance: Float64 = defaultFractionCalculationTolerance): ComputablePoint<Float64>? {
+
+            if (line1.equals(line2, tolerance = tolerance)) {
+                return line1.start
+            }
+
+            val line1XDelta = line1.start.x - line1.end.x
+            val line1YDelta = line1.end.y - line1.start.y
+            val line1Delta = (line1XDelta * line1.start.y) + (line1YDelta * line1.start.x)
+
+            val line2XDelta = line2.start.x - line2.end.x
+            val line2YDelta = line2.end.y - line2.start.y
+            val line2Delta = (line2XDelta * line2.start.y) + (line2YDelta * line2.start.x)
+
+            val angularDifference = abs((line2XDelta * line1YDelta) - (line1XDelta * line2YDelta))
+            val areParallel = angularDifference <= tolerance
+
+            return if (areParallel) {
+                null
+            } else {
+                Float64Point(((line2XDelta * line1Delta) - (line1XDelta * line2Delta)) / angularDifference,
+                             ((line1YDelta * line2Delta) - (line2YDelta * line1Delta)) / angularDifference)
+            }
+        }
     }
 }
 typealias BHFloatLineSegment = Float64LineSegment
 typealias FloatLineSegment = BHFloatLineSegment
 
-val LineSegment<*>.floatValue: FloatLineSegment get() = FloatLineSegment(start.floatValue, end.floatValue)
+val AnyLineSegment.floatValue: FloatLineSegment get() = FloatLineSegment(start.floatValue, end.floatValue)
