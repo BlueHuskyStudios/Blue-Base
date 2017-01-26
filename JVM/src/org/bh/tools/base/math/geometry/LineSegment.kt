@@ -7,7 +7,6 @@ import org.bh.tools.base.abstraction.Float64
 import org.bh.tools.base.abstraction.Int64
 import org.bh.tools.base.math.defaultFractionCalculationTolerance
 import org.bh.tools.base.math.defaultIntegerCalculationTolerance
-import org.bh.tools.base.math.equals
 import org.bh.tools.base.math.floatValue
 import java.awt.geom.AffineTransform
 import java.lang.Math.*
@@ -219,10 +218,21 @@ abstract class ComputableLineSegment<NumberType : Number>(start: ComputablePoint
  */
 @Suppress("UNUSED_PARAMETER")
 sealed class IntersectionDescription {
+
     /**
      * The line segments do not intersect
      */
-    object none : IntersectionDescription()
+    object none : IntersectionDescription() {
+        override fun equals(other: Any?): Boolean {
+            return other != null && other is none
+        }
+
+
+        override fun hashCode(): Int {
+            return super.hashCode()
+        }
+    }
+
 
     /**
      * One of the left line segment's vertices touches one of the right one's
@@ -231,7 +241,28 @@ sealed class IntersectionDescription {
      * @param isLeftStartVertex `true` iff the left line segment's vertex is its starting vertex
      * @param isRightStartVertex `true` iff the right line segment's vertex is its starting vertex
      */
-    class leftVertexTouchesRightVertex<out NumberType : Number>(val verticesLocation: Point<NumberType>, isLeftStartVertex: Boolean, isRightStartVertex: Boolean) : IntersectionDescription()
+    class leftVertexTouchesRightVertex<out NumberType : Number>(val verticesLocation: Point<NumberType>, val isLeftStartVertex: Boolean, val isRightStartVertex: Boolean) : IntersectionDescription() {
+        override fun equals(other: Any?): Boolean {
+            return other is leftVertexTouchesRightVertex<*>
+                    && verticesLocation == other.verticesLocation
+                    && isLeftStartVertex == other.isLeftStartVertex
+                    && isRightStartVertex == other.isRightStartVertex
+        }
+
+
+        override fun hashCode(): Int {
+            return (super.hashCode()
+                    xor verticesLocation.hashCode()
+                    xor isLeftStartVertex.hashCode()
+                    xor isRightStartVertex.hashCode())
+        }
+
+
+        override fun toString(): String {
+            return "{ ${javaClass.simpleName}: { verticesLocation: $verticesLocation, isLeftStartVertex: $isLeftStartVertex, isRightStartVertex: $isRightStartVertex } }"
+        }
+    }
+
 
     /**
      * One of the left line segment's vertices touches the right one's edge
@@ -239,7 +270,23 @@ sealed class IntersectionDescription {
      * @param leftVertexLocation The location of the touching vertex
      * @param isLeftStartVertex `true` iff the left line segment's touching vertex is its starting vertex
      */
-    class leftVertexTouchesRightEdge<out NumberType : Number>(val leftVertexLocation: Point<NumberType>, isLeftStartVertex: Boolean) : IntersectionDescription()
+    class leftVertexTouchesRightEdge<out NumberType : Number>(val leftVertexLocation: Point<NumberType>, val isLeftStartVertex: Boolean) : IntersectionDescription() {
+        override fun equals(other: Any?): Boolean {
+            return other is leftVertexTouchesRightEdge<*>
+                    && isLeftStartVertex == other.isLeftStartVertex
+        }
+
+
+        override fun hashCode(): Int {
+            return super.hashCode() xor isLeftStartVertex.hashCode()
+        }
+
+
+        override fun toString(): String {
+            return "{ ${javaClass.simpleName}: { leftVertexLocation: $leftVertexLocation, isLeftStartVertex: $isLeftStartVertex } }"
+        }
+    }
+
 
     /**
      * One of the right line segment's vertices touches the left one's edge
@@ -247,14 +294,46 @@ sealed class IntersectionDescription {
      * @param rightVertexLocation The location of the touching vertex
      * @param isRightStartVertex `true` iff the right line segment's touching vertex is its starting vertex
      */
-    class rightVertexTouchesLeftEdge<out NumberType : Number>(val rightVertexLocation: Point<NumberType>, isRightStartVertex: Boolean) : IntersectionDescription()
+    class rightVertexTouchesLeftEdge<out NumberType : Number>(val rightVertexLocation: Point<NumberType>, val isRightStartVertex: Boolean) : IntersectionDescription() {
+        override fun equals(other: Any?): Boolean {
+            return other is rightVertexTouchesLeftEdge<*>
+                    && isRightStartVertex == other.isRightStartVertex
+        }
+
+
+        override fun hashCode(): Int {
+            return super.hashCode() xor isRightStartVertex.hashCode()
+        }
+
+
+        override fun toString(): String {
+            return "{ ${javaClass.simpleName}: { rightVertexLocation: $rightVertexLocation isRightStartVertex: $isRightStartVertex } }"
+        }
+    }
+
 
     /**
      * The left line segment and the right one cross, but their vertices don't touch
      *
      * @param crossingLocation The location of the crossing point
      */
-    class edgesCross<out NumberType : Number>(val crossingLocation: Point<NumberType>) : IntersectionDescription()
+    class edgesCross<out NumberType : Number>(val crossingLocation: Point<NumberType>) : IntersectionDescription() {
+        override fun equals(other: Any?): Boolean {
+            return other is edgesCross<*>
+                    && crossingLocation == other.crossingLocation
+        }
+
+
+        override fun hashCode(): Int {
+            return super.hashCode() xor crossingLocation.hashCode()
+        }
+
+
+        override fun toString(): String {
+            return "{ ${javaClass.simpleName}: { crossingLocation: $crossingLocation } }"
+        }
+    }
+
 
     /**
      * The line segments completely overlap; both vertices on both line segments touch eachother and all points along
@@ -263,7 +342,22 @@ sealed class IntersectionDescription {
      * @param isStartAndEndFlipped `true` iff the starts touch ends and ends touch starts; `false` if the starts touch
      *                             starts and ends touch ends.
      */
-    class completeOverlap(val isStartAndEndFlipped: Boolean) : IntersectionDescription()
+    class completeOverlap(val isStartAndEndFlipped: Boolean) : IntersectionDescription() {
+        override fun equals(other: Any?): Boolean {
+            return other is completeOverlap
+                    && isStartAndEndFlipped == other.isStartAndEndFlipped
+        }
+
+
+        override fun hashCode(): Int {
+            return super.hashCode() xor isStartAndEndFlipped.hashCode()
+        }
+
+
+        override fun toString(): String {
+            return "{ ${javaClass.simpleName}: { isStartAndEndFlipped: $isStartAndEndFlipped } }"
+        }
+    }
 }
 
 
@@ -494,8 +588,16 @@ class Float64LineSegment(start: ComputablePoint<Float64>, end: ComputablePoint<F
             val angularDifference = abs((line2XDelta * line1YDelta) - (line1XDelta * line2YDelta))
             val areParallel = angularDifference <= tolerance
 
-            return if (areParallel) {
-                null
+            return if (areParallel) { // parallel line segments can still intersect if they share a vertex
+                if (line1.start == line2.start
+                        || line1.start == line2.end) {
+                    return line1.start
+                } else if (line1.end == line2.start
+                        || line1.end == line2.end) {
+                    return line1.end
+                } else {
+                    null
+                }
             } else {
                 Float64Point(((line2XDelta * line1Delta) - (line1XDelta * line2Delta)) / angularDifference,
                              ((line1YDelta * line2Delta) - (line2YDelta * line1Delta)) / angularDifference)

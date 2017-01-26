@@ -23,14 +23,29 @@ open class Point<out NumberType : Number>(val x: NumberType, val y: NumberType) 
         val zero: Point<*> = Point(0, 0)
     }
 
+
+    val stringValue get() = toString()
+
+
     override fun toString(): String {
         return "($x, $y)"
     }
 
-    val stringValue get() = toString()
 
     override public fun clone(): Point<NumberType> {
         return Point(x, y)
+    }
+
+
+    override fun equals(other: Any?): Boolean {
+        return other is Point<*>
+                && x == other.x
+                && y == other.y
+    }
+
+
+    override fun hashCode(): Int {
+        return super.hashCode() xor x.hashCode() xor y.hashCode()
     }
 }
 
@@ -60,6 +75,27 @@ abstract class ComputablePoint<NumberType : Number>(x: NumberType, y: NumberType
     abstract infix operator fun <OtherType : Number> times(rhs: Pair<OtherType, OtherType>): Point<NumberType>
     abstract infix operator fun <OtherType : Number> div(rhs: Pair<OtherType, OtherType>): Point<NumberType>
 
+    /**
+     * Calls [equals] with default tolerance
+     *
+     * @param rhs       The other point to compare
+     * @param tolerance _optional_ - The distance on either axis by which the other point must be away from this one
+     *                  before they are considered unequal
+     *
+     * @return `true` iff the two points are equal within the given tolerance
+     */
+    @Suppress("KDocUnresolvedReference")
+    abstract fun equals(rhs: ComputablePoint<NumberType>): Boolean
+
+    /**
+     * Determines whether this point is equal to another of the same type within a certain tolerance
+     *
+     * @param rhs       The other point to compare
+     * @param tolerance _optional_ - The distance on either axis by which the other point must be away from this one
+     *                  before they are considered unequal
+     *
+     * @return `true` iff the two points are equal within the given tolerance
+     */
     abstract fun equals(rhs: ComputablePoint<NumberType>, tolerance: NumberType): Boolean
 }
 
@@ -155,6 +191,9 @@ class Int64Point(x: Int64, y: Int64) : ComputablePoint<Int64>(x, y) {
             }
 
 
+    override fun equals(rhs: ComputablePoint<Int64>): Boolean = equals(rhs, tolerance = defaultIntegerCalculationTolerance)
+
+
     override fun equals(rhs: ComputablePoint<Int64>, tolerance: Int64): Boolean =
             abs(x - rhs.x) < tolerance
             && abs(y - rhs.y) < tolerance
@@ -237,6 +276,9 @@ class Float64Point(x: Float64, y: Float64) : ComputablePoint<Float64>(x, y) {
                         otherTypeA = rhs.first::class.java,
                         otherTypeB = rhs.second::class.java)
             }
+
+
+    override fun equals(rhs: ComputablePoint<Float64>): Boolean = equals(rhs, tolerance = defaultFractionCalculationTolerance)
 
 
     override fun equals(rhs: ComputablePoint<Float64>, tolerance: Float64): Boolean =
