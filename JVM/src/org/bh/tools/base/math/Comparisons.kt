@@ -1,7 +1,7 @@
 package org.bh.tools.base.math
 
-import org.bh.tools.base.abstraction.BHFloat
-import org.bh.tools.base.abstraction.BHInt
+import org.bh.tools.base.abstraction.Fraction
+import org.bh.tools.base.abstraction.Integer
 import org.bh.tools.base.abstraction.Float32
 import org.bh.tools.base.abstraction.Float64
 import java.lang.StrictMath.abs
@@ -65,24 +65,24 @@ enum class ComparisonResult(
                             val otherInt = other.integerValue
                             return (otherInt - rawInt).clampedInt32Value
                         } else if (other.isNativeFraction) {
-                            val otherFloat = other.floatValue
+                            val otherFloat = other.fractionValue
                             return (otherFloat - rawInt).clampedInt32Value
                         } else {
-                            backupResult = (other.floatValue - rawInt).clampedInt32Value
+                            backupResult = (other.fractionValue - rawInt).clampedInt32Value
                         }
                     } else if (raw.isNativeFraction) {
-                        val rawFloat = raw.floatValue
+                        val rawFloat = raw.fractionValue
                         if (other.isNativeInteger) {
                             val otherInt = other.integerValue
                             return (otherInt - rawFloat).clampedInt32Value
                         } else if (other.isNativeFraction) {
-                            val otherFloat = other.floatValue
+                            val otherFloat = other.fractionValue
                             return (otherFloat - rawFloat).clampedInt32Value
                         } else {
-                            backupResult = (other.floatValue - rawFloat).clampedInt32Value
+                            backupResult = (other.fractionValue - rawFloat).clampedInt32Value
                         }
                     } else {
-                        backupResult = (other.floatValue - raw.floatValue).clampedInt32Value
+                        backupResult = (other.fractionValue - raw.fractionValue).clampedInt32Value
                     }
                     print("Sorry; I hadn't thought about subtracting a ${other.javaClass} from a ${raw.javaClass}...")
                     print("I'll attempt to convert them to floats and do the math from there!")
@@ -143,12 +143,12 @@ val defaultFloat64CalculationTolerance: Float64 get() = 0.0001
 /**
  * The default amount by which fractional calculations and comparisons can be off
  */
-val defaultFractionCalculationTolerance: BHFloat get() = 0.0001
+val defaultFractionCalculationTolerance: Fraction get() = 0.0001
 
 /**
  * The default amount by which integer calculations and comparisons can be off
  */
-val defaultIntegerCalculationTolerance: BHInt get() = 0
+val defaultIntegerCalculationTolerance: Integer get() = 0
 
 
 /**
@@ -159,20 +159,16 @@ val defaultIntegerCalculationTolerance: BHInt get() = 0
  *                  Defaults to [defaultFractionCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
-fun BHFloat.equals(rhs: BHFloat, tolerance: BHFloat = defaultFractionCalculationTolerance): Boolean {
-    return abs(rhs - this) < tolerance
-}
+fun Fraction.equals(rhs: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean = abs(rhs - this) < tolerance
 
 
 /**
- * If you use this, you're being silly. Anyway, this determines whether this integer is equal to the other, within a
- * given tolerance.
+ * This determines whether this integer is equal to the other, within a given tolerance.
  *
  * @param rhs       The other integer to compare to this one
  * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
  *                  Defaults to [defaultIntegerCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
-fun BHInt.equals(rhs: BHInt, tolerance: BHInt = defaultIntegerCalculationTolerance): Boolean {
-    return abs(rhs - this) < tolerance
+fun Integer.equals(rhs: Integer, tolerance: Integer = defaultIntegerCalculationTolerance): Boolean = abs(rhs - this) < tolerance
 }

@@ -3,7 +3,7 @@
 package org.bh.tools.base.util
 
 import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.math.floatValue
+import org.bh.tools.base.math.fractionValue
 import org.bh.tools.base.util.TimeConversion.Companion.nanosecondsPerMillisecond
 import org.bh.tools.base.util.TimeConversion.Companion.nanosecondsPerSecond
 import java.time.Instant
@@ -20,13 +20,13 @@ import java.util.*
 /**
  * An interval of time, by default in seconds
  */
-typealias TimeInterval = BHFloat
+typealias TimeInterval = Fraction
 
-inline val Int8.timeIntervalValue: TimeInterval get() = floatValue
-inline val Int16.timeIntervalValue: TimeInterval get() = floatValue
-inline val Int32.timeIntervalValue: TimeInterval get() = floatValue
-inline val Int64.timeIntervalValue: TimeInterval get() = floatValue
-inline val Float32.timeIntervalValue: TimeInterval get() = floatValue
+inline val Int8.timeIntervalValue: TimeInterval get() = fractionValue
+inline val Int16.timeIntervalValue: TimeInterval get() = fractionValue
+inline val Int32.timeIntervalValue: TimeInterval get() = fractionValue
+inline val Int64.timeIntervalValue: TimeInterval get() = fractionValue
+inline val Float32.timeIntervalValue: TimeInterval get() = fractionValue
 inline val Float64.timeIntervalValue: TimeInterval get() = this
 
 
@@ -53,7 +53,7 @@ sealed class TimeConversion {
         val nanosecondsPerSecond: TimeInterval = 1_000_000_000.0
 
 
-        fun nanosecondsToTimeInterval(nanoseconds: BHInt): TimeInterval = nanoseconds.floatValue / nanosecondsPerSecond
+        fun nanosecondsToTimeInterval(nanoseconds: Integer): TimeInterval = nanoseconds.fractionValue / nanosecondsPerSecond
     }
 }
 
@@ -62,8 +62,8 @@ sealed class TimeConversion {
  * The number of seconds since the Java epoch: January 1st, 1970 at 00:00:00.0000
  */
 val Instant.timeIntervalSinceJavaEpoch: TimeInterval get() {
-    val millisecondsSinceJavaEpoch = toEpochMilli().floatValue
-    val nanosecondsSinceLastSecond = nano.floatValue
+    val millisecondsSinceJavaEpoch = toEpochMilli().fractionValue
+    val nanosecondsSinceLastSecond = nano.fractionValue
 
     val nanosecondsSinceJavaEpoch = (millisecondsSinceJavaEpoch * nanosecondsPerMillisecond) + nanosecondsSinceLastSecond
 

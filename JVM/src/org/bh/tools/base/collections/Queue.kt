@@ -2,7 +2,7 @@
 
 package org.bh.tools.base.collections
 
-import org.bh.tools.base.abstraction.BHInt
+import org.bh.tools.base.abstraction.Integer
 import org.bh.tools.base.math.int32Value
 import org.bh.tools.base.math.integerValue
 
@@ -16,7 +16,7 @@ data class Queue<Element>(internal var backingList: MutableList<Element> = mutab
     val front: Element?
         get() = backingList.firstOrNull
 
-    val size: BHInt
+    val size: Integer
         get() = backingList.size.integerValue
 
     val isEmpty: Boolean = size == 0L

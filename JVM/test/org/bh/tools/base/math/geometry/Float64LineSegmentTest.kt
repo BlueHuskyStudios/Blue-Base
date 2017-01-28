@@ -1,8 +1,8 @@
 package org.bh.tools.base.math.geometry
 
-import org.bh.tools.base.abstraction.BHFloat
+import org.bh.tools.base.abstraction.Fraction
 import org.bh.tools.base.math.defaultFractionCalculationTolerance
-import org.bh.tools.base.math.geometry.Float64Point.Companion.zero
+import org.bh.tools.base.math.geometry.FractionPoint.Companion.zero
 import org.bh.tools.base.math.geometry.IntersectionDescription.*
 import org.bh.tools.base.util.measureTimeInterval
 import org.junit.Assert.assertEquals
@@ -12,7 +12,7 @@ import java.util.logging.Logger
 
 private data class Intersection
 (val name: String,
- val line1: FloatLineSegment, val line2: FloatLineSegment,
+ val line1: FractionLineSegment, val line2: FractionLineSegment,
  val expectedIntersectionPoint: FloatPoint?,
  val expectedIntersectionDescriptionType: IntersectionDescription) {
 
@@ -20,7 +20,7 @@ private data class Intersection
                 line1Start: FloatPoint, line1End: FloatPoint,   line2Start: FloatPoint, line2End: FloatPoint,
                 expectedIntersectionPoint: FloatPoint,
                 expectedIntersectionDescriptionType: IntersectionDescription):
-            this(name, FloatLineSegment(line1Start, line1End), FloatLineSegment(line2Start, line2End), expectedIntersectionPoint, expectedIntersectionDescriptionType)
+            this(name, FractionLineSegment(line1Start, line1End), FractionLineSegment(line2Start, line2End), expectedIntersectionPoint, expectedIntersectionDescriptionType)
 }
 
 
@@ -98,7 +98,7 @@ class Float64LineSegmentTest {
             allIntersections.forEach {
                 assertEquals("findLineIntersection: " + it.name,
                         it.expectedIntersectionPoint!!,
-                        Float64LineSegment.findLineIntersection(it.line1, it.line2),
+                        FractionLineSegment.findLineIntersection(it.line1, it.line2),
                         defaultFractionCalculationTolerance)
             }
         }
@@ -108,7 +108,7 @@ class Float64LineSegmentTest {
 }
 
 
-fun assertEquals(message: String, expected: ComputablePoint<BHFloat>?, actual: ComputablePoint<BHFloat>?, tolerance: BHFloat) {
+fun assertEquals(message: String, expected: ComputablePoint<Fraction>?, actual: ComputablePoint<Fraction>?, tolerance: Fraction) {
     val fail: Boolean
     if (actual != null) {
         if (expected != null) {

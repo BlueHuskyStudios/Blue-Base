@@ -74,14 +74,14 @@ private typealias Int64RectBaseType = ComputableRect<Int64, ComputablePoint<Int6
 
 
 
-class Int64Rect(origin: ComputablePoint<Int64>, size: ComputableSize<Int64>)
+class IntegerRect(origin: ComputablePoint<Int64>, size: ComputableSize<Int64>)
     : Int64RectBaseType(origin, size) {
 
     companion object {
-        val zero = Int64Rect(Int64Point.zero, Int64Size.zero)
+        val zero = IntegerRect(IntegerPoint.zero, IntegerSize.zero)
     }
 
-    constructor(x: Int64, y: Int64, width: Int64, height: Int64) : this(IntPoint(x, y), IntSize(width, height))
+    constructor(x: Int64, y: Int64, width: Int64, height: Int64) : this(IntPoint(x, y), IntegerSize(width, height))
 
     override val minX get() = if (width < 0) x + width else x
     override val midX get() = (minX + maxX) / 2
@@ -91,17 +91,17 @@ class Int64Rect(origin: ComputablePoint<Int64>, size: ComputableSize<Int64>)
     override val midY get() = (minY + maxY) / 2
     override val maxY get() = if (height < 0) y else y + height
 
-    override val minXminY get() = Int64Point(minX, minY)
-    override val minXmidY get() = Int64Point(minX, midY)
-    override val minXmaxY get() = Int64Point(minX, maxY)
+    override val minXminY get() = IntegerPoint(minX, minY)
+    override val minXmidY get() = IntegerPoint(minX, midY)
+    override val minXmaxY get() = IntegerPoint(minX, maxY)
 
-    override val midXminY get() = Int64Point(midX, minY)
-    override val midXmidY get() = Int64Point(midX, midY)
-    override val midXmaxY get() = Int64Point(midX, maxY)
+    override val midXminY get() = IntegerPoint(midX, minY)
+    override val midXmidY get() = IntegerPoint(midX, midY)
+    override val midXmaxY get() = IntegerPoint(midX, maxY)
 
-    override val maxXminY get() = Int64Point(maxX, minY)
-    override val maxXmidY get() = Int64Point(maxX, midY)
-    override val maxXmaxY get() = Int64Point(maxX, maxY)
+    override val maxXminY get() = IntegerPoint(maxX, minY)
+    override val maxXmidY get() = IntegerPoint(maxX, midY)
+    override val maxXmaxY get() = IntegerPoint(maxX, maxY)
 
 
 
@@ -135,7 +135,7 @@ class Int64Rect(origin: ComputablePoint<Int64>, size: ComputableSize<Int64>)
         val y = min(this.minY, other.minY)
         val width = max(this.maxX, other.maxX) - x
         val height = max(this.maxY, other.maxY) - y
-        return Int64Rect(x, y, width, height)
+        return IntegerRect(x, y, width, height)
     }
 
 
@@ -149,27 +149,27 @@ class Int64Rect(origin: ComputablePoint<Int64>, size: ComputableSize<Int64>)
         val y = max(this.minY, other.minY)
         val width = min(this.maxX, other.maxX) - x
         val height = min(this.maxY, other.maxY) - y
-        return Int64Rect(x, y, width, height)
+        return IntegerRect(x, y, width, height)
     }
 }
-typealias BHIntRect = Int64Rect
-typealias IntRect = BHIntRect
+typealias Int64Rect = IntegerRect
+typealias IntRect = IntegerRect
 
-val AnyRect.intValue: IntRect get() = IntRect(x = x.integerValue, y = y.integerValue, width = width.integerValue, height = height.integerValue)
-
-
-
-private typealias Float64RectBaseType = ComputableRect<Float64, ComputablePoint<Float64>, ComputableSize<Float64>>
+val AnyRect.intValue: IntegerRect get() = IntegerRect(x = x.integerValue, y = y.integerValue, width = width.integerValue, height = height.integerValue)
 
 
 
-class Float64Rect(origin: ComputablePoint<Float64>, size: ComputableSize<Float64>) : Float64RectBaseType(origin, size) {
+private typealias FractionRectBaseType = ComputableRect<Float64, ComputablePoint<Float64>, ComputableSize<Float64>>
+
+
+
+class FractionRect(origin: ComputablePoint<Float64>, size: ComputableSize<Float64>) : FractionRectBaseType(origin, size) {
 
     companion object {
-        val zero = Float64Rect(Float64Point.zero, Float64Size.zero)
+        val zero = FractionRect(FractionPoint.zero, Float64Size.zero)
     }
 
-    constructor(x: Float64, y: Float64, width: Float64, height: Float64) : this(Float64Point(x, y), Float64Size(width, height))
+    constructor(x: Float64, y: Float64, width: Float64, height: Float64) : this(FractionPoint(x, y), FractionSize(width, height))
 
     constructor(awtValue: Rectangle2D) : this(awtValue.x, awtValue.y, awtValue.width, awtValue.height)
 
@@ -181,33 +181,33 @@ class Float64Rect(origin: ComputablePoint<Float64>, size: ComputableSize<Float64
     override val midY get() = (minY + maxY) / 2
     override val maxY get() = if (height < 0) y else y + height
 
-    override val minXminY get() = Float64Point(minX, minY)
-    override val minXmidY get() = Float64Point(minX, midY)
-    override val minXmaxY get() = Float64Point(minX, maxY)
+    override val minXminY get() = FractionPoint(minX, minY)
+    override val minXmidY get() = FractionPoint(minX, midY)
+    override val minXmaxY get() = FractionPoint(minX, maxY)
 
-    override val midXminY get() = Float64Point(midX, minY)
-    override val midXmidY get() = Float64Point(midX, midY)
-    override val midXmaxY get() = Float64Point(midX, maxY)
+    override val midXminY get() = FractionPoint(midX, minY)
+    override val midXmidY get() = FractionPoint(midX, midY)
+    override val midXmaxY get() = FractionPoint(midX, maxY)
 
-    override val maxXminY get() = Float64Point(maxX, minY)
-    override val maxXmidY get() = Float64Point(maxX, midY)
-    override val maxXmaxY get() = Float64Point(maxX, maxY)
+    override val maxXminY get() = FractionPoint(maxX, minY)
+    override val maxXmidY get() = FractionPoint(maxX, midY)
+    override val maxXmaxY get() = FractionPoint(maxX, maxY)
 
     val awtValue: Rectangle2D get() = Rectangle2D.Double(x, y, width, height)
 
-    override fun contains(other: Float64RectBaseType): Boolean
+    override fun contains(other: FractionRectBaseType): Boolean
             = this.minX <= x
             && this.minY <= y
             && this.maxX >= x
             && this.maxY >= y
 
 
-    override fun intersects(other: Float64RectBaseType): Boolean {
+    override fun intersects(other: FractionRectBaseType): Boolean {
         return intersection(other) != null
     }
 
 
-    override fun union(other: Float64RectBaseType): Float64RectBaseType {
+    override fun union(other: FractionRectBaseType): FractionRectBaseType {
         // Adapted from https://github.com/apple/swift-corelibs-foundation/blob/87815eab0cff7d971f1fbdbfbe98729ec92dbe3d/Foundation/NSGeometry.swift#L587
 
         val isEmptyFirstRect = this.isEmpty
@@ -223,11 +223,11 @@ class Float64Rect(origin: ComputablePoint<Float64>, size: ComputableSize<Float64
         val y = min(this.minY, other.minY)
         val width = max(this.maxX, other.maxX) - x
         val height = max(this.maxY, other.maxY) - y
-        return Float64Rect(x, y, width, height)
+        return FractionRect(x, y, width, height)
     }
 
 
-    override fun intersection(other: Float64RectBaseType): Float64RectBaseType? {
+    override fun intersection(other: FractionRectBaseType): FractionRectBaseType? {
         if (this.maxX <= other.minX || other.maxX <= this.minX || this.maxY <= other.minY || other.maxY <= this.minY) {
             return null
         }
@@ -235,10 +235,10 @@ class Float64Rect(origin: ComputablePoint<Float64>, size: ComputableSize<Float64
         val y = max(this.minY, other.minY)
         val width = min(this.maxX, other.maxX) - x
         val height = min(this.maxY, other.maxY) - y
-        return Float64Rect(x, y, width, height)
+        return FractionRect(x, y, width, height)
     }
 }
-typealias BHFloatRect = Float64Rect
-typealias FloatRect = BHFloatRect
+typealias Float64Rect = FractionRect
+typealias FloatRect = FractionRect
 
-val AnyRect.floatValue: FloatRect get() = FloatRect(x = x.floatValue, y = y.floatValue, width = width.floatValue, height = height.floatValue)
+val AnyRect.fractionValue: FractionRect get() = FractionRect(x = x.fractionValue, y = y.fractionValue, width = width.fractionValue, height = height.fractionValue)

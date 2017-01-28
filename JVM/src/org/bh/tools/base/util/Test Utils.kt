@@ -1,6 +1,6 @@
 package org.bh.tools.base.util
 
-import org.bh.tools.base.abstraction.BHInt
+import org.bh.tools.base.abstraction.Integer
 import org.bh.tools.base.math.Averager
 import org.bh.tools.base.util.TimeConversion.Companion.nanosecondsToTimeInterval
 import kotlin.system.measureNanoTime
@@ -25,7 +25,7 @@ val defaultMeasurementTrialCount = 10L
  * @param trials The number of times to measure the given block
  * @param block  The block to measure
  */
-inline fun measureTimeInterval(trials: BHInt = defaultMeasurementTrialCount, block: TestMeasurementBlock): TimeInterval {
+inline fun measureTimeInterval(trials: Integer = defaultMeasurementTrialCount, block: TestMeasurementBlock): TimeInterval {
     if (trials <= 0) {
         return TimeInterval.NaN
     }

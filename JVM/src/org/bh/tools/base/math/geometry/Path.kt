@@ -44,41 +44,41 @@ interface ComputablePath<NumberType: Number, PointType: ComputablePoint<NumberTy
 
 
 
-class Int64Path(override val points: List<ComputablePoint<Int64>> = listOf(), override val isClosed: Boolean = false) : ComputablePath<Int64, ComputablePoint<Int64>> {
+class IntegerPath(override val points: List<ComputablePoint<Int64>> = listOf(), override val isClosed: Boolean = false) : ComputablePath<Int64, ComputablePoint<Int64>> {
 
     override val intersectsSelf: Boolean get() = null != points.firstOrNullComparingTriads { (left, current, right) ->
-        return@firstOrNullComparingTriads when (Int64LineSegment(left, current).describeIntersection(Int64LineSegment(current, right))) {
+        return@firstOrNullComparingTriads when (IntegerLineSegment(left, current).describeIntersection(IntegerLineSegment(current, right))) {
             is IntersectionDescription.none -> false
             else -> true
         }
     }
 
 
-    override operator fun plus(rhs: ComputablePoint<Int64>): Int64Path {
-        return Int64Path(points + rhs)
+    override operator fun plus(rhs: ComputablePoint<Int64>): IntegerPath {
+        return IntegerPath(points + rhs)
     }
 }
-typealias BHIntPath = Int64Path
-typealias IntegerPath = BHIntPath
+typealias Int64Path = IntegerPath
+typealias IntPath = IntegerPath
 
 
 
-class Float64Path(override val points: List<ComputablePoint<Float64>> = listOf(), override val isClosed: Boolean = false) : ComputablePath<Float64, ComputablePoint<Float64>> {
+class FractionPath(override val points: List<ComputablePoint<Float64>> = listOf(), override val isClosed: Boolean = false) : ComputablePath<Float64, ComputablePoint<Float64>> {
 
     override val intersectsSelf: Boolean get() = null != this.points.firstOrNullComparingTriads { (left, current, right) ->
-        return@firstOrNullComparingTriads when (FloatLineSegment(left, current).describeIntersection(FloatLineSegment(current, right))) {
+        return@firstOrNullComparingTriads when (FractionLineSegment(left, current).describeIntersection(FractionLineSegment(current, right))) {
             is IntersectionDescription.none -> false
             else -> true
         }
     }
 
 
-    override operator fun plus(rhs: ComputablePoint<Float64>): Float64Path {
-        return Float64Path(points + rhs)
+    override operator fun plus(rhs: ComputablePoint<Float64>): FractionPath {
+        return FractionPath(points + rhs)
     }
 }
-typealias BHFloatPath = Float64Path
-typealias FloatPath = BHFloatPath
+typealias Float64Path = FractionPath
+typealias FloatPath = FractionPath
 
 
 
@@ -105,7 +105,7 @@ typealias FloatPath = BHFloatPath
 // *         `tu` from the event queue, and, if `r` and `t` cross or `s` and `u` cross, add those crossing points to the
 // *         event queue.
 // */
-//private val Path<BHInt>._bendleyOttmann: Boolean get() {
+//private val Path<Integer>._bendleyOttmann: Boolean get() {
 //
 //    // 1. Initialize a priority queue `Q` of potential future events, each associated with a point in the plane and
 //    //     prioritized by the x-coordinate of the point. Initially, `Q` contains an event for each of the endpoints of
@@ -115,9 +115,9 @@ typealias FloatPath = BHFloatPath
 //
 //    // 2. Initialize a binary search tree `T` of the line segments that cross the sweep line `L`, ordered by the
 //    //     y-coordinates of the crossing points. Initially, `T` is empty.
-//    val T = TreeSet<LineSegment<BHInt>>({ lhs, rhs -> (rhs.y - lhs.y).int32Value })
+//    val T = TreeSet<LineSegment<Integer>>({ lhs, rhs -> (rhs.y - lhs.y).int32Value })
 //
-//    var previous: Point<BHInt>? = null
+//    var previous: Point<Integer>? = null
 //
 //    // 3. While `Q` is nonempty, find and remove the event from `Q` associated with a point `p` with minimum
 //    //     x-coordinate. Determine what type of event this is and process it according to the following case analysis:

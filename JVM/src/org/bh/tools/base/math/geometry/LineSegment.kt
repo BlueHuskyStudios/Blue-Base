@@ -2,12 +2,8 @@
 
 package org.bh.tools.base.math.geometry
 
-import org.bh.tools.base.abstraction.BHFloat
-import org.bh.tools.base.abstraction.Float64
-import org.bh.tools.base.abstraction.Int64
-import org.bh.tools.base.math.defaultFractionCalculationTolerance
-import org.bh.tools.base.math.defaultIntegerCalculationTolerance
-import org.bh.tools.base.math.floatValue
+import org.bh.tools.base.abstraction.*
+import org.bh.tools.base.math.*
 import java.awt.geom.AffineTransform
 import java.lang.Math.*
 
@@ -361,15 +357,15 @@ sealed class IntersectionDescription {
 }
 
 
-class Int64LineSegment(start: ComputablePoint<Int64>, end: ComputablePoint<Int64>) : ComputableLineSegment<Int64>(start, end) {
+class IntegerLineSegment(start: ComputablePoint<Integer>, end: ComputablePoint<Integer>) : ComputableLineSegment<Integer>(start, end) {
 
-    override fun contains(point: ComputablePoint<Int64>): Boolean = contains(point, tolerance = 0)
+    override fun contains(point: ComputablePoint<Integer>): Boolean = contains(point, tolerance = 0)
 
-    override fun contains(point: ComputablePoint<Int64>, tolerance: Int64): Boolean
             = (point.x <= max(start.x, end.x) && point.x >= min(start.x, end.x)
             && point.y <= max(start.y, end.y) && point.y >= min(start.y, end.y))
     /* TODO: Evaluate whether the following approach would be better:
     {
+    override fun contains(point: ComputablePoint<Integer>, tolerance: Integer): Boolean {
         val m = (end.y - start.y) / (end.x - start.x)
         val b = start.y - (m * start.x)
         return Math.abs(point.y - ((m * point.x) + b)) < tolerance // derived from y=mx+b
@@ -378,16 +374,16 @@ class Int64LineSegment(start: ComputablePoint<Int64>, end: ComputablePoint<Int64
     /**
      * The smallest rectangle that contains all points in this line
      */
-    override val bounds: Int64Rect = Int64Rect(start, Int64Size(x2 - x1, y2 - y1))
+    override val bounds: IntegerRect = IntegerRect(start, IntegerSize(x2 - x1, y2 - y1))
 
 
     /**
-     * Not yet supported. That said, if the given `transform` is `null` or the identity, [floatValue] is returned.
+     * Not yet supported. That said, if the given `transform` is `null` or the identity, [fractionValue] is returned.
      */
     @Deprecated("Not yet supported")
-    fun transformed(transform: AffineTransform?): FloatLineSegment {
+    fun transformed(transform: AffineTransform?): FractionLineSegment {
         if (transform == null || transform.isIdentity) {
-            return floatValue
+            return fractionValue
         }
 
         TODO("Transformations are not yet supported")
@@ -411,7 +407,7 @@ class Int64LineSegment(start: ComputablePoint<Int64>, end: ComputablePoint<Int64
 
     // BEGIN: Code translated from http://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
 
-    override fun orientation(p: ComputablePoint<Int64>, q: ComputablePoint<Int64>, r: ComputablePoint<Int64>): ThreePointOrientation {
+    override fun orientation(p: ComputablePoint<Integer>, q: ComputablePoint<Integer>, r: ComputablePoint<Integer>): ThreePointOrientation {
         val ret = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y)
 
         return when {
@@ -424,34 +420,34 @@ class Int64LineSegment(start: ComputablePoint<Int64>, end: ComputablePoint<Int64
     // END: Translated code
 
 
-    override fun equals(other: ComputableLineSegment<Int64>): Boolean
+    override fun equals(other: ComputableLineSegment<Integer>): Boolean
             = equals(other, tolerance = defaultIntegerCalculationTolerance)
 
 
-    override fun equals(other: ComputableLineSegment<Int64>, tolerance: Int64): Boolean
+    override fun equals(other: ComputableLineSegment<Integer>, tolerance: Integer): Boolean
             = this.start.equals(other.start, tolerance = tolerance)
             && this.end.equals(other.end, tolerance = tolerance)
 
 
-    override fun intersects(other: ComputableLineSegment<Int64>): Boolean
+    override fun intersects(other: ComputableLineSegment<Integer>): Boolean
             = intersects(other, tolerance = defaultIntegerCalculationTolerance)
 
 
-    override fun describeIntersection(other: ComputableLineSegment<Int64>): IntersectionDescription
+    override fun describeIntersection(other: ComputableLineSegment<Integer>): IntersectionDescription
             = describeIntersection(other, tolerance = defaultIntegerCalculationTolerance)
 
 
-    override fun rawIntersection(other: ComputableLineSegment<Int64>): ComputablePoint<Int64>?
+    override fun rawIntersection(other: ComputableLineSegment<Integer>): ComputablePoint<Integer>?
             = rawIntersection(other, tolerance = defaultIntegerCalculationTolerance)
 
 
-    override fun rawIntersection(other: ComputableLineSegment<Int64>, tolerance: Int64): ComputablePoint<Int64>?
+    override fun rawIntersection(other: ComputableLineSegment<Integer>, tolerance: Integer): ComputablePoint<Integer>?
             = findLineIntersection(this, other)
 
     companion object {
-        fun findLineIntersection(line1: ComputableLineSegment<Int64>,
-                                 line2: ComputableLineSegment<Int64>,
-                                 tolerance: Int64 = defaultIntegerCalculationTolerance): ComputablePoint<Int64>? {
+        fun findLineIntersection(line1: ComputableLineSegment<Integer>,
+                                 line2: ComputableLineSegment<Integer>,
+                                 tolerance: Integer = defaultIntegerCalculationTolerance): ComputablePoint<Integer>? {
 
             if (line1.equals(line2, tolerance = tolerance)) {
                 return line1.start
@@ -471,28 +467,28 @@ class Int64LineSegment(start: ComputablePoint<Int64>, end: ComputablePoint<Int64
             return if (areParallel) {
                 null
             } else {
-                Int64Point(((line2XDelta * line1Delta) - (line1XDelta * line2Delta)) / angularDifference,
+                IntegerPoint(((line2XDelta * line1Delta) - (line1XDelta * line2Delta)) / angularDifference,
                            ((line1YDelta * line2Delta) - (line2YDelta * line1Delta)) / angularDifference)
             }
         }
     }
 }
-typealias BHIntLineSegment = Int64LineSegment
-typealias IntegerLineSegment = BHIntLineSegment
+typealias Int64LineSegment = IntegerLineSegment
+typealias IntLineSegment = IntegerLineSegment
 
 
-class Float64LineSegment(start: ComputablePoint<Float64>, end: ComputablePoint<Float64>) : ComputableLineSegment<Float64>(start, end) {
+class FractionLineSegment(start: ComputablePoint<Fraction>, end: ComputablePoint<Fraction>) : ComputableLineSegment<Fraction>(start, end) {
 
 
-    override fun contains(point: ComputablePoint<Float64>): Boolean {
+    override fun contains(point: ComputablePoint<Fraction>): Boolean {
         return contains(point, tolerance = defaultFractionCalculationTolerance)
     }
 
-    override fun contains(point: ComputablePoint<BHFloat>, tolerance: BHFloat): Boolean
             = (point.x <= max(start.x, end.x) && point.x >= min(start.x, end.x)
             && point.y <= max(start.y, end.y) && point.y >= min(start.y, end.y))
     /* TODO: Evaluate whether the following approach would be better:
     {
+    override fun contains(point: ComputablePoint<Fraction>, tolerance: Fraction): Boolean {
         val m = (end.y - start.y) / (end.x - start.x)
         val b = start.y - (m * start.x)
         return Math.abs(point.y - ((m * point.x) + b)) < tolerance // derived from y=mx+b
@@ -501,14 +497,14 @@ class Float64LineSegment(start: ComputablePoint<Float64>, end: ComputablePoint<F
     /**
      * The smallest rectangle that contains all points in this line
      */
-    override val bounds: Float64Rect = Float64Rect(Float64Point(x1, y1), Float64Size(x2 - x1, y2 - y1))
+    override val bounds: FractionRect = FractionRect(FractionPoint(x1, y1), FractionSize(x2 - x1, y2 - y1))
 
     /**
-     * Not yet supported. That said, if the given `transform` is `null` or the identity, [floatValue] is returned.
+     * Not yet supported. That said, if the given `transform` is `null` or the identity, [fractionValue] is returned.
      */
-    fun transformed(transform: AffineTransform?): Float64LineSegment {
+    fun transformed(transform: AffineTransform?): FractionLineSegment {
         if (transform == null || transform.isIdentity) {
-            return floatValue
+            return fractionValue
         }
 
         TODO("Transformations are not yet supported")
@@ -532,7 +528,7 @@ class Float64LineSegment(start: ComputablePoint<Float64>, end: ComputablePoint<F
 
     // BEGIN: Code translated from http://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
 
-    override fun orientation(p: ComputablePoint<Float64>, q: ComputablePoint<Float64>, r: ComputablePoint<Float64>): ThreePointOrientation {
+    override fun orientation(p: ComputablePoint<Fraction>, q: ComputablePoint<Fraction>, r: ComputablePoint<Fraction>): ThreePointOrientation {
         val ret = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y)
 
         return when {
@@ -545,33 +541,33 @@ class Float64LineSegment(start: ComputablePoint<Float64>, end: ComputablePoint<F
     // END: Translated code
 
 
-    override fun equals(other: ComputableLineSegment<Float64>): Boolean = equals(other, tolerance = defaultFractionCalculationTolerance)
+    override fun equals(other: ComputableLineSegment<Fraction>): Boolean = equals(other, tolerance = defaultFractionCalculationTolerance)
 
 
-    override fun equals(other: ComputableLineSegment<Float64>, tolerance: Float64): Boolean
+    override fun equals(other: ComputableLineSegment<Fraction>, tolerance: Fraction): Boolean
             = this.start.equals(other.start, tolerance = tolerance)
             && this.end.equals(other.end, tolerance = tolerance)
 
 
-    override fun intersects(other: ComputableLineSegment<Float64>): Boolean
+    override fun intersects(other: ComputableLineSegment<Fraction>): Boolean
             = intersects(other, tolerance = defaultFractionCalculationTolerance)
 
 
-    override fun describeIntersection(other: ComputableLineSegment<Float64>): IntersectionDescription
+    override fun describeIntersection(other: ComputableLineSegment<Fraction>): IntersectionDescription
             = describeIntersection(other, tolerance = defaultFractionCalculationTolerance)
 
 
-    override fun rawIntersection(other: ComputableLineSegment<Float64>): ComputablePoint<Float64>?
+    override fun rawIntersection(other: ComputableLineSegment<Fraction>): ComputablePoint<Fraction>?
             = rawIntersection(other, tolerance = defaultFractionCalculationTolerance)
 
 
-    override fun rawIntersection(other: ComputableLineSegment<Float64>, tolerance: Float64): ComputablePoint<Float64>?
+    override fun rawIntersection(other: ComputableLineSegment<Fraction>, tolerance: Fraction): ComputablePoint<Fraction>?
             = findLineIntersection(this, other)
 
     companion object {
-        fun findLineIntersection(line1: ComputableLineSegment<Float64>,
-                                 line2: ComputableLineSegment<Float64>,
-                                 tolerance: Float64 = defaultFractionCalculationTolerance): ComputablePoint<Float64>? {
+        fun findLineIntersection(line1: ComputableLineSegment<Fraction>,
+                                 line2: ComputableLineSegment<Fraction>,
+                                 tolerance: Fraction = defaultFractionCalculationTolerance): ComputablePoint<Fraction>? {
 
             if (line1.equals(line2, tolerance = tolerance)) {
                 return line1.start
@@ -599,13 +595,13 @@ class Float64LineSegment(start: ComputablePoint<Float64>, end: ComputablePoint<F
                     null
                 }
             } else {
-                Float64Point(((line2XDelta * line1Delta) - (line1XDelta * line2Delta)) / angularDifference,
-                             ((line1YDelta * line2Delta) - (line2YDelta * line1Delta)) / angularDifference)
+                FractionPoint(((line2XDelta * line1Delta) - (line1XDelta * line2Delta)) / angularDifference,
+                        ((line1YDelta * line2Delta) - (line2YDelta * line1Delta)) / angularDifference)
             }
         }
     }
 }
-typealias BHFloatLineSegment = Float64LineSegment
-typealias FloatLineSegment = BHFloatLineSegment
+typealias Float64LineSegment = FractionLineSegment
+typealias FloatLineSegment = FractionLineSegment
 
-val AnyLineSegment.floatValue: FloatLineSegment get() = FloatLineSegment(start.floatValue, end.floatValue)
+val AnyLineSegment.fractionValue: FractionLineSegment get() = FractionLineSegment(start.fractionValue, end.fractionValue)

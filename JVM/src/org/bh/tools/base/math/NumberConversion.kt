@@ -18,10 +18,7 @@ interface NumberConvertible<out NumberType: Number> {
     val numberValue: NumberType
 }
 
-/**
- * The ideal native floating-point value of this [Number]
- */
-inline val Number.floatValue: BHFloat get() = this.float64Value
+
 
 /**
  * The 32-bit floating-point value of this [Number]
@@ -33,11 +30,12 @@ inline val Number.float32Value: Float32 get() = this.toFloat()
  */
 inline val Number.float64Value: Float64 get() = this.toDouble()
 
-
 /**
- * The ideal integer value of this [Number]
+ * The ideal native floating-point value of this [Number]
  */
-inline val Number.integerValue: BHInt get() = this.int64Value
+inline val Number.fractionValue: Fraction get() = this.float64Value
+
+
 
 /**
  * The 8-bit integer value of this [Number]
@@ -59,6 +57,14 @@ inline val Number.int32Value: Int32 get() = this.toInt()
  */
 inline val Number.int64Value: Int64 get() = this.toLong()
 
+/**
+ * The ideal integer value of this [Number]
+ */
+inline val Number.integerValue: Integer get() = this.int64Value
+
+
+
+
 val Number.isNativeInteger: Boolean get()
     = when (this) {
         is Int8, is Int16, is Int32, is Int64 -> true
@@ -77,8 +83,8 @@ val Number.isNativeFraction: Boolean get()
  * smallest native int value. If it is within the range of valid native ints, its value is returned rounded to an int
  * using the default rounding method.
  */
-val BHFloat.clampedIntegerValue: BHInt get()
-    = clamp(low = BHInt.min.floatValue, value = this, high = BHInt.max.floatValue).integerValue
+val Fraction.clampedIntegerValue: Integer get()
+    = clamp(low = Integer.min.fractionValue, value = this, high = Integer.max.fractionValue).integerValue
 
 /**
  * This native floating-point number as a native integer, clamped to guard against overflow. That is to say, if
@@ -86,8 +92,8 @@ val BHFloat.clampedIntegerValue: BHInt get()
  * Likewise for the smallest native 32-bit int value. If it is within the range of valid native 32-bit ints, its value
  * is returned rounded to a 32-bit int using the default rounding method.
  */
-val BHFloat.clampedInt32Value: Int32 get()
-    = clamp(low = Int32.min.floatValue, value = this, high = Int32.max.floatValue).int32Value
+val Fraction.clampedInt32Value: Int32 get()
+    = clamp(low = Int32.min.fractionValue, value = this, high = Int32.max.fractionValue).int32Value
 
 /**
  * This native ideal-size integer as a native 32-bit integer, clamped to guard against overflow. That is to say, if
@@ -95,5 +101,5 @@ val BHFloat.clampedInt32Value: Int32 get()
  * Likewise for the smallest native 32-bit int value. If it is within the range of valid native 32-bit ints, its value
  * is returned unchanged.
  */
-val BHInt.clampedInt32Value: Int32 get()
+val Integer.clampedInt32Value: Int32 get()
     = clamp(low = Int32.min.integerValue, value = this, high = Int32.max.integerValue).int32Value

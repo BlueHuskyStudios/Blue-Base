@@ -37,7 +37,7 @@ typealias Int64 = Long
 /**
  * The ideal type of integer
  */
-typealias BHInt = Int64 // TODO: Rename to Integer
+typealias Integer = Int64
 
 
 
@@ -54,7 +54,7 @@ typealias Float64 = Double
 /**
  * The ideal type of fractional number
  */
-typealias BHFloat = Float64 // TODO: Rename to Fraction?
+typealias Fraction = Float64
 
 
 
@@ -64,11 +64,9 @@ typealias Int8Array = ByteArray
 typealias Int16Array = ShortArray
 typealias Int32Array = IntArray
 typealias Int64Array = LongArray
-typealias BHIntArray = Int64Array
-typealias IntegerArray = BHIntArray
+typealias IntegerArray = Int64Array
 
 
 typealias Float32Array = FloatArray
 typealias Float64Array = DoubleArray
-typealias BHFloatArray = Float64Array
-typealias FractionArray = BHFloatArray
+typealias FractionArray = Float64Array
