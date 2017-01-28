@@ -102,6 +102,12 @@ abstract class ComputablePoint<NumberType : Number>(x: NumberType, y: NumberType
      * @return `true` iff the two points are equal within the given tolerance
      */
     abstract fun equals(rhs: ComputablePoint<NumberType>, tolerance: NumberType): Boolean
+
+
+    /**
+     * Creates a copy of this line segment, optionally changing the values
+     */
+    abstract fun copy(x: NumberType = this.x, y: NumberType = this.y): ComputablePoint<NumberType>
 }
 
 private class PointOperatorUnavailableApology(
@@ -204,6 +210,11 @@ class IntegerPoint(x: Integer, y: Integer) : ComputablePoint<Integer>(x, y) {
             && abs(y - rhs.y) < tolerance
 
 
+    override fun copy(x: Integer, y: Integer): IntegerPoint {
+        return IntegerPoint(x = x, y = y)
+    }
+
+
     companion object {
         val zero = IntegerPoint(0, 0)
     }
@@ -289,6 +300,11 @@ class FractionPoint(x: Fraction, y: Fraction) : ComputablePoint<Fraction>(x, y) 
     override fun equals(rhs: ComputablePoint<Fraction>, tolerance: Fraction): Boolean =
             abs(x - rhs.x) < tolerance
             && abs(y - rhs.y) < tolerance
+
+
+    override fun copy(x: Fraction, y: Fraction): FractionPoint {
+        return FractionPoint(x = x, y = y)
+    }
 
 
 

@@ -44,6 +44,15 @@ abstract class ComputableLineSegment<NumberType : Number>(start: ComputablePoint
 
     abstract val bounds: ComputableRect<NumberType, ComputablePoint<NumberType>, ComputableSize<NumberType>>
 
+    val flipped: ComputableLineSegment<NumberType> by lazy { copy(start = end, end = start) }
+
+
+    /**
+     * Creates a copy of this line segment, optionally changing the values
+     */
+    abstract fun copy(start: ComputablePoint<NumberType> = this.start.copy(), end: ComputablePoint<NumberType> = this.end.copy()): ComputableLineSegment<NumberType>
+
+
     /**
      * Indicates whether the given point lies on this line segment
      *
@@ -129,7 +138,9 @@ abstract class ComputableLineSegment<NumberType : Number>(start: ComputablePoint
         // Easy win: If they're equal, they completely overlap and thus always intersect
 
         if (this.equals(other, tolerance = tolerance)) {
-            return IntersectionDescription.completeOverlap(isStartAndEndFlipped = !this.start.equals(other.start, tolerance = tolerance))
+            return IntersectionDescription.completeOverlap(isStartAndEndFlipped = false)
+        } else if (this.equals(other.flipped, tolerance = tolerance)) {
+            return IntersectionDescription.completeOverlap(isStartAndEndFlipped = true)
         }
 
         val rawIntersection = this.rawIntersection(other, tolerance = tolerance)
@@ -361,15 +372,11 @@ class IntegerLineSegment(start: ComputablePoint<Integer>, end: ComputablePoint<I
 
     override fun contains(point: ComputablePoint<Integer>): Boolean = contains(point, tolerance = 0)
 
-            = (point.x <= max(start.x, end.x) && point.x >= min(start.x, end.x)
-            && point.y <= max(start.y, end.y) && point.y >= min(start.y, end.y))
-    /* TODO: Evaluate whether the following approach would be better:
-    {
     override fun contains(point: ComputablePoint<Integer>, tolerance: Integer): Boolean {
         val m = (end.y - start.y) / (end.x - start.x)
         val b = start.y - (m * start.x)
-        return Math.abs(point.y - ((m * point.x) + b)) < tolerance // derived from y=mx+b
-    }*/
+        return abs(point.y - ((m * point.x) + b)) < tolerance // derived from y=mx+b
+    }
 
     /**
      * The smallest rectangle that contains all points in this line
@@ -429,6 +436,11 @@ class IntegerLineSegment(start: ComputablePoint<Integer>, end: ComputablePoint<I
             && this.end.equals(other.end, tolerance = tolerance)
 
 
+    override fun copy(start: ComputablePoint<Integer>, end: ComputablePoint<Integer>): IntegerLineSegment {
+        return IntegerLineSegment(start = start, end = end)
+    }
+
+
     override fun intersects(other: ComputableLineSegment<Integer>): Boolean
             = intersects(other, tolerance = defaultIntegerCalculationTolerance)
 
@@ -484,15 +496,18 @@ class FractionLineSegment(start: ComputablePoint<Fraction>, end: ComputablePoint
         return contains(point, tolerance = defaultFractionCalculationTolerance)
     }
 
-            = (point.x <= max(start.x, end.x) && point.x >= min(start.x, end.x)
-            && point.y <= max(start.y, end.y) && point.y >= min(start.y, end.y))
-    /* TODO: Evaluate whether the following approach would be better:
-    {
     override fun contains(point: ComputablePoint<Fraction>, tolerance: Fraction): Boolean {
+        if (start.x.equals(end.x, tolerance = tolerance)) { // it's vertical
+            return point.x.equals(start.x, tolerance = tolerance) // just compare the horizontal
+            && point.y.isBetween(start.y, end.y, tolerance = tolerance)
+        } else if (start.y.equals(end.y, tolerance = tolerance)) { // it's horizontal
+            return point.y.equals(start.y, tolerance = tolerance) // just compare the vertical
+            && point.x.isBetween(start.x, end.x, tolerance = tolerance)
+        }
         val m = (end.y - start.y) / (end.x - start.x)
         val b = start.y - (m * start.x)
-        return Math.abs(point.y - ((m * point.x) + b)) < tolerance // derived from y=mx+b
-    }*/
+        return abs(point.y - ((m * point.x) + b)) < tolerance // derived from y=mx+b
+    }
 
     /**
      * The smallest rectangle that contains all points in this line
@@ -547,6 +562,11 @@ class FractionLineSegment(start: ComputablePoint<Fraction>, end: ComputablePoint
     override fun equals(other: ComputableLineSegment<Fraction>, tolerance: Fraction): Boolean
             = this.start.equals(other.start, tolerance = tolerance)
             && this.end.equals(other.end, tolerance = tolerance)
+
+
+    override fun copy(start: ComputablePoint<Fraction>, end: ComputablePoint<Fraction>): FractionLineSegment {
+        return FractionLineSegment(start = start, end = end)
+    }
 
 
     override fun intersects(other: ComputableLineSegment<Fraction>): Boolean

@@ -171,4 +171,13 @@ fun Fraction.equals(rhs: Fraction, tolerance: Fraction = defaultFractionCalculat
  * @return `true` iff this value and the other are equal within the given tolerance
  */
 fun Integer.equals(rhs: Integer, tolerance: Integer = defaultIntegerCalculationTolerance): Boolean = abs(rhs - this) < tolerance
+
+
+/**
+ * Determines whether this float is between `a` and `b`, within the given tolerance
+ */
+fun Fraction.isBetween(a: Fraction, b: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean {
+    val largest = max(a, b)
+    val smallest = min(a, b)
+    return (this + tolerance) > smallest && (this - tolerance) < largest
 }
