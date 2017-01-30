@@ -1,8 +1,8 @@
 package org.bh.tools.base.math.geometry
 
 import org.bh.tools.base.abstraction.Fraction
-import org.bh.tools.base.abstraction.Integer
 import org.bh.tools.base.abstraction.Int64
+import org.bh.tools.base.abstraction.Integer
 import org.bh.tools.base.math.*
 import java.util.*
 

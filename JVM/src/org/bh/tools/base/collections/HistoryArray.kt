@@ -19,10 +19,10 @@ enum class HistoryArraySelectionMode {
     /**
      * Select items as they are pushed onto the array
      */
-    SelectNewlyPushed,
+    selectNewlyPushed,
 
     /**
      * Attempt to keep the same selection even as the array contents changes
      */
-    PersistSelection
+    persistSelection
 }

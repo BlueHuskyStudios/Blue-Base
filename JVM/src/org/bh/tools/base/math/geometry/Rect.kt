@@ -2,7 +2,7 @@
 
 package org.bh.tools.base.math.geometry
 
-import org.bh.tools.base.abstraction.Float64
+import org.bh.tools.base.abstraction.Fraction
 import org.bh.tools.base.abstraction.Int64
 import org.bh.tools.base.math.*
 import java.awt.Rectangle
@@ -17,7 +17,7 @@ import java.awt.geom.Rectangle2D
  * @author Kyli Rouge
  * @since 2016-12-11
  */
-open class Rect<out NumberType : Number, PointType: Point<NumberType>, SizeType: Size<NumberType>>(val origin: PointType, val size: SizeType) {
+open class Rect<out NumberType : Number, out PointType: Point<NumberType>, out SizeType: Size<NumberType>>(val origin: PointType, val size: SizeType) {
 
     val x get() = this.origin.x
     val y get() = this.origin.y
@@ -159,17 +159,17 @@ val AnyRect.intValue: IntegerRect get() = IntegerRect(x = x.integerValue, y = y.
 
 
 
-private typealias FractionRectBaseType = ComputableRect<Float64, ComputablePoint<Float64>, ComputableSize<Float64>>
+private typealias FractionRectBaseType = ComputableRect<Fraction, ComputablePoint<Fraction>, ComputableSize<Fraction>>
 
 
 
-class FractionRect(origin: ComputablePoint<Float64>, size: ComputableSize<Float64>) : FractionRectBaseType(origin, size) {
+class FractionRect(origin: ComputablePoint<Fraction>, size: ComputableSize<Fraction>) : FractionRectBaseType(origin, size) {
 
     companion object {
         val zero = FractionRect(FractionPoint.zero, Float64Size.zero)
     }
 
-    constructor(x: Float64, y: Float64, width: Float64, height: Float64) : this(FractionPoint(x, y), FractionSize(width, height))
+    constructor(x: Fraction, y: Fraction, width: Fraction, height: Fraction) : this(FractionPoint(x, y), FractionSize(width, height))
 
     constructor(awtValue: Rectangle2D) : this(awtValue.x, awtValue.y, awtValue.width, awtValue.height)
 

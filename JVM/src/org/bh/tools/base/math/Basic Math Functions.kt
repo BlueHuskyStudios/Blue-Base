@@ -3,10 +3,6 @@
 
 package org.bh.tools.base.math
 
-import org.bh.tools.base.abstraction.Float32
-import org.bh.tools.base.abstraction.Float64
-import java.lang.Math.abs
-
 /* Basic Math Functions, made for Blue Base, is copyright Blue Husky Software ©2016 BH-1-PS.
  *
  * To help you do math!

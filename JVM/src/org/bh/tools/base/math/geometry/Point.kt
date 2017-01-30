@@ -2,10 +2,11 @@
 
 package org.bh.tools.base.math.geometry
 
-import org.bh.tools.base.abstraction.*
+import org.bh.tools.base.abstraction.Fraction
+import org.bh.tools.base.abstraction.Int64
+import org.bh.tools.base.abstraction.Integer
 import org.bh.tools.base.math.*
 import java.awt.geom.Point2D
-import java.lang.Math.abs
 
 /**
  * Copyright BHStudios ©2016 BH-1-PS. Made for BH Tic Tac Toe IntelliJ Project.
@@ -55,8 +56,8 @@ typealias Coordinate<NumberType> = Point<NumberType>
 
 
 val <NumberType : Number> Point<NumberType>.pairValue: Pair<NumberType, NumberType> get() = Pair(x, y)
-val <NumberType : Number> Point<NumberType>.integerValue: IntegerPoint get() = if (this is IntegerPoint) this else IntegerPoint(x.integerValue, y.integerValue)
-val <NumberType : Number> Point<NumberType>.fractionValue: FractionPoint get() = if (this is FractionPoint) this else FractionPoint(x.fractionValue, y.fractionValue)
+val <NumberType : Number> Point<NumberType>.integerValue: IntegerPoint get() = this as? IntegerPoint ?: IntegerPoint(x.integerValue, y.integerValue)
+val <NumberType : Number> Point<NumberType>.fractionValue: FractionPoint get() = this as? FractionPoint ?: FractionPoint(x.fractionValue, y.fractionValue)
 
 
 
@@ -206,8 +207,8 @@ class IntegerPoint(x: Integer, y: Integer) : ComputablePoint<Integer>(x, y) {
 
 
     override fun equals(rhs: ComputablePoint<Integer>, tolerance: Integer): Boolean =
-            abs(x - rhs.x) < tolerance
-            && abs(y - rhs.y) < tolerance
+            x.equals(rhs.x, tolerance = tolerance)
+            && y.equals(rhs.y, tolerance = tolerance)
 
 
     override fun copy(x: Integer, y: Integer): IntegerPoint {
@@ -222,7 +223,7 @@ class IntegerPoint(x: Integer, y: Integer) : ComputablePoint<Integer>(x, y) {
 typealias Int64Point = IntegerPoint
 typealias IntPoint = IntegerPoint
 
-class FractionPoint(x: Fraction, y: Fraction) : ComputablePoint<Fraction>(x, y) {
+open class FractionPoint(x: Fraction, y: Fraction) : ComputablePoint<Fraction>(x, y) {
     constructor(x: Int64, y: Int64) : this(x.fractionValue, y.fractionValue)
     constructor(awtValue: Point2D) : this(awtValue.x, awtValue.y)
 
@@ -298,8 +299,8 @@ class FractionPoint(x: Fraction, y: Fraction) : ComputablePoint<Fraction>(x, y) 
 
 
     override fun equals(rhs: ComputablePoint<Fraction>, tolerance: Fraction): Boolean =
-            abs(x - rhs.x) < tolerance
-            && abs(y - rhs.y) < tolerance
+            x.equals(rhs.x, tolerance = tolerance)
+            && y.equals(rhs.y, tolerance = tolerance)
 
 
     override fun copy(x: Fraction, y: Fraction): FractionPoint {

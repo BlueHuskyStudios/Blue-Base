@@ -2,12 +2,14 @@
 
 package org.bh.tools.base.math.geometry
 
-import org.bh.tools.base.abstraction.Float64
-import org.bh.tools.base.abstraction.Int64
-import org.bh.tools.base.collections.firstOrNullComparingTriads
+import org.bh.tools.base.abstraction.Fraction
+import org.bh.tools.base.abstraction.Integer
+import org.bh.tools.base.collections.*
 import org.bh.tools.base.math.Comparator
 import org.bh.tools.base.math.ComparisonResult
+import org.bh.tools.base.math.geometry.IntegerPath.Companion.pathFromGenericSegments
 import java.util.*
+import java.util.Queue
 
 /**
  * A path comprised of a set of points
@@ -15,21 +17,30 @@ import java.util.*
  * @author Kyli
  * @since 2016-12-17
  */
-interface Path<out NumberType: Number, out PointType: Point<NumberType>> {
+interface Path<out NumberType: Number, out PointType: Point<NumberType>, out SegmentType: LineSegment<NumberType, PointType>> {
+    /**
+     * The segments in the path
+     */
+    val segments: List<SegmentType>
+
     /**
      * The points in the path
      */
     val points: List<PointType>
 
     /**
-     * Indicates whether the last point connects to the first
+     * Indicates whether every point in this path is connected to another
      */
     val isClosed: Boolean
 }
+typealias AnyPath = Path<*, *, *>
 
 
 
-interface ComputablePath<NumberType: Number, PointType: ComputablePoint<NumberType>> : Path<NumberType, PointType> {
+interface ComputablePath
+    <NumberType, PointType, out SegmentType>
+    : Path<NumberType, PointType, SegmentType>
+    where NumberType: Number, PointType: ComputablePoint<NumberType>, SegmentType: ComputableLineSegment<NumberType, PointType> {
     /**
      * Indicates whether this path touches or crosses over itself at any point
      */
@@ -39,14 +50,82 @@ interface ComputablePath<NumberType: Number, PointType: ComputablePoint<NumberTy
     /**
      * Appends the given point to the end of the path
      */
-    operator fun plus(rhs: PointType): ComputablePath<NumberType, PointType>
+    operator fun plus(rhs: PointType): ComputablePath<NumberType, PointType, SegmentType>
 }
+typealias AnyComputablePath = ComputablePath<*, *, *>
 
 
 
-class IntegerPath(override val points: List<ComputablePoint<Int64>> = listOf(), override val isClosed: Boolean = false) : ComputablePath<Int64, ComputablePoint<Int64>> {
+open class IntegerPath(override val segments: List<IntegerLineSegment> = listOf())
+    : ComputablePath<Integer, IntegerPoint, IntegerLineSegment> {
 
-    override val intersectsSelf: Boolean get() = null != points.firstOrNullComparingTriads { (left, current, right) ->
+    companion object {
+        fun segmentsFromGenericPoints(points: List<ComputablePoint<*>>, isClosed: Boolean): List<IntegerLineSegment> {
+
+            if (points.size < 2) {
+                return listOf()
+            }
+
+            val allButFirstPoint = points.subList(1, toIndex = points.size) // toIndex is exclusive
+            val segments = allButFirstPoint.reduceTo(mutableListOf(IntegerLineSegment(start = points[0].integerValue, end = points[1].integerValue))) {
+                previousSegments: MutableList<IntegerLineSegment>,
+                currentPoint: ComputablePoint<*> ->
+
+                previousSegments.add(IntegerLineSegment(start = previousSegments.last.end, end = currentPoint.integerValue))
+                /*return*/ previousSegments
+            }
+
+
+            if (isClosed) {
+                segments += IntegerLineSegment(start = points.last.integerValue, end = points.first.integerValue)
+            }
+
+            return segments
+        }
+
+
+        fun pathFromGenericSegments(segments: List<ComputableLineSegment<*, *>>): IntegerPath {
+            return IntegerPath(segments = segments.reduceTo(mutableListOf()) { translatedSegments, currentSegment ->
+                val integerSegment = currentSegment.integerValue
+                translatedSegments.add(integerSegment)
+                /*return*/ translatedSegments
+            })
+        }
+
+
+        fun pathFromGenericPoints(points: List<ComputablePoint<*>>, isClosed: Boolean): IntegerPath {
+            return pathFromGenericSegments(segmentsFromGenericPoints(points, isClosed))
+        }
+    }
+
+    constructor(points: List<IntegerPoint>, isClosed: Boolean): this(segments = segmentsFromGenericPoints(points, isClosed = isClosed))
+
+
+    fun getAllPoints(): List<IntegerPoint> {
+        return segments.reduceTo(mutableListOf(segments.first.start)) {
+            previousPoints: MutableList<IntegerPoint>,
+            currentSegment: IntegerLineSegment ->
+
+            previousPoints.add(currentSegment.end)
+            /*return*/ previousPoints
+        }
+    }
+
+
+    override val points: List<IntegerPoint> by lazy { getAllPoints() }
+
+
+    fun findIsClosed(): Boolean {
+        return segments.firstOrNullComparingPairs { (previous, current) ->
+            /*return*/ previous.end != current.start
+        } != null
+    }
+
+
+    override val isClosed: Boolean by lazy { findIsClosed() }
+
+
+    override val intersectsSelf: Boolean get() = null != this.points.firstOrNullComparingTriads { (left, current, right) ->
         return@firstOrNullComparingTriads when (IntegerLineSegment(left, current).describeIntersection(IntegerLineSegment(current, right))) {
             is IntersectionDescription.none -> false
             else -> true
@@ -54,16 +133,79 @@ class IntegerPath(override val points: List<ComputablePoint<Int64>> = listOf(), 
     }
 
 
-    override operator fun plus(rhs: ComputablePoint<Int64>): IntegerPath {
-        return IntegerPath(points + rhs)
+    override operator fun plus(rhs: IntegerPoint): IntegerPath {
+        return IntegerPath(segments = segments + IntegerLineSegment(start = segments.last.end, end = rhs))
     }
 }
 typealias Int64Path = IntegerPath
 typealias IntPath = IntegerPath
 
 
+val AnyComputablePath.integerValue: IntegerPath get() = this as? IntegerPath ?: pathFromGenericSegments(segments)
 
-class FractionPath(override val points: List<ComputablePoint<Float64>> = listOf(), override val isClosed: Boolean = false) : ComputablePath<Float64, ComputablePoint<Float64>> {
+
+
+open class FractionPath(override val segments: List<FractionLineSegment> = listOf())
+    : ComputablePath<Fraction, FractionPoint, FractionLineSegment> {
+
+    companion object {
+        fun segmentsFromPoints(points: List<FractionPoint>, isClosed: Boolean): List<FractionLineSegment> {
+
+            if (points.size < 2) {
+                return listOf()
+            }
+
+            val allButFirstPoint = points.subList(1, toIndex = points.size) // toIndex is exclusive
+            val segments = allButFirstPoint.reduceTo(mutableListOf(FractionLineSegment(start = points[0], end = points[1]))) {
+                previousSegments: MutableList<FractionLineSegment>,
+                currentPoint: FractionPoint ->
+
+                previousSegments.add(FractionLineSegment(start = previousSegments.last.end, end = currentPoint))
+                /*return*/ previousSegments
+            }
+
+            if (isClosed) {
+                segments += FractionLineSegment(start = points.last, end = points.first)
+            }
+
+            return segments
+        }
+    }
+
+
+    /**
+     * Creates a new path out of lines connecting the given points. Each point will connect to the one immediately
+     * before and after it. If `isClosed` is `true`, the final point will also connect to the first.
+     *
+     * @param points The points in the new path
+     * @param isClosed if `true`, the last point will connect with the first. If `false`, it will not
+     */
+    constructor(points: List<FractionPoint>, isClosed: Boolean): this(segments = segmentsFromPoints(points, isClosed = isClosed))
+
+
+    fun getAllPoints(): List<FractionPoint> {
+        return segments.reduceTo(mutableListOf(segments.first.start)) {
+            previousPoints: MutableList<FractionPoint>,
+            currentSegment: FractionLineSegment ->
+
+            previousPoints.add(currentSegment.end)
+            /*return*/ previousPoints
+        }
+    }
+
+
+    override val points: List<FractionPoint> by lazy { getAllPoints() }
+
+
+    fun findIsClosed(): Boolean {
+        return segments.firstOrNullComparingPairs { (previous, current) ->
+            /*return*/ previous.end != current.start
+        } != null
+    }
+
+
+    override val isClosed: Boolean by lazy { findIsClosed() }
+
 
     override val intersectsSelf: Boolean get() = null != this.points.firstOrNullComparingTriads { (left, current, right) ->
         return@firstOrNullComparingTriads when (FractionLineSegment(left, current).describeIntersection(FractionLineSegment(current, right))) {
@@ -73,8 +215,8 @@ class FractionPath(override val points: List<ComputablePoint<Float64>> = listOf(
     }
 
 
-    override operator fun plus(rhs: ComputablePoint<Float64>): FractionPath {
-        return FractionPath(points + rhs)
+    override operator fun plus(rhs: FractionPoint): FractionPath {
+        return FractionPath(segments = segments + FractionLineSegment(start = segments.last.end, end = rhs))
     }
 }
 typealias Float64Path = FractionPath

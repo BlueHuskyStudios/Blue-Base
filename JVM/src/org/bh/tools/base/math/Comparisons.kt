@@ -1,9 +1,9 @@
 package org.bh.tools.base.math
 
-import org.bh.tools.base.abstraction.Fraction
-import org.bh.tools.base.abstraction.Integer
 import org.bh.tools.base.abstraction.Float32
 import org.bh.tools.base.abstraction.Float64
+import org.bh.tools.base.abstraction.Fraction
+import org.bh.tools.base.abstraction.Integer
 import java.lang.StrictMath.abs
 
 /* Comparisons, made for Blue Base, is copyright Blue Husky Software ©2016 BH-1-PS.
@@ -159,7 +159,7 @@ val defaultIntegerCalculationTolerance: Integer get() = 0
  *                  Defaults to [defaultFractionCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
-fun Fraction.equals(rhs: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean = abs(rhs - this) < tolerance
+fun Fraction.equals(rhs: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean = abs(rhs - this) <= tolerance
 
 
 /**
@@ -170,11 +170,21 @@ fun Fraction.equals(rhs: Fraction, tolerance: Fraction = defaultFractionCalculat
  *                  Defaults to [defaultIntegerCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
-fun Integer.equals(rhs: Integer, tolerance: Integer = defaultIntegerCalculationTolerance): Boolean = abs(rhs - this) < tolerance
+fun Integer.equals(rhs: Integer, tolerance: Integer = defaultIntegerCalculationTolerance): Boolean = abs(rhs - this) <= tolerance
 
 
 /**
- * Determines whether this float is between `a` and `b`, within the given tolerance
+ * Determines whether this integer is between `a` and `b`, within the given tolerance
+ */
+fun Integer.isBetween(a: Integer, b: Integer, tolerance: Integer = defaultIntegerCalculationTolerance): Boolean {
+    val largest = max(a, b)
+    val smallest = min(a, b)
+    return (this + tolerance) > smallest && (this - tolerance) < largest
+}
+
+
+/**
+ * Determines whether this fraction is between `a` and `b`, within the given tolerance
  */
 fun Fraction.isBetween(a: Fraction, b: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean {
     val largest = max(a, b)
