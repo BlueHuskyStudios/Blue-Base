@@ -60,7 +60,7 @@ abstract class ComputableRect<NumberType : Number, PointType: ComputablePoint<Nu
     abstract val maxXmidY: PointType
     abstract val maxXmaxY: PointType
 
-    val isEmpty: Boolean = size.isEmpty
+    val isEmpty: Boolean get() = size.isEmpty
 
     abstract fun contains(other: ComputableRect<NumberType, PointType, SizeType>): Boolean
     abstract fun intersects(other: ComputableRect<NumberType, PointType, SizeType>): Boolean

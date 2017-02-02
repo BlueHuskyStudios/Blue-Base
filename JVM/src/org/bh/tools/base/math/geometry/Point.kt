@@ -48,6 +48,10 @@ open class Point<out NumberType : Number>(val x: NumberType, val y: NumberType) 
         return super.hashCode() xor x.hashCode() xor y.hashCode()
     }
 }
+/**
+ * Any kind of point, of any subclass, using any kind of number
+ */
+typealias AnyPoint = Point<*>
 
 
 

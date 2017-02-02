@@ -77,3 +77,19 @@ typealias CubicBézierPathSegment = CubicBezierPathSegment
  * @see BezierPath
  */
 typealias BézierPath = BezierPath
+
+
+/**
+ * An object that can be converted into a [BezierPath]
+ */
+interface BezierPathConvertible {
+    /**
+     * This, converted to a [BezierPath]
+     */
+    val bezierPathValue: BezierPath
+
+    /**
+     * This, converted to a [BézierPath]
+     */
+    val bézierPathValue: BézierPath get() = bezierPathValue
+}

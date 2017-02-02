@@ -397,7 +397,7 @@ class IntegerLineSegment
     /**
      * The smallest rectangle that contains all points in this line
      */
-    override val bounds: IntegerRect = IntegerRect(start, IntegerSize(x2 - x1, y2 - y1))
+    override val bounds: IntegerRect by lazy { IntegerRect(start, IntegerSize(x2 - x1, y2 - y1)) }
 
 
     /**
@@ -531,7 +531,7 @@ open class FractionLineSegment(start: FractionPoint, end: FractionPoint) : Compu
     /**
      * The smallest rectangle that contains all points in this line
      */
-    override val bounds: FractionRect = FractionRect(FractionPoint(x1, y1), FractionSize(x2 - x1, y2 - y1))
+    override val bounds: FractionRect by lazy { FractionRect(FractionPoint(x1, y1), FractionSize(x2 - x1, y2 - y1)) }
 
     /**
      * Not yet supported. That said, if the given `transform` is `null` or the identity, [fractionValue] is returned.

@@ -29,6 +29,10 @@ open class Size<out NumberType>(val width: NumberType, val height: NumberType) w
     }
 
     override fun hashCode(): Int = 31 * width.hashCode() + height.hashCode()
+
+    override fun toString(): String {
+        return "$width × $height"
+    }
 }
 
 typealias Dimension<NumberType> = Size<NumberType>
@@ -36,7 +40,11 @@ typealias Dimension<NumberType> = Size<NumberType>
 
 // MARK: - Computations
 
-abstract class ComputableSize<out NumberType : Number>(width: NumberType, height: NumberType) : Size<NumberType>(width, height) {
+abstract class ComputableSize
+<out NumberType>
+(width: NumberType, height: NumberType)
+    : Size<NumberType>(width, height)
+where NumberType: Number {
 
     abstract infix operator fun <OtherType : Number> plus(rhs: Size<OtherType>): Size<NumberType>
     abstract infix operator fun <OtherType : Number> minus(rhs: Size<OtherType>): Size<NumberType>
@@ -54,6 +62,11 @@ abstract class ComputableSize<out NumberType : Number>(width: NumberType, height
     abstract infix operator fun <OtherType : Number> div(rhs: Pair<OtherType, OtherType>): Size<NumberType>
 
     abstract val isEmpty: Boolean
+
+    /** The smaller of the two dimensions */
+    abstract val minDimension: NumberType
+    /** The larger of the two dimensions */
+    abstract val maxDimension: NumberType
 }
 
 
@@ -83,7 +96,12 @@ private fun Size<*>.apology(type: String,
         otherMainType, otherTypeA, otherTypeAType, otherTypeB, otherTypeBType)
 
 
-class IntegerSize(width: Int64, height: Int64) : ComputableSize<Int64>(width, height) {
+class IntegerSize(width: Integer, height: Integer) : ComputableSize<Integer>(width, height) {
+
+    companion object {
+        val zero = IntegerSize(0, 0)
+    }
+
 
     override val isEmpty: Boolean = this == zero
 
@@ -156,9 +174,8 @@ class IntegerSize(width: Int64, height: Int64) : ComputableSize<Int64>(width, he
             })
 
 
-    companion object {
-        val zero = IntegerSize(0, 0)
-    }
+    override val minDimension: Integer by lazy { min(width, height) }
+    override val maxDimension: Integer by lazy { max(width, height) }
 }
 typealias Int64Size = IntegerSize
 typealias IntSize = IntegerSize
@@ -178,7 +195,7 @@ class FractionSize(width: Fraction, height: Fraction) : ComputableSize<Fraction>
     constructor(width: Integer, height: Integer) : this(width.fractionValue, height.fractionValue)
 
 
-    override val isEmpty: Boolean = this == zero
+    override val isEmpty: Boolean by lazy { this == zero }
 
 
     override infix operator fun <OtherType : Number> plus(rhs: Size<OtherType>): FractionSize = plus(Pair(rhs.width, rhs.height))
@@ -244,6 +261,10 @@ class FractionSize(width: Fraction, height: Fraction) : ComputableSize<Fraction>
                         otherTypeA = rhs.first::class.java,
                         otherTypeB = rhs.second::class.java)
             }
+
+
+    override val minDimension: Fraction by lazy { min(width, height) }
+    override val maxDimension: Fraction by lazy { max(width, height) }
 }
 typealias Float64Size = FractionSize
 typealias FloatSize = FractionSize
@@ -252,7 +273,7 @@ val FractionSize.integerValue: IntegerSize get() = IntegerSize(width.integerValu
 
 
 
-val <NumberType : Number> Size<NumberType>.fractionValue: FractionSize get() = FractionSize(width.fractionValue, height.fractionValue)
+inline val <NumberType : Number> Size<NumberType>.fractionValue: FractionSize get() = if (this is FractionSize) this else FractionSize(width.fractionValue, height.fractionValue)
 
 
 // Silliness

@@ -46,6 +46,15 @@ interface ComputablePath
      */
     val intersectsSelf: Boolean
 
+    /**
+     * The first point in the path
+     */
+    val startPoint: PointType?
+
+    /**
+     * The last point in the path
+     */
+    val endPoint: PointType?
 
     /**
      * Appends the given point to the end of the path
@@ -113,6 +122,10 @@ open class IntegerPath(override val segments: List<IntegerLineSegment> = listOf(
 
 
     override val points: List<IntegerPoint> by lazy { getAllPoints() }
+
+    override val startPoint get() = segments.firstOrNull?.start
+
+    override val endPoint get() = segments.lastOrNull?.end
 
 
     fun findIsClosed(): Boolean {
@@ -195,6 +208,10 @@ open class FractionPath(override val segments: List<FractionLineSegment> = listO
 
 
     override val points: List<FractionPoint> by lazy { getAllPoints() }
+
+    override val startPoint get() = segments.firstOrNull?.start
+
+    override val endPoint get() = segments.lastOrNull?.end
 
 
     fun findIsClosed(): Boolean {
@@ -320,7 +337,7 @@ private fun <ContentType> List<ContentType>.sortedQueueValue(sorter: Comparator<
                 if (lhs == null) ComparisonResult.right
                 else if (rhs == null) ComparisonResult.left
                 else sorter(lhs, rhs)
-                ).nativeValue
+            ).nativeValue
     })
     x.addAll(this)
     return x
