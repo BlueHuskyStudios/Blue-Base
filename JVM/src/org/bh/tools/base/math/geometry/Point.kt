@@ -243,8 +243,8 @@ open class FractionPoint(x: Fraction, y: Fraction) : ComputablePoint<Fraction>(x
             if (rhs.first.isNativeInteger) {
                 FractionPoint(x + rhs.first.integerValue, y + rhs.second.integerValue)
             } else if (rhs.first.isNativeFraction) {
-                FractionPoint((x + rhs.first.fractionValue).clampedIntegerValue,
-                        (y + rhs.second.fractionValue).clampedIntegerValue)
+                FractionPoint((x + rhs.first.fractionValue),
+                        (y + rhs.second.fractionValue))
             } else {
                 throw apology("addition",
                         otherMainType = Pair::class.java,
@@ -257,8 +257,8 @@ open class FractionPoint(x: Fraction, y: Fraction) : ComputablePoint<Fraction>(x
             if (rhs.first.isNativeInteger) {
                 FractionPoint(x - rhs.first.integerValue, y - rhs.second.integerValue)
             } else if (rhs.first.isNativeFraction) {
-                FractionPoint((x - rhs.first.fractionValue).clampedIntegerValue,
-                        (y - rhs.second.fractionValue).clampedIntegerValue)
+                FractionPoint((x - rhs.first.fractionValue),
+                        (y - rhs.second.fractionValue))
             } else {
                 throw apology("subtraction",
                         otherMainType = Pair::class.java,
@@ -271,8 +271,8 @@ open class FractionPoint(x: Fraction, y: Fraction) : ComputablePoint<Fraction>(x
             if (rhs.first.isNativeInteger) {
                 FractionPoint(x * rhs.first.integerValue, y * rhs.second.integerValue)
             } else if (rhs.first.isNativeFraction) {
-                FractionPoint((x * rhs.first.fractionValue).clampedIntegerValue,
-                        (y * rhs.second.fractionValue).clampedIntegerValue)
+                FractionPoint((x * rhs.first.fractionValue),
+                        (y * rhs.second.fractionValue))
             } else {
                 throw apology("multiplication",
                         otherMainType = Pair::class.java,
@@ -285,8 +285,8 @@ open class FractionPoint(x: Fraction, y: Fraction) : ComputablePoint<Fraction>(x
             if (rhs.first.isNativeInteger) {
                 FractionPoint(x / rhs.first.integerValue, y / rhs.second.integerValue)
             } else if (rhs.first.isNativeFraction) {
-                FractionPoint((x / rhs.first.fractionValue).clampedIntegerValue,
-                        (y / rhs.second.fractionValue).clampedIntegerValue)
+                FractionPoint((x / rhs.first.fractionValue),
+                        (y / rhs.second.fractionValue))
             } else {
                 throw apology("division",
                         otherMainType = Pair::class.java,

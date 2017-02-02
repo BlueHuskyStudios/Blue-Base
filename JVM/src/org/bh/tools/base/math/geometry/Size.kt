@@ -197,8 +197,8 @@ class FractionSize(width: Fraction, height: Fraction) : ComputableSize<Fraction>
             if (rhs.first.isNativeInteger) {
                 FractionSize(width + (rhs.first.integerValue), height + (rhs.second.integerValue))
             } else if (rhs.first.isNativeFraction) {
-                FractionSize((width + (rhs.first.fractionValue)).clampedIntegerValue,
-                        (height + (rhs.second.fractionValue)).clampedIntegerValue)
+                FractionSize((width + rhs.first.fractionValue),
+                        (height + rhs.second.fractionValue))
             } else {
                 throw apology("addition",
                         otherMainType = Pair::class.java,
@@ -210,8 +210,8 @@ class FractionSize(width: Fraction, height: Fraction) : ComputableSize<Fraction>
             if (rhs.first.isNativeInteger) {
                 FractionSize(width - (rhs.first.integerValue), height - (rhs.second.integerValue))
             } else if (rhs.first.isNativeFraction) {
-                FractionSize((width - (rhs.first.fractionValue)).clampedIntegerValue,
-                        (height - (rhs.second.fractionValue)).clampedIntegerValue)
+                FractionSize((width - rhs.first.fractionValue),
+                        (height - rhs.second.fractionValue))
             } else {
                 throw apology("subtraction",
                         otherMainType = Pair::class.java,
@@ -223,8 +223,8 @@ class FractionSize(width: Fraction, height: Fraction) : ComputableSize<Fraction>
             if (rhs.first.isNativeInteger) {
                 FractionSize(width * (rhs.first.integerValue), height * (rhs.second.integerValue))
             } else if (rhs.first.isNativeFraction) {
-                FractionSize((width * (rhs.first.fractionValue)).clampedIntegerValue,
-                        (height * (rhs.second.fractionValue)).clampedIntegerValue)
+                FractionSize((width * rhs.first.fractionValue),
+                        (height * rhs.second.fractionValue))
             } else {
                 throw apology("multiplication",
                         otherMainType = Pair::class.java,
@@ -234,10 +234,10 @@ class FractionSize(width: Fraction, height: Fraction) : ComputableSize<Fraction>
 
     override infix operator fun <OtherType : Number> div(rhs: Pair<OtherType, OtherType>): FractionSize =
             if (rhs.first.isNativeInteger) {
-                FractionSize(width / (rhs.first.integerValue), height / (rhs.second.integerValue))
+                FractionSize(width = width / (rhs.first.integerValue), height = height / (rhs.second.integerValue))
             } else if (rhs.first.isNativeFraction) {
-                FractionSize((width / (rhs.first.fractionValue)).clampedIntegerValue,
-                        (height / (rhs.second.fractionValue)).clampedIntegerValue)
+                FractionSize(width = (width / rhs.first.fractionValue),
+                        height = (height / rhs.second.fractionValue))
             } else {
                 throw apology("division",
                         otherMainType = Pair::class.java,
