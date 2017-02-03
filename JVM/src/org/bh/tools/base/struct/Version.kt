@@ -1,13 +1,13 @@
+@file:Suppress("unused")
+
 package org.bh.tools.base.struct
 
-import java.util.Arrays
-import java.util.regex.Pattern
-
 //import org.bh.tools.base.math.NumberConversion
-import org.bh.tools.base.math.Comparable64
-import org.bh.tools.base.collections.BHArray
 
-import org.bh.tools.base.struct.VersionChannel.*
+import org.bh.tools.base.collections.BHArray
+import org.bh.tools.base.math.Comparable64
+import org.bh.tools.base.struct.VersionChannel.stable
+import java.util.*
 
 typealias VersionStage = Long
 
@@ -26,8 +26,8 @@ typealias VersionStage = Long
  * @since 2014-09-22
  */
 data class Version
-(val stages: Array<VersionStage>, val channel: VersionChannel = STABLE)
-: Comparable<Version>, Comparable64<Version> {
+(val stages: Array<VersionStage>, val channel: VersionChannel = stable)
+    : Comparable<Version>, Comparable64<Version> {
 
     private var cache: String? = null
 
@@ -36,7 +36,7 @@ data class Version
 //     * `Version(1,2,3)`
 //     * @param initStages The stages (number) of the version
 //     */
-//    constructor(vararg initStages: VersionStage) : this(initStages, STABLE)
+//    constructor(vararg initStages: VersionStage) : this(initStages, stable)
 
     /**
      * Creates a version with the given channel and stages. For instance, if it's version 1.2.3 β, you would call
@@ -44,20 +44,20 @@ data class Version
      * @param initChannel The channel of the version
      * @param initStages  The stages (number) of the version
      */
-    constructor(vararg initStages: VersionStage, initChannel: VersionChannel = STABLE) :
-        this(stages = initStages.toTypedArray(), channel = initChannel)
+    constructor(vararg initStages: VersionStage, initChannel: VersionChannel = stable) :
+            this(stages = initStages.toTypedArray(), channel = initChannel)
 
     /**
      * @return a string representation of the version, like: `&quot;1.2.3β&quot;`
      */
-    public override fun toString(): String {
+    override fun toString(): String {
         if (cache == null) {
-            cache = BHArray(stages).toString(glue = ".") + Character.toString(channel.UNICODE)
+            cache = BHArray(stages).toString(glue = ".") + Character.toString(channel.unicode)
         }
         return cache!!
     }
 
-    public override fun hashCode(): Int {
+    override fun hashCode(): Int {
         var hash = 3
         hash = 29 * hash + Arrays.deepHashCode(this.stages)
         return hash
@@ -67,30 +67,30 @@ data class Version
      * Evaluates whether these are equal. Evaluation happens in this order:
      *
      * check with == (yes? true)
-     * whether obj is null (yes? false)
+     * whether other is null (yes? false)
      * whether they're the same class (no? false)
      * whether their channels are equal (no? false)
      * whether their stages are equal (no? false)
      * if all of the above are not tripped, return true
      *
-     * @param obj the other object to test
+     * @param other the other object to test
      *
      * @return `true` iff both this and the other object are equal
      */
-    public override fun equals(obj: Any?): Boolean {
-        if (this === obj) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
             return true
         }
-        if (obj == null) {
+        if (other == null) {
             return false
         }
-        if (!(obj is Version)) {
+        if (other !is Version) {
             return false
         }
-        if (this.channel != obj.channel) {
+        if (this.channel != other.channel) {
             return false
         }
-        if (!Arrays.deepEquals(this.stages, obj.stages)) {
+        if (!Arrays.deepEquals(this.stages, other.stages)) {
             return false
         }
         return true
@@ -105,29 +105,29 @@ data class Version
      * difference is returned
      *  4. Else, the difference between the number of stages is returned.
      *
-     * @param otherVersion the other object to compare this one against
+     * @param other the other object to compare this one against
      * @return an integer, centered around 0, telling how much more or less this object is than the other.
      */
-    public override fun compareTo(otherVersion:Version):Int {
-        return compareTo64(otherVersion).toInt()
+    override fun compareTo(other: Version): Int {
+        return compareTo64(other).toInt()
     }
 
-    override fun compareTo64(otherVersion: Version): Long {
-        if (equals(otherVersion)) {
+    override fun compareTo64(otherComparable: Version): Long {
+        if (equals(otherComparable)) {
             return 0
         }
-        if (channel != otherVersion.channel) {
-            return (channel.ordinal - otherVersion.channel.ordinal).toLong()
+        if (channel != otherComparable.channel) {
+            return (channel.ordinal - otherComparable.channel.ordinal).toLong()
         }
         var i = 0
-        val l = Math.min(stages.size, otherVersion.stages.size)
+        val l = Math.min(stages.size, otherComparable.stages.size)
         while (i < l) {
-            if (stages[i] != otherVersion.stages[i]) {
-                return stages[i] - otherVersion.stages[i]
+            if (stages[i] != otherComparable.stages[i]) {
+                return stages[i] - otherComparable.stages[i]
             }
             i++
         }
-        return (stages.size - otherVersion.stages.size).toLong()
+        return (stages.size - otherComparable.stages.size).toLong()
     }
 }
 
@@ -144,19 +144,19 @@ enum class VersionChannel
      * @param unicode The Unicode symbol of the channel. This is preferred.
      * @param html    The HTML escape of the Unicode symbol of the channel.
      */
-    private constructor(
-        /**
-         * The ASCII symbol of the channel.
-         */
-        val ASCII:Char,
-        /**
-         * The Unicode symbol of the channel.
-         */
-        val UNICODE:Char,
-        /**
-         * The HTML escape of the Unicode symbol of the channel.
-         */
-        val HTML:String
+    constructor(
+            /**
+             * The ASCII symbol of the channel.
+             */
+            val ascii: Char,
+            /**
+             * The Unicode symbol of the channel.
+             */
+            val unicode: Char,
+            /**
+             * The HTML escape of the Unicode symbol of the channel.
+             */
+            val html: String
     ) {
 
     /**
@@ -164,7 +164,7 @@ enum class VersionChannel
      * an unstable alpha test.
      *
      * <DL>
-     * <DT>ASCII</DT>
+     * <DT>ascii</DT>
      * <DD>{@code l} (108)</DD>
      * <DT>Unicode</DT>
      * <DD>U+03BB Greek Small Letter Lambda</DD>
@@ -215,5 +215,25 @@ enum class VersionChannel
      * <DD>the empty string ({@code ""})</DD>
      * </DL>
      */
-    STABLE(' ', 0x200C as Char, "")
+    stable(' ', 0x200C.toChar(), "");
+
+    companion object {
+        /**
+         * A typing-friendly version of [λ]
+         * @see [λ]
+         */
+        val lambda: VersionChannel get() = λ
+
+        /**
+         * A typing-friendly version of [α]
+         * @see [α]
+         */
+        val alpha: VersionChannel get() = α
+
+        /**
+         * A typing-friendly version of [β]
+         * @see [β]
+         */
+        val beta: VersionChannel get() = β
+    }
 }

@@ -11,10 +11,10 @@ package org.bh.tools.base.math
  */
 
 
-fun<NumberType: Comparable<NumberType>> min(lhs: NumberType, rhs: NumberType): NumberType
+fun <NumberType : Comparable<NumberType>> min(lhs: NumberType, rhs: NumberType): NumberType
         = if (lhs < rhs) lhs else rhs
 
-fun<NumberType: Comparable<NumberType>> min(a: NumberType, b: NumberType, vararg n: NumberType): NumberType {
+fun <NumberType : Comparable<NumberType>> min(a: NumberType, b: NumberType, vararg n: NumberType): NumberType {
     if (n.isEmpty()) {
         return min(lhs = a, rhs = b)
     }
@@ -31,10 +31,10 @@ fun<NumberType: Comparable<NumberType>> min(a: NumberType, b: NumberType, vararg
     return min(lhs = a, rhs = min(lhs = b, rhs = lowestN))
 }
 
-fun<NumberType: Comparable<NumberType>> max(lhs: NumberType, rhs: NumberType): NumberType
+fun <NumberType : Comparable<NumberType>> max(lhs: NumberType, rhs: NumberType): NumberType
         = if (lhs > rhs) lhs else rhs
 
-fun<NumberType: Comparable<NumberType>> max(a: NumberType, b: NumberType, vararg n: NumberType): NumberType {
+fun <NumberType : Comparable<NumberType>> max(a: NumberType, b: NumberType, vararg n: NumberType): NumberType {
     if (n.isEmpty()) {
         return max(lhs = a, rhs = b)
     }
@@ -55,5 +55,5 @@ fun<NumberType: Comparable<NumberType>> max(a: NumberType, b: NumberType, vararg
  * Returns the clamped value between `low` and `high`, such that ideally `value` is returned, but never will the
  * returned number be less than `low` or greater than `high`.
  */
-fun<NumberType: Comparable<NumberType>> clamp(low: NumberType, value: NumberType, high: NumberType): NumberType
-    = max(low, min(value, high))
+fun <NumberType : Comparable<NumberType>> clamp(low: NumberType, value: NumberType, high: NumberType): NumberType
+        = max(low, min(value, high))

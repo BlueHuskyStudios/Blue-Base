@@ -12,6 +12,8 @@ package org.bh.tools.base.abstraction
  * @since 2016-10-31
  */
 
+// MARK: - Native Numbers
+
 /**
  * An integer represented as an 8-bit signed two's-compliment number
  */
@@ -33,50 +35,9 @@ typealias Int32 = Int
 typealias Int64 = Long
 
 /**
- * The ideal type of integer
+ * The ideal type of integer. **BH Standards dictate you use this instead of an `Int` or `Long` when possible.**
  */
-typealias BHInt = Int64
-
-/**
- * The floating-point value of this [Int8]
- */
-val Int8.floatValue: BHFloat get() = this.toDouble()
-
-/**
- * The floating-point value of this [Int16]
- */
-val Int16.floatValue: BHFloat get() = this.toDouble()
-
-/**
- * The floating-point value of this [Int32]
- */
-val Int32.floatValue: BHFloat get() = this.toDouble()
-
-/**
- * The floating-point value of this [Int64]
- */
-val Int64.floatValue: BHFloat get() = this.toDouble()
-
-
-/**
- * The ideal integer value of this [Int8]
- */
-val Int8.integerValue: BHInt get() = this.toLong()
-
-/**
- * The ideal integer value of this [Int16]
- */
-val Int16.integerValue: BHInt get() = this.toLong()
-
-/**
- * The ideal integert value of this [Int32]
- */
-val Int32.integerValue: BHInt get() = this.toLong()
-
-/**
- * The ideal integer value of this [Int64]
- */
-val Int64.integerValue: BHInt get() = this.toLong()
+typealias Integer = Int64
 
 
 
@@ -91,26 +52,21 @@ typealias Float32 = Float
 typealias Float64 = Double
 
 /**
- * The ideal type of fractional number
+ * The ideal type of fractional number. **BH Standards dictate you use this instead of a `Double` or `Float` when possible.**
  */
-typealias BHFloat = Float64
+typealias Fraction = Float64
 
-/**
- * The integer value of this [Float32]
- */
-val Float32.integerValue: BHInt get() = this.toLong()
 
-/**
- * The integer value of this [Float64]
- */
-val Float64.integerValue: BHInt get() = this.toLong()
 
-/**
- * The integer value of this [Float32]
- */
-val Float32.floatValue: BHFloat get() = this.toDouble()
+// MARK: - Collections
 
-/**
- * The integer value of this [Float64]
- */
-val Float64.floatValue: BHFloat get() = this.toDouble()
+typealias Int8Array = ByteArray
+typealias Int16Array = ShortArray
+typealias Int32Array = IntArray
+typealias Int64Array = LongArray
+typealias IntegerArray = Int64Array
+
+
+typealias Float32Array = FloatArray
+typealias Float64Array = DoubleArray
+typealias FractionArray = Float64Array

@@ -2,9 +2,11 @@
 
 package org.bh.tools.base.collections
 
+import org.bh.tools.base.math.integerValue
 import org.bh.tools.base.struct.*
 
 typealias Index = Int
+typealias IndexArray = IntArray
 
 /**
  * IndexSet, made for Blue Base, is copyright Blue Husky Software ©2016 BH-1-PS <hr/>
@@ -25,7 +27,7 @@ open class IndexSet : Cloneable {
      * The running number of indexes in this set
      */
     @Volatile
-    protected var _count: Int = _ranges.map { it.size }.reduce(Index::plus)
+    protected var _count: Int = _ranges.map { it.size }.reduce(Int::plus)
 
     /**
      * The number of indexes in this set
@@ -38,10 +40,14 @@ open class IndexSet : Cloneable {
     val ranges: Array<IndexRange> get() = _ranges
 
     constructor(vararg ranges: ClosedRange<Index>) {
-        this._ranges = ranges.sortedWith(SortClosedRanges()).toTypedArray()
+        ranges.forEach { union(it) }
     }
 
-    constructor(integers: IntArray) {
+    constructor(integers: IndexArray) {
+        integers.forEach { union(it) }
+    }
+
+    constructor(integers: Iterable<Index>) {
         integers.forEach { union(it) }
     }
 
@@ -124,6 +130,7 @@ open class IndexSet : Cloneable {
     override fun clone(): IndexSet = IndexSet(*_ranges)
 
     fun union(index: Index): IndexSet = union(ClosedRange(onlyValue = index))
+    fun union(n: Number): IndexSet = union(n.integerValue)
 
 
     // Adapted from NSIndexSet:
@@ -216,3 +223,7 @@ fun Index.isWithin(set: IndexSet): Boolean {
 }
 
 val IntArray.indexSetValue: IndexSet get() = IndexSet(this)
+val Set<Int>.indexSetValue: IndexSet get() = IndexSet(this)
+val Array<Int>.indexSetValue: IndexSet get() = IndexSet(this.toIntArray())
+val List<Int>.indexSetValue: IndexSet get() = IndexSet(this)
+val Iterable<Int>.indexSetValue: IndexSet get() = IndexSet(this.toList())

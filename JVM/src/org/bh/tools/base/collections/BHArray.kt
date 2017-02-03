@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+@file:Suppress("unused", "UNUSED_PARAMETER")
 
 package org.bh.tools.base.collections
 
@@ -68,7 +68,7 @@ open class BHArray<ElementType> {
 val BHArray<*>.size: Int get() = this.length
 val BHArray<*>.count: Int get() = this.length
 
-val BHArray<*>.allIndices: IndexSet get() = IndexSet(0..length)
+val BHArray<*>.allIndices: IndexSet get() = IndexSet(ranges = 0..length)
 
 /**
  * Returns the index of the given needle near the given position in the array. If the given needle can't be found at
@@ -82,48 +82,30 @@ val BHArray<*>.allIndices: IndexSet get() = IndexSet(0..length)
 fun <ElementType> BHArray<ElementType>.indexOf(needle: ElementType?,
                                                near: ArrayPosition = start,
                                                behavior: SearchBehavior = any): Index? { // TODO: Use behavior
-    if (needle == null) {
+    return if (needle == null) {
         return indexOfNull(near)
-    }
-    when (near) {
-        start -> run {
-            var i = 0
-            val l = length
-            while (i < l) {
-                if (needle == get(i)) {
-                    return i
-                }
-                i++
-            }
+    } else
+        when (near) {
+            start -> (1 until length)
+                    .filter { needle == get(it) }
+                    .firstOrNull
+            end -> (length downTo 1)
+                    .filter { needle == get(it) }
+                    .firstOrNull
         }
-        end -> for (i in length downTo 1) {
-            if (needle == get(i)) {
-                return i
-            }
-        }
-    }
-    return NotFound
 }
 
-fun <ElementType> BHArray<ElementType>.indicesOf(vararg needles: ElementType, near: ArrayPosition = start): IndexSet {
-    var ret = IndexSet()
-    needles.forEach {
-        val index = indexOf(it, near)
-        if (index != null) {
-            ret = ret.union(index = index)
-        }
-    }
-    return ret
-}
+fun <ElementType> BHArray<ElementType>.indicesOf(vararg needles: ElementType, near: ArrayPosition = start): IndexSet =
+        if (needles.length == 0) IndexSet()
+        else when (near) {
+            start -> (1 until length)
+                    .filter { needles.contains(get(it)) }
+            end -> (length downTo 1)
+                    .filter { needles.contains(get(it)) }
+        }.indexSetValue
 
-private fun <ElementType> BHArray<ElementType>.indexOfNull(near: ArrayPosition): Int? {
-    for (index in 0 until  length) {
-        if (get(index) == null) {
-            return index
-        }
-    }
-    return NotFound
-}
+private fun <ElementType> BHArray<ElementType>.indexOfNull(near: ArrayPosition): Int? =
+        (0 until length).firstOrNull { get(it) == null }
 
 
 /**
@@ -177,6 +159,7 @@ open class BHMutableArray<ElementType>(vararg backend: ElementType) : BHArray<El
         backend = result
         return this
     }
+
     /**
      * Removes the given item from the array, using the given behaviors.
      *
@@ -203,11 +186,9 @@ open class BHMutableArray<ElementType>(vararg backend: ElementType) : BHArray<El
                 }
             }
 
-            all -> for (i in 0..backend.length - 1) {
-                if (oldVal === backend[i] || Objects.equals(oldVal, backend[i])) {
-                    remove(i)
-                }
-            }
+            all -> (0 until backend.length)
+                    .filter { oldVal === backend[it] || Objects.equals(oldVal, backend[it]) }
+                    .forEach { remove(it) }
 
             solely -> if (this.contains(solely, oldVal)) {
                 clear()
@@ -289,7 +270,6 @@ interface ArrayMutationListener<ElementType> {
 
 
 ///// AUXILIARY CLASSES /////
-
 
 
 /**
