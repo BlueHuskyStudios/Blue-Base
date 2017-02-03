@@ -4,7 +4,7 @@ package org.bh.tools.base.struct
 
 //import org.bh.tools.base.math.NumberConversion
 
-import org.bh.tools.base.collections.BHArray
+import org.bh.tools.base.collections.toString
 import org.bh.tools.base.math.Comparable64
 import org.bh.tools.base.struct.VersionChannel.stable
 import java.util.*
@@ -52,7 +52,7 @@ data class Version
      */
     override fun toString(): String {
         if (cache == null) {
-            cache = BHArray(stages).toString(glue = ".") + Character.toString(channel.unicode)
+            cache = listOf(stages).toString(glue = ".") + Character.toString(channel.unicode)
         }
         return cache!!
     }

@@ -173,3 +173,12 @@ inline fun <ElementType, StartingType: ResultType, ResultType>
     }
     return runningValue
 }
+
+
+/**
+ * Creates a string from this [Iterable], where the given `prefix` appears at the beginning of the string, `glue`
+ * appears between each element, and `suffix` appears at the end of the string.
+ */
+fun <ElementType> Iterable<ElementType>.toString(prefix: CharSequence = "", glue: CharSequence, suffix: CharSequence = ""): String {
+    return this.joinToString(prefix = prefix, separator = glue, postfix = suffix)
+}
