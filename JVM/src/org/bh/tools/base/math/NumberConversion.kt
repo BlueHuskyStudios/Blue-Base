@@ -71,11 +71,13 @@ val Number.isNativeInteger: Boolean get()
         else -> false
     }
 
+
 val Number.isNativeFraction: Boolean get()
     = when (this) {
         is Float32, is Float64 -> true
         else -> false
     }
+
 
 /**
  * This native floating-point number as a native integer, clamped to guard against overflow. That is to say, if this

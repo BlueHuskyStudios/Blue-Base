@@ -176,6 +176,20 @@ inline fun <ElementType, StartingType: ResultType, ResultType>
 
 
 /**
+ * Allows you to reduce a possibly-empty array. If the array is empty, the block is never called and `null` is always returned
+ */
+inline fun <S, T: S> Iterable<T>.safeReduce(operation: (S, T) -> S): S?
+        = if (count() < 1) null else reduce(operation)
+
+
+/**
+ * Allows you to reduce a possibly-empty array. If the array is empty, the block is never called and `null` is always returned
+ */
+inline fun <S, T: S> Collection<T>.safeReduce(operation: (S, T) -> S): S?
+        = if (isEmpty()) null else reduce(operation)
+
+
+/**
  * Creates a string from this [Iterable], where the given `prefix` appears at the beginning of the string, `glue`
  * appears between each element, and `suffix` appears at the end of the string.
  */
