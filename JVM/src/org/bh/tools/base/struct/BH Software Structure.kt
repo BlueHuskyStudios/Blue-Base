@@ -21,7 +21,7 @@ interface UIView<RepresentedType> {
     /**
      * The object that this view represents
      */
-    var representedObject: RepresentedType
+    var representedObject: RepresentedType // TODO: Reconsider whether this belongs in the view
 }
 
 /**

@@ -1,6 +1,15 @@
 @file:Suppress("unused")
 
-package org.bh.tools.base.util
+package org.bh.tools.base.strings
+
+import org.bh.tools.base.abstraction.Fraction
+import org.bh.tools.base.abstraction.Integer
+import org.bh.tools.base.collections.reduceTo
+import org.bh.tools.base.math.components
+import org.bh.tools.base.math.hasFractionComponent
+import org.bh.tools.base.math.integerValue
+import org.bh.tools.base.math.rounded
+import org.bh.tools.base.struct.int32Value
 
 /*
  * Copyright BHStudios ©2016 BH-1-PS. Made for BH Tic Tac Toe IntelliJ Project.
@@ -77,4 +86,22 @@ fun CharSequence.containsIgnoreCase(cs: CharSequence): Boolean
 /**
  * Repeats the given string `rhs` times.
  */
-operator fun String.times(rhs: Int): String = (0..rhs).map { this }.reduce { old, current -> old + current }
+operator fun String.times(rhs: Integer): String = (0..rhs).map { this }.reduce { old, current -> old + current }
+
+
+operator fun String.times(rhs: Fraction): String {
+    if (!rhs.hasFractionComponent) {
+        return times(rhs.integerValue)
+    }
+    val partialRepeatingString = (1..(rhs.integerValue - 1)).reduceTo(this) { concatenatedString, _ ->
+        /*return*/ concatenatedString + this
+    }
+
+    val remainingCharacterCount = (rhs.components.fractionPart * length).rounded().integerValue
+
+    if (remainingCharacterCount <= 0L || remainingCharacterCount >= length) {
+        return partialRepeatingString + this
+    } else {
+        return partialRepeatingString + substring((0..remainingCharacterCount).int32Value)
+    }
+}

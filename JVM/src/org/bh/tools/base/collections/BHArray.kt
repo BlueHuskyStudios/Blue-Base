@@ -17,6 +17,7 @@ import java.util.stream.Stream
  * @author Kyli
  * @since 2016-09-15
  */
+@Deprecated("Use List or Array with extension functions instead")
 open class BHArray<ElementType> {
     protected var backend: Array<ElementType>
 

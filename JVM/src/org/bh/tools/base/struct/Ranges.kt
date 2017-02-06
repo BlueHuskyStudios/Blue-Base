@@ -2,9 +2,9 @@
 
 package org.bh.tools.base.struct
 
+import org.bh.tools.base.abstraction.Int32
 import org.bh.tools.base.collections.Index
-import org.bh.tools.base.math.max
-import org.bh.tools.base.math.min
+import org.bh.tools.base.math.*
 import kotlin.reflect.isSuperclassOf
 
 /**
@@ -84,31 +84,19 @@ open class OpenRange<NumberType: Comparable<NumberType>>
         return OpenRange(newStart, newEnd)
     }
 
-    fun containsCompletely(other: OpenRange<NumberType>): Boolean {
-        if (this.startInclusive == null) {
-            if (this.endInclusive == null) {
-                return true
-            } else {
-                if (other.endInclusive == null) {
-                    return false
-                } else {
-                    return other.endInclusive <= this.endInclusive
-                }
-            }
-        } else {
-            if (this.endInclusive == null) {
-                if (other.startInclusive == null) {
-                    return false
-                } else {
-                    return other.startInclusive >= this.startInclusive
-                }
-            } else {
-                if (other.startInclusive == null || other.endInclusive == null) {
-                    return false
-                } else {
-                    return this.contains(other.startInclusive) && this.contains(other.endInclusive)
-                }
-            }
+    fun containsCompletely(other: OpenRange<NumberType>): Boolean = when {
+        this.startInclusive == null -> when {
+            this.endInclusive == null -> true
+            other.endInclusive == null -> false
+            else -> other.endInclusive <= this.endInclusive
+        }
+        this.endInclusive == null -> when {
+            other.startInclusive == null -> false
+            else -> other.startInclusive >= this.startInclusive
+        }
+        else -> when {
+            other.startInclusive == null || other.endInclusive == null -> false
+            else -> this.contains(other.startInclusive) && this.contains(other.endInclusive)
         }
     }
 
@@ -144,8 +132,9 @@ open class OpenRange<NumberType: Comparable<NumberType>>
 //    }
 
     override fun equals(other: Any?): Boolean {
-        if (other is OpenRange<*> && this.startInclusive::class.isSuperclassOf(other.startInclusive::class)) {
-            return other.startInclusive == this.startInclusive && other.endInclusive == this.endInclusive
+        if (other is OpenRange<*>) {
+            return other.startInclusive == this.startInclusive
+                    && other.endInclusive == this.endInclusive
         } else {
             return false
         }
@@ -186,7 +175,7 @@ fun<NumberType: Comparable<NumberType>> NumberType.isWithin(range: OpenRange<Num
 /**
  * A range which contains nothing, has neither a start nor an end, and is not open.
  */
-private class _EmptyOpenRange<NumberType: Comparable<NumberType>>(): OpenRange<NumberType>(null, null) {
+private class _EmptyOpenRange<NumberType: Comparable<NumberType>> : OpenRange<NumberType>(null, null) {
     override val isOpen: Boolean get() = false
     override fun contains(value: NumberType): Boolean {
         return false
@@ -226,9 +215,21 @@ operator fun<NumberType: Comparable<NumberType>> ClosedRange<NumberType>.compare
 }
 
 // This must be done because ClosedRange has a compareTo method but isn't Comparable. Because you can't do extensions conformity. |I
-class SortClosedRanges<NumberType>: Comparator<ClosedRange<NumberType>> where NumberType: Comparable<NumberType> {
+class SortClosedRanges<NumberType>
+    : kotlin.Comparator<ClosedRange<NumberType>>
+    where NumberType: Comparable<NumberType> {
     override fun compare(lhs: ClosedRange<NumberType>, rhs: ClosedRange<NumberType>): Int
         = lhs.compareTo(rhs)
 }
 
 //class SortOpenRanges<NumberType>: ComparableComparator<OpenRange<NumberType>>() where NumberType: Comparable<NumberType>
+
+
+
+val <T> ClosedRange<T>.int32Value: IntRange
+    where T: Number, T: Comparable<T>
+    get() = if (this is IntRange) this else IntRange(start = start.int32Value, endInclusive = endInclusive.int32Value)
+
+val <T> ClosedRange<T>.integerValue: LongRange
+    where T: Number, T: Comparable<T>
+    get() = if (this is LongRange) this else LongRange(start = start.integerValue, endInclusive = endInclusive.integerValue)

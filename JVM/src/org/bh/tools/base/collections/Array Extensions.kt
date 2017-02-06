@@ -71,19 +71,22 @@ fun <ElementType> Array<ElementType>.removing(indices: IntArray): Array<ElementT
 }
 
 /**
- * Returns an array where those you decide to keep are kept, and then transformed as you decide to transform them
+ * Returns an array where those you decide to keep are kept, and then transformed as you decide to transform them.
+ * Like `flatMap` but allows you to keep `null`s
  */
 fun <ElementType, OutputType>
         Array<ElementType>.filterMap(predicateTransform: (ElementType) -> Pair<Boolean, () -> OutputType>)
         : List<OutputType>
         = this
             .map { predicateTransform(it) }
-            .filter(Pair<Boolean, () -> OutputType>::first)
+            .filter { it.first }
             .map { it.second() }
 
 
 /**
- * Allows you to reduce a possibly-empty array. If the array is empty, the block is never called and `null` is always returned
+ * Allows creation of arrays via the bracket syntax: `val x = a[1, 2, 3]`
  */
-inline fun <S, T: S> Array<out T>.safeReduce(operation: (S, T) -> S): S?
-        = if (isEmpty()) null else reduce(operation)
+object a {
+    /** Returns an array of the given elements */
+    inline operator fun <reified Element> get(vararg elements: Element) : Array<Element> = arrayOf(*elements)
+}
