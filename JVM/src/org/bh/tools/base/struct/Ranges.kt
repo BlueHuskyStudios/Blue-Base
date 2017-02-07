@@ -38,6 +38,9 @@ open class OpenRange<NumberType: Comparable<NumberType>>
      */
     val endInclusive: NumberType?
 
+    private val isLeftOpen = startInclusive == null
+    private val isRightOpen = endInclusive == null
+
     init {
         if (startInclusive != null && endInclusive != null && startInclusive > endInclusive) {
             this.startInclusive = endInclusive
@@ -85,17 +88,17 @@ open class OpenRange<NumberType: Comparable<NumberType>>
     }
 
     fun containsCompletely(other: OpenRange<NumberType>): Boolean = when {
-        this.startInclusive == null -> when {
-            this.endInclusive == null -> true
-            other.endInclusive == null -> false
+        isLeftOpen -> when {
+            isRightOpen -> true
+            other.isRightOpen -> false
             else -> other.endInclusive <= this.endInclusive
         }
-        this.endInclusive == null -> when {
-            other.startInclusive == null -> false
+        isRightOpen -> when {
+            other.isLeftOpen -> false
             else -> other.startInclusive >= this.startInclusive
         }
         else -> when {
-            other.startInclusive == null || other.endInclusive == null -> false
+            other.isLeftOpen || isRightOpen -> false
             else -> this.contains(other.startInclusive) && this.contains(other.endInclusive)
         }
     }
