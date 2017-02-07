@@ -12,6 +12,57 @@ import java.lang.StrictMath.abs
  * Created by Kyli Rouge on 2016-10-28.
  */
 
+fun <T : Comparable<T>> min(lhs: T, rhs: T): T = if (lhs < rhs) lhs else rhs
+
+
+fun <T : Comparable<T>> min(a: T, b: T, vararg n: T): T {
+    if (n.isEmpty()) {
+        return min(lhs = a, rhs = b)
+    }
+
+    val lowestN: T
+    if (n.size == 1) {
+        lowestN = n[0]
+    } else if (n.size == 2) {
+        lowestN = min(lhs = n[0], rhs = n[1])
+    } else {
+        lowestN = n.reduce { x, y -> min(lhs = x, rhs = y) }
+    }
+
+    return min(lhs = a, rhs = min(lhs = b, rhs = lowestN))
+}
+
+
+fun <T : Comparable<T>> max(lhs: T, rhs: T): T = if (rhs < lhs) lhs else rhs
+
+
+fun <T : Comparable<T>> max(a: T, b: T, vararg n: T): T {
+    if (n.isEmpty()) {
+        return max(lhs = a, rhs = b)
+    }
+
+    val highestN: T
+    if (n.size == 1) {
+        highestN = n[0]
+    } else if (n.size == 2) {
+        highestN = max(lhs = n[0], rhs = n[1])
+    } else {
+        highestN = n.reduce { x, y -> max(lhs = x, rhs = y) }
+    }
+
+    return max(lhs = a, rhs = max(lhs = b, rhs = highestN))
+}
+
+
+/**
+ * Returns the clamped value between `low` and `high`, such that ideally `value` is returned, but never will the
+ * returned number be less than `low` or greater than `high`.
+ */
+fun <T : Comparable<T>> clamp(low: T, value: T, high: T): T
+        = max(low, min(value, high))
+
+
+
 open class ComparableComparator<T: Comparable<T>>: kotlin.Comparator<T> {
     override fun compare(lhs: T, rhs: T): Int {
         return lhs.compareTo(rhs)
