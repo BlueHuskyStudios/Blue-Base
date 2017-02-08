@@ -37,10 +37,55 @@ typealias AnyPath = Path<*, *, *>
 
 
 
+/**
+ * A function used to compare each and every segment against each and every other segment
+ */
+typealias EachSegmentComparator<SegmentType> = (currentSegment: SegmentType, otherSegment: SegmentType, relationship: OtherSegmentRelationshipToCurrent) -> Boolean
+
+
+
+/** Describes the relationship between two segments of a path, from the perspective of one */
+enum class OtherSegmentRelationshipToCurrent {
+    /**
+     * The other segment is the left neighbor of this one.
+     * This means its end vertex should touch current's start vertex.
+     */
+    otherIsLeftNeighborOfCurrent,
+
+    /**
+     * The other segment is actually the current segment. They are the same object in memory.
+     */
+    otherIsCurrent,
+
+    /**
+     * The other segment is the right neighbor of this one.
+     * This means its start vertex should touch current's end vertex.
+     */
+    otherIsRightNeighborOfCurrent,
+
+    /**
+     * The other segment is neither a neighbor of nor the same as the current one.
+     */
+    otherDoesNotTouchCurrent;
+
+    constructor(currentSegmentIndex: Index, otherSegmentIndex: Index) {
+        return when (currentSegmentIndex - otherSegmentIndex) {
+            -1 -> otherIsLeftNeighborOfCurrent
+            0 -> otherIsCurrent
+            1 -> otherIsRightNeighborOfCurrent
+            else -> otherDoesNotTouchCurrent
+        }
+    }
+}
+
+
+
 interface ComputablePath
     <NumberType, PointType, out SegmentType>
     : Path<NumberType, PointType, SegmentType>
     where NumberType: Number, PointType: ComputablePoint<NumberType>, SegmentType: ComputableLineSegment<NumberType, PointType> {
+
+
     /**
      * Indicates whether this path touches or crosses over itself at any point
      */
@@ -56,10 +101,53 @@ interface ComputablePath
      */
     val endPoint: PointType?
 
+
     /**
      * Appends the given point to the end of the path
      */
     operator fun plus(rhs: PointType): ComputablePath<NumberType, PointType, SegmentType>
+
+
+    fun anyTwoSegments(comparator: EachSegmentComparator<ComputableSegment<NumberType, PointType>>): Boolean {
+        if (segments.length < 2) {
+            return false
+        }
+
+        for (currentSegmentIndex in (0 until segments.length)) {
+            val currentSegment = segments[currentSegmentIndex]
+            for (otherSegmentIndex in (0 until segments.length)) {
+                val otherSegment = segments[otherSegmentIndex]
+                if (comparator(currentSegment, otherSegment, OtherSegmentRelationshipToCurrent(currentSegmentIndex, otherSegmentIndex))) {
+                    return true
+                }
+            }
+        }
+
+        return false
+    }
+
+
+
+    companion object {
+        /**
+         * Determines if the two given segments intersect. Vertices touching doesn't count.
+         */
+        fun <NumberType, PointType, SegmentType>
+            doSegmentsIntersect(left: SegmentType, right: SegmentType)
+            : Boolean
+            where NumberType : Number, PointType : ComputablePoint<NumberType>, SegmentType : ComputableLineSegment<NumberType, PointType>
+            = when (left.describeIntersection(right)) {
+                is IntersectionDescription.none,
+                is IntersectionDescription.leftVertexTouchesRightVertex<*>
+                    -> false
+
+                is IntersectionDescription.completeOverlap,
+                is IntersectionDescription.leftVertexTouchesRightEdge<*>,
+                is IntersectionDescription.rightVertexTouchesLeftEdge<*>,
+                is IntersectionDescription.edgesCross<*>
+                    -> true
+            }
+    }
 }
 typealias AnyComputablePath = ComputablePath<*, *, *>
 
@@ -75,8 +163,8 @@ open class IntegerPath(override val segments: List<IntegerLineSegment> = listOf(
                 return listOf()
             }
 
-            val allButFirstPoint = points.subList(1, toIndex = points.size) // toIndex is exclusive
-            val segments = allButFirstPoint.reduceTo(mutableListOf(IntegerLineSegment(start = points[0].integerValue, end = points[1].integerValue))) {
+            val allButFirstTwoPoints = points.subList(fromIndex = 2, toIndex = points.size) // toIndex is exclusive
+            val segments = allButFirstTwoPoints.reduceTo(mutableListOf(IntegerLineSegment(start = points[0].integerValue, end = points[1].integerValue))) {
                 previousSegments: MutableList<IntegerLineSegment>,
                 currentPoint: ComputablePoint<*> ->
 
@@ -129,19 +217,18 @@ open class IntegerPath(override val segments: List<IntegerLineSegment> = listOf(
 
 
     fun findIsClosed(): Boolean {
-        return segments.firstOrNullComparingPairs { (previous, current) ->
+        return null != segments.firstOrNullComparingPairs { (previous, current) ->
             /*return*/ previous.end != current.start
-        } != null
+        }
     }
 
 
     override val isClosed: Boolean by lazy { findIsClosed() }
 
 
-    override val intersectsSelf: Boolean get() = null != this.points.firstOrNullComparingTriads { (left, current, right) ->
-        return@firstOrNullComparingTriads when (IntegerLineSegment(left, current).describeIntersection(IntegerLineSegment(current, right))) {
-            is IntersectionDescription.none -> false
-            else -> true
+    override val intersectsSelf: Boolean by lazy {
+        /*return*/ anyTwoSegments { currentSegment, otherSegment, relationship ->
+
         }
     }
 
