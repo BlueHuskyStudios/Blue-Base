@@ -8,6 +8,8 @@ import org.bh.tools.base.collections.*
 import org.bh.tools.base.math.Comparator
 import org.bh.tools.base.math.ComparisonResult
 import org.bh.tools.base.math.geometry.IntegerPath.Companion.pathFromGenericSegments
+import org.bh.tools.base.math.geometry.IntersectionDescription.*
+import org.bh.tools.base.math.geometry.OtherSegmentRelationshipToCurrent.*
 import java.util.*
 import java.util.Queue
 
@@ -70,7 +72,7 @@ enum class OtherSegmentRelationshipToCurrent {
 
     companion object {
         @JvmStatic
-        fun from(currentSegmentIndex: Index, otherSegmentIndex: Index) {
+        fun from(currentSegmentIndex: Index, otherSegmentIndex: Index): OtherSegmentRelationshipToCurrent {
             return when (currentSegmentIndex - otherSegmentIndex) {
                 -1 -> otherIsLeftNeighborOfCurrent
                 0 -> otherIsCurrent
@@ -111,7 +113,7 @@ interface ComputablePath
     operator fun plus(rhs: PointType): ComputablePath<NumberType, PointType, SegmentType>
 
 
-    fun anyTwoSegments(comparator: EachSegmentComparator<ComputableSegment<NumberType, PointType>>): Boolean {
+    fun anyTwoSegments(comparator: EachSegmentComparator<ComputableLineSegment<NumberType, PointType>>): Boolean {
         if (segments.length < 2) {
             return false
         }
@@ -120,7 +122,7 @@ interface ComputablePath
             val currentSegment = segments[currentSegmentIndex]
             for (otherSegmentIndex in (0 until segments.length)) {
                 val otherSegment = segments[otherSegmentIndex]
-                if (comparator(currentSegment, otherSegment, OtherSegmentRelationshipToCurrent(currentSegmentIndex, otherSegmentIndex))) {
+                if (comparator(currentSegment, otherSegment, OtherSegmentRelationshipToCurrent.from(currentSegmentIndex, otherSegmentIndex))) {
                     return true
                 }
             }
@@ -229,16 +231,56 @@ open class IntegerPath(override val segments: List<IntegerLineSegment> = listOf(
     override val isClosed: Boolean by lazy { findIsClosed() }
 
 
+    /**
+     * Indicates whether any two segments in this path intersect.
+     *
+     * The following are **not** considered to be intersections:
+     *  - The two segments in no way intersect
+     *  - The two compared segments are in fact the same segment in memory
+     *  - The two compared segments are neighbors and one vertex of one touches one opposing vertex of the other (start touches end or vice versa)
+     *
+     *  All other forms of intersection return `true` immediately
+     */
     override val intersectsSelf: Boolean by lazy {
         /*return*/ anyTwoSegments { currentSegment, otherSegment, relationship ->
+            /*return*/ when (relationship) {
+                otherIsCurrent -> /*return*/ false // Don't evaluate current against itself
 
+                otherIsLeftNeighborOfCurrent,
+                otherIsRightNeighborOfCurrent -> {
+                    val intersection = currentSegment.describeIntersection(otherSegment)
+                    when (intersection) {
+                        is none -> /*return*/ false
+
+                        // Neighbors touch vertices? If they're opposing (start touches end or vice versa), that's normal.
+                        is leftVertexTouchesRightVertex<*> -> /*return*/ intersection.isLeftStartVertex != intersection.isRightStartVertex
+
+                        is leftVertexTouchesRightEdge<*>,
+                        is rightVertexTouchesLeftEdge<*>,
+                        is edgesCross<*>,
+                        is completeOverlap -> /*return*/ true
+                    }
+                }
+
+                otherDoesNotTouchCurrent -> {
+                    val intersection = currentSegment.describeIntersection(otherSegment)
+                    when (intersection) {
+                        is none -> /*return*/ false
+
+                        is leftVertexTouchesRightVertex<*>,
+                        is leftVertexTouchesRightEdge<*>,
+                        is rightVertexTouchesLeftEdge<*>,
+                        is edgesCross<*>,
+                        is completeOverlap -> /*return*/ true
+                    }
+                }
+            }
         }
     }
 
 
-    override operator fun plus(rhs: IntegerPoint): IntegerPath {
-        return IntegerPath(segments = segments + IntegerLineSegment(start = segments.last.end, end = rhs))
-    }
+    override operator fun plus(rhs: IntegerPoint): IntegerPath
+            = IntegerPath(segments = segments + IntegerLineSegment(start = segments.last.end, end = rhs))
 }
 typealias Int64Path = IntegerPath
 typealias IntPath = IntegerPath
