@@ -1,5 +1,7 @@
 package org.bh.tools.base.math
 
+import org.bh.tools.base.abstraction.Int64
+
 /**
  * Comparable64, made for BHToolbox, is made by and copyrighted to Blue Husky Software, ©2012 BH-1-PS <hr/>
  *
@@ -54,5 +56,5 @@ interface Comparable64<in T> : Comparable<T> {
      * @throws ClassCastException if the specified object's type prevents it
      *         from being compared to this object.
      */
-    fun compareTo64(otherComparable: T): Long
+    fun compareTo64(otherComparable: T): Int64
 }
