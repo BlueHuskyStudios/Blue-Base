@@ -68,12 +68,15 @@ enum class OtherSegmentRelationshipToCurrent {
      */
     otherDoesNotTouchCurrent;
 
-    constructor(currentSegmentIndex: Index, otherSegmentIndex: Index) {
-        return when (currentSegmentIndex - otherSegmentIndex) {
-            -1 -> otherIsLeftNeighborOfCurrent
-            0 -> otherIsCurrent
-            1 -> otherIsRightNeighborOfCurrent
-            else -> otherDoesNotTouchCurrent
+    companion object {
+        @JvmStatic
+        fun from(currentSegmentIndex: Index, otherSegmentIndex: Index) {
+            return when (currentSegmentIndex - otherSegmentIndex) {
+                -1 -> otherIsLeftNeighborOfCurrent
+                0 -> otherIsCurrent
+                1 -> otherIsRightNeighborOfCurrent
+                else -> otherDoesNotTouchCurrent
+            }
         }
     }
 }
