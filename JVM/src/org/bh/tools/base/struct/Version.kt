@@ -4,10 +4,13 @@ package org.bh.tools.base.struct
 
 //import org.bh.tools.base.math.NumberConversion
 
+import org.bh.tools.base.abstraction.Int32
+import org.bh.tools.base.abstraction.Int64
 import org.bh.tools.base.collections.toString
 import org.bh.tools.base.math.Comparable64
+import org.bh.tools.base.math.int32Value
+import org.bh.tools.base.math.int64Value
 import org.bh.tools.base.struct.VersionChannel.stable
-import java.util.*
 
 typealias VersionStage = Long
 
@@ -17,26 +20,25 @@ typealias VersionStage = Long
  * @author Kyli and Ben of Blue Husky Software
  *
  * @version 3.0.0
+ *     - 3.1.0 (2016-10-21) - Ben Leggiero rewrote some things to be more Kotlin and pruned dead code
  *     - 3.0.0 (2016-10-21) - Kyli Rouge updated to Kotlin
  *     - 2.1.0 (2016-10-09) - Ben Leggiero updated to work without version 1, cleaned up warnings
  *     - 2.0.0 (2016-04-24) - Kyli Rouge updated to modern BH standards
- *     - 1.1.1 (2014-11-29) - Kyli Rouge Changed version pattern from \d(\.\d)* to \d+(\.\d+)*
+ *     - 1.1.1 (2014-11-29) - Kyli Rouge Changed version pattern from `\d(\.\d)*` to `\d+(\.\d+)*`
  *     - 1.1.0 (2014-11-29) - Kyli Rouge added support for channels
  *
  * @since 2014-09-22
  */
 data class Version
-(val stages: Array<VersionStage>, val channel: VersionChannel = stable)
-    : Comparable<Version>, Comparable64<Version> {
+(
+        /** The stages in this version. For instance, `1.0.2` would be `listOf(1,0,2)`. */
+        val stages: List<VersionStage>,
 
-    private var cache: String? = null
+        /** The channel in which this version lives. For instance, `2.0 β` would have the channel [β][VersionChannel.β]. */
+        val channel: VersionChannel = stable
+) : Comparable64<Version> {
 
-//    /**
-//     * Creates a version with the given stages. For instance, if it's version 1.2.3, you would call
-//     * `Version(1,2,3)`
-//     * @param initStages The stages (number) of the version
-//     */
-//    constructor(vararg initStages: VersionStage) : this(initStages, stable)
+    private val cachedStringValue by lazy { stages.toString(glue = ".") + Character.toString(channel.unicode) }
 
     /**
      * Creates a version with the given channel and stages. For instance, if it's version 1.2.3 β, you would call
@@ -44,57 +46,14 @@ data class Version
      * @param initChannel The channel of the version
      * @param initStages  The stages (number) of the version
      */
-    constructor(vararg initStages: VersionStage, initChannel: VersionChannel = stable) :
-            this(stages = initStages.toTypedArray(), channel = initChannel)
+    constructor(vararg initStages: VersionStage, initChannel: VersionChannel = stable)
+            : this(stages = initStages.asList(), channel = initChannel)
+
 
     /**
-     * @return a string representation of the version, like: `&quot;1.2.3β&quot;`
+     * @return a string representation of the version, like `"1.2.3β"`
      */
-    override fun toString(): String {
-        if (cache == null) {
-            cache = listOf(stages).toString(glue = ".") + Character.toString(channel.unicode)
-        }
-        return cache!!
-    }
-
-    override fun hashCode(): Int {
-        var hash = 3
-        hash = 29 * hash + Arrays.deepHashCode(this.stages)
-        return hash
-    }
-
-    /**
-     * Evaluates whether these are equal. Evaluation happens in this order:
-     *
-     * check with == (yes? true)
-     * whether other is null (yes? false)
-     * whether they're the same class (no? false)
-     * whether their channels are equal (no? false)
-     * whether their stages are equal (no? false)
-     * if all of the above are not tripped, return true
-     *
-     * @param other the other object to test
-     *
-     * @return `true` iff both this and the other object are equal
-     */
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-        if (other == null) {
-            return false
-        }
-        if (other !is Version) {
-            return false
-        }
-        if (this.channel != other.channel) {
-            return false
-        }
-        if (!Arrays.deepEquals(this.stages, other.stages)) {
-            return false
-        }
-        return true
-    }
+    override fun toString(): String = cachedStringValue
 
 
     /**
@@ -108,28 +67,23 @@ data class Version
      * @param other the other object to compare this one against
      * @return an integer, centered around 0, telling how much more or less this object is than the other.
      */
-    override fun compareTo(other: Version): Int {
-        return compareTo64(other).toInt()
-    }
+    override fun compareTo(other: Version): Int32 = compareTo64(other).int32Value
 
-    override fun compareTo64(otherComparable: Version): Long {
-        if (equals(otherComparable)) {
-            return 0
-        }
-        if (channel != otherComparable.channel) {
-            return (channel.ordinal - otherComparable.channel.ordinal).toLong()
-        }
-        var i = 0
-        val l = Math.min(stages.size, otherComparable.stages.size)
-        while (i < l) {
-            if (stages[i] != otherComparable.stages[i]) {
-                return stages[i] - otherComparable.stages[i]
+    override fun compareTo64(otherComparable: Version): Int64 {
+        when {
+            equals(otherComparable) -> return 0
+            channel != otherComparable.channel -> return (channel.ordinal - otherComparable.channel.ordinal).toLong()
+            else -> {
+                val l = Math.min(stages.size, otherComparable.stages.size)
+                return (0 until l)
+                        .firstOrNull { stages[it] != otherComparable.stages[it] }
+                        ?.let { stages[it] - otherComparable.stages[it] }
+                        ?: (stages.size - otherComparable.stages.size).int64Value
             }
-            i++
         }
-        return (stages.size - otherComparable.stages.size).toLong()
     }
 }
+
 
 /**
  * Represents a channel (stable, beta, alpha, lambda):
@@ -137,27 +91,29 @@ data class Version
  */
 enum class VersionChannel
 
-    /**
-     * Creates a new Channel with the given translations.
+/**
+ * Creates a new Channel with the given translations.
 
-     * @param ascii   The ASCII symbol of the channel.
-     * @param unicode The Unicode symbol of the channel. This is preferred.
-     * @param html    The HTML escape of the Unicode symbol of the channel.
-     */
-    constructor(
-            /**
-             * The ASCII symbol of the channel.
-             */
-            val ascii: Char,
-            /**
-             * The Unicode symbol of the channel.
-             */
-            val unicode: Char,
-            /**
-             * The HTML escape of the Unicode symbol of the channel.
-             */
-            val html: String
-    ) {
+ * @param ascii   The ASCII symbol of the channel.
+ * @param unicode The Unicode symbol of the channel. This is preferred.
+ * @param html    The HTML escape of the Unicode symbol of the channel.
+ */
+constructor(
+        /**
+         * The ASCII symbol of the channel.
+         */
+        val ascii: Char,
+
+        /**
+         * The Unicode symbol of the channel.
+         */
+        val unicode: Char,
+
+        /**
+         * The HTML escape of the Unicode symbol of the channel.
+         */
+        val html: String
+) {
 
     /**
      * Signifies that this software is in very unstable or incomplete testing, and the next major release should be
