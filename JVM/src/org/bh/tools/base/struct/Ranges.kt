@@ -4,7 +4,6 @@ package org.bh.tools.base.struct
 
 import org.bh.tools.base.collections.Index
 import org.bh.tools.base.math.*
-import java.lang.Double.NaN
 
 /**
  * OpenRange, made for Blue Base, is copyright Blue Husky Software ©2016 BH-1-PS <hr/>
@@ -56,24 +55,32 @@ open class OpenRange<NumberType: Comparable<NumberType>>
 
     /**
      * Indicates whether the given value is in this range
+     *
+     * Fringe cases:
+     *  - if `value` is [NaN][Double.NaN], this always returns `false`.
+     *  - if `value` is [-∞][Double.NEGATIVE_INFINITY], [startInclusive] must be `null`
+     *  - if `value` is [∞][Double.POSITIVE_INFINITY], [endInclusive] must be `null`
      */
-    open fun contains(value: NumberType): Boolean = when (value) {
-        is Number -> when {
-            value.isNaN -> false
-            value.isNegativeInfinity -> startInclusive == null
-            value.isPositiveInfinity -> endInclusive == null
-            else -> continue // Compile error: 'break' and 'continue' only allowed inside a loop
+    open fun contains(value: NumberType): Boolean {
+        if (value is Number) {
+            when {
+                value.isNaN -> return false
+                value.isNegativeInfinity -> return startInclusive == null
+                value.isPositiveInfinity -> return endInclusive == null
+            }
         }
-        else -> when {
+        return when {
             startInclusive != null && value < startInclusive -> false
             endInclusive != null && value > endInclusive -> false
             else -> true
         }
     }
 
+
     fun intersects(other: OpenRange<NumberType>): Boolean
             = (other.startInclusive != null && contains(other.startInclusive))
             || (other.endInclusive != null && contains(other.endInclusive))
+
 
     fun union(other: OpenRange<NumberType>): OpenRange<NumberType> {
         if (!intersects(other)) {

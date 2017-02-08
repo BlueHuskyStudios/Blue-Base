@@ -15,7 +15,7 @@ class OpenRangeTest {
     val range5To17 = OpenRange(5.0, 17.0)
     val rangeOpenTo17 = OpenRange(null, 17.0)
     val range5ToOpen = OpenRange(5.0, null)
-    val rangeOpenToOpen = OpenRange(null, null)
+    val rangeOpenToOpen = OpenRange<Fraction>(null, null)
 
     @Test
     fun isOpen() {
@@ -99,21 +99,21 @@ class OpenRangeTest {
 
         // MARK: Fully-open Range:
 
-        assertFalse("A range of Open to Open must not contain Not-a-Number", range5ToOpen.contains(Fraction.NaN))
-        assertTrue("A range of Open to Open must contain -∞", range5ToOpen.contains(Fraction.NEGATIVE_INFINITY))
-        assertTrue("A range of Open to Open must contain ∞", range5ToOpen.contains(Fraction.POSITIVE_INFINITY))
+        assertFalse("A range of Open to Open must not contain Not-a-Number", rangeOpenToOpen.contains(Fraction.NaN))
+        assertTrue("A range of Open to Open must contain -∞", rangeOpenToOpen.contains(Fraction.NEGATIVE_INFINITY))
+        assertTrue("A range of Open to Open must contain ∞", rangeOpenToOpen.contains(Fraction.POSITIVE_INFINITY))
 
-        assertTrue("A range of Open to Open must contain 4", range5ToOpen.contains(4.0))
-        assertTrue("A range of Open to Open must contain 4.99", range5ToOpen.contains(4.99))
-        assertTrue("A range of Open to Open must contain 5", range5ToOpen.contains(5.0))
-        assertTrue("A range of Open to Open must contain 5.01", range5ToOpen.contains(5.01))
-        assertTrue("A range of Open to Open must contain 6", range5ToOpen.contains(6.0))
+        assertTrue("A range of Open to Open must contain 4", rangeOpenToOpen.contains(4.0))
+        assertTrue("A range of Open to Open must contain 4.99", rangeOpenToOpen.contains(4.99))
+        assertTrue("A range of Open to Open must contain 5", rangeOpenToOpen.contains(5.0))
+        assertTrue("A range of Open to Open must contain 5.01", rangeOpenToOpen.contains(5.01))
+        assertTrue("A range of Open to Open must contain 6", rangeOpenToOpen.contains(6.0))
 
-        assertTrue("A range of Open to Open must contain 16", range5ToOpen.contains(16.0))
-        assertTrue("A range of Open to Open must contain 16.99", range5ToOpen.contains(16.99))
-        assertTrue("A range of Open to Open must contain 17", range5ToOpen.contains(17.0))
-        assertTrue("A range of Open to Open must contain 17.01", range5ToOpen.contains(17.01))
-        assertTrue("A range of Open to Open must contain 18", range5ToOpen.contains(18.0))
+        assertTrue("A range of Open to Open must contain 16", rangeOpenToOpen.contains(16.0))
+        assertTrue("A range of Open to Open must contain 16.99", rangeOpenToOpen.contains(16.99))
+        assertTrue("A range of Open to Open must contain 17", rangeOpenToOpen.contains(17.0))
+        assertTrue("A range of Open to Open must contain 17.01", rangeOpenToOpen.contains(17.01))
+        assertTrue("A range of Open to Open must contain 18", rangeOpenToOpen.contains(18.0))
     }
 
     @Test

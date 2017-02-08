@@ -133,13 +133,25 @@ enum class RoundingDirection {
 
 
 /** Returns `true` iff this is a native fraction and [isNaN()][Double.isNaN()] */
-val Number.isNaN: Boolean get() = isNativeFraction && fractionValue.isNaN()
+inline val Number.isNaN: Boolean get() = isNativeFraction && fractionValue.isNaN()
 
 /** Returns `true` iff this is a native fraction and [isInfinite()][Double.isInfinite()] */
-val Number.isInfinite: Boolean get() = isNativeFraction && fractionValue.isInfinite()
+inline val Number.isInfinite: Boolean get() = isNativeFraction && fractionValue.isInfinite()
 
 /** Returns `true` iff [isInfinite] and is less than `0.0` */
-val Number.isNegativeInfinity: Boolean get() = isInfinite && fractionValue < 0.0
+inline val Number.isNegativeInfinity: Boolean get() = isInfinite && fractionValue < 0.0
 
 /** Returns `true` iff [isInfinite] and is greater than `0.0` */
-val Number.isPositiveInfinity: Boolean get() = isInfinite && fractionValue > 0.0
+inline val Number.isPositiveInfinity: Boolean get() = isInfinite && fractionValue > 0.0
+
+/** ∞ as an IEEE 32-bit float */
+inline val Float.Companion.infinity get() = POSITIVE_INFINITY
+
+/** ∞ as an IEEE 64-bit float */
+inline val Double.Companion.infinity get() = POSITIVE_INFINITY
+
+/** Not-A-Number as an IEEE 32-bit float */
+inline val Float.Companion.nan get() = NaN
+
+/** Not-A-Number as an IEEE 64-bit float */
+inline val Double.Companion.nan get() = NaN
