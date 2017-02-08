@@ -19,9 +19,13 @@ import java.lang.Math.abs
  */
 open class LineSegment<out NumberType : Number, out PointType : Point<NumberType>>(open val start: PointType, open val end: PointType) : Cloneable {
 
+    /** The first point's X coordinate */
     inline val x1 get() = start.x
+    /** The first point's Y coordinate */
     inline val y1 get() = start.y
+    /** The second point's X coordinate */
     inline val x2 get() = end.x
+    /** The second point's Y coordinate */
     inline val y2 get() = end.y
 
     override fun toString(): String {
