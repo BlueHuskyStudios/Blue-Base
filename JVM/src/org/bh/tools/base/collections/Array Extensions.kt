@@ -75,8 +75,8 @@ fun <ElementType> Array<ElementType>.removing(indices: IntArray): Array<ElementT
  * Like `flatMap` but allows you to keep `null`s
  */
 fun <ElementType, OutputType>
-        Array<ElementType>.filterMap(predicateTransform: (ElementType) -> Pair<Boolean, () -> OutputType>)
-        : List<OutputType>
+        Array<ElementType>.filterMap(predicateTransform: (ElementType) -> Pair<Boolean, () -> OutputType?>)
+        : List<OutputType?>
         = this
             .map { predicateTransform(it) }
             .filter { it.first }
