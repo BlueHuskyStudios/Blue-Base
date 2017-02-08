@@ -37,6 +37,8 @@ val Fraction.components: RadixNumberParts get() {
     return RadixNumberParts(iPart, fPart)
 }
 
+
+
 /**
  * Represents a fractional number's integer and fraction parts
  *
@@ -87,6 +89,7 @@ fun RoundingMode(fraction: Fraction, direction: RoundingDirection, threshold: Ro
 }
 
 
+
 /**
  * Describes at what part of the number rounding should occur
  */
@@ -107,6 +110,7 @@ enum class RoundingThreshold {
 }
 
 
+
 /** Represents the direction to round a fraction if it is not already an integer */
 enum class RoundingDirection {
     /** If the number is not already an integer, increase its value to the next-highest integer */
@@ -125,3 +129,17 @@ enum class RoundingDirection {
         val default = awayFromZero
     }
 }
+
+
+
+/** Returns `true` iff this is a native fraction and [isNaN()][Double.isNaN()] */
+val Number.isNaN: Boolean get() = isNativeFraction && fractionValue.isNaN()
+
+/** Returns `true` iff this is a native fraction and [isInfinite()][Double.isInfinite()] */
+val Number.isInfinite: Boolean get() = isNativeFraction && fractionValue.isInfinite()
+
+/** Returns `true` iff [isInfinite] and is less than `0.0` */
+val Number.isNegativeInfinity: Boolean get() = isInfinite && fractionValue < 0.0
+
+/** Returns `true` iff [isInfinite] and is greater than `0.0` */
+val Number.isPositiveInfinity: Boolean get() = isInfinite && fractionValue > 0.0

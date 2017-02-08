@@ -2,10 +2,9 @@
 
 package org.bh.tools.base.struct
 
-import org.bh.tools.base.abstraction.Int32
 import org.bh.tools.base.collections.Index
 import org.bh.tools.base.math.*
-import kotlin.reflect.isSuperclassOf
+import java.lang.Double.NaN
 
 /**
  * OpenRange, made for Blue Base, is copyright Blue Husky Software ©2016 BH-1-PS <hr/>
@@ -53,19 +52,23 @@ open class OpenRange<NumberType: Comparable<NumberType>>
 
     constructor(onlyValue: NumberType): this(startInclusive = onlyValue, endInclusive = onlyValue)
 
-    open val isOpen: Boolean get() = startInclusive == null || endInclusive == null
+    open val isOpen: Boolean by lazy { startInclusive == null || endInclusive == null }
 
     /**
      * Indicates whether the given value is in this range
      */
-    open fun contains(value: NumberType): Boolean {
-        if (startInclusive != null && value < startInclusive) {
-            return false
+    open fun contains(value: NumberType): Boolean = when (value) {
+        is Number -> when {
+            value.isNaN -> false
+            value.isNegativeInfinity -> startInclusive == null
+            value.isPositiveInfinity -> endInclusive == null
+            else -> continue // Compile error: 'break' and 'continue' only allowed inside a loop
         }
-        if (endInclusive != null && value > endInclusive) {
-            return false
+        else -> when {
+            startInclusive != null && value < startInclusive -> false
+            endInclusive != null && value > endInclusive -> false
+            else -> true
         }
-        return true
     }
 
     fun intersects(other: OpenRange<NumberType>): Boolean
