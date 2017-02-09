@@ -51,7 +51,18 @@ open class OpenRange<NumberType: Comparable<NumberType>>
 
     constructor(onlyValue: NumberType): this(startInclusive = onlyValue, endInclusive = onlyValue)
 
-    open val isOpen: Boolean by lazy { startInclusive == null || endInclusive == null }
+    /** Indicates whether either side of this range extends infinitely */
+    open val isOpen: Boolean by lazy { isStartOpen || isEndOpen }
+
+    /** Indicates whether this range extends to -∞ */
+    open val isStartOpen: Boolean by lazy { startInclusive == null }
+
+    /** Indicates whether this range extends to +∞ */
+    open val isEndOpen: Boolean by lazy { endInclusive == null }
+
+    /** Indicates whether this range extends from -∞ to +∞ */
+    open val isInfinite: Boolean by lazy { isStartOpen && isEndOpen }
+
 
     /**
      * Indicates whether the given value is in this range
@@ -77,9 +88,50 @@ open class OpenRange<NumberType: Comparable<NumberType>>
     }
 
 
-    fun intersects(other: OpenRange<NumberType>): Boolean
-            = (other.startInclusive != null && contains(other.startInclusive))
-            || (other.endInclusive != null && contains(other.endInclusive))
+    fun intersects(other: OpenRange<NumberType>): Boolean {
+        if (startInclusive == null) { // (-∞, ?) ∩ ( ?, ?)
+            if (endInclusive == null) { // (-∞, ∞) ∩ ( ?, ?)
+                return true
+            } else { // (-∞, #) ∩ ( ?, ?)
+                if (other.startInclusive == null) { // (-∞, #) ∩ (-∞, ?)
+                    return true
+                } else { // (-∞, #) ∩ ( #, ?)
+                    return other.startInclusive <= endInclusive
+                }
+            }
+        } else { // ( #, ?) ∩ ( ?, ?)
+            if (endInclusive == null) { // ( #, ∞) ∩ ( ?, ?)
+                if (other.startInclusive == null) { // ( #, ∞) ∩ (-∞, ?)
+                    if (other.endInclusive == null)  { // ( #, ∞) ∩ (-∞, ∞)
+                        return true
+                    } else { // ( #, ∞) ∩ (-∞, #)
+                        return startInclusive <= other.endInclusive
+                    }
+                } else { // ( #, ∞) ∩ ( #, ?)
+                    if (other.endInclusive == null)  { // ( #, ∞) ∩ ( #, ∞)
+                        return true
+                    } else { // ( #, ∞) ∩ ( #, #)
+                        return startInclusive <= other.endInclusive
+                    }
+                }
+            } else { // ( #, #) ∩ ( ?, ?)
+                if (other.startInclusive == null) { // ( #, #) ∩ (-∞, ?)
+                    if (other.endInclusive == null) { // ( #, #) ∩ (-∞, ∞)
+                        return true
+                    } else { // ( #, #) ∩ (-∞, #)
+                        return startInclusive <= other.endInclusive
+                    }
+                } else { // ( #, #) ∩ ( #, ?)
+                    if (other.endInclusive == null) { // ( #, #) ∩ ( #, ∞)
+                        return other.startInclusive <= endInclusive
+                    } else { // ( #, #) ∩ ( #, #)
+                        return startInclusive <= other.endInclusive
+                                && other.startInclusive <= endInclusive
+                    }
+                }
+            }
+        }
+    }
 
 
     fun union(other: OpenRange<NumberType>): OpenRange<NumberType> {
@@ -157,6 +209,16 @@ open class OpenRange<NumberType: Comparable<NumberType>>
         var result = startInclusive?.hashCode() ?: Int.min
         result = 31 * result + (endInclusive?.hashCode() ?: Int.max)
         return result
+    }
+
+
+    override fun toString(): String {
+        return "(${startInclusive ?: "-∞"}, ${endInclusive ?: "∞"})"
+    }
+
+
+    companion object {
+        val open = null
     }
 }
 
