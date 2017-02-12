@@ -98,7 +98,7 @@ open class OpenRange<NumberType: Comparable<NumberType>>
             else -> other.startInclusive >= this.startInclusive
         }
         else -> when {
-            other.isLeftOpen || isRightOpen -> false
+            other.isLeftOpen || other.isRightOpen -> false
             else -> this.contains(other.startInclusive) && this.contains(other.endInclusive)
         }
     }
