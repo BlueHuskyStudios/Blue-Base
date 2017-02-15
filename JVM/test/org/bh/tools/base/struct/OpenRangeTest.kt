@@ -1,10 +1,19 @@
 package org.bh.tools.base.struct
 
 import org.bh.tools.base.abstraction.Fraction
-import org.bh.tools.base.struct.OpenRange.Companion.open
+import org.bh.tools.base.abstraction.Integer
+import org.bh.tools.base.math.defaultFractionCalculationTolerance
+import org.bh.tools.base.struct.OpenRange.Companion.openEnd
+import org.bh.tools.base.util.TimeTrialMeasurementMode
+import org.bh.tools.base.util.TimeTrialMeasurementMode.*
+import org.bh.tools.base.util.measureTimeInterval
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+
+
+private val intersectionTrialCount: Integer = 1_000_000
+
 
 /**
  * @author Kyli Rouge
@@ -12,17 +21,17 @@ import org.junit.Test
  */
 class OpenRangeTest {
 
-    val rangeOnly5 = OpenRange(5.0)
-    val rangeOnly10 = OpenRange(10.0)
-    val range5To17 = OpenRange(5.0, 17.0)
-    val range10To23 = OpenRange(10.0, 23.0)
-    val range17ToOpen = OpenRange(17.0, open)
-    val rangeOpenTo23 = OpenRange(open, 23.0)
-    val rangeOpenTo5 = OpenRange(open, 5.0)
-    val range10ToOpen = OpenRange(10.0, open)
-    val rangeOpenToOpen = OpenRange<Fraction>(open, open)
+    val rangeOnly5 = FractionOpenRange(5.0)
+    val rangeOnly10 = FractionOpenRange(10.0)
+    val range5To17 = FractionOpenRange(5.0, 17.0)
+    val range10To23 = FractionOpenRange(10.0, 23.0)
+    val range17ToOpen = FractionOpenRange(17.0, openEnd)
+    val rangeOpenTo23 = FractionOpenRange(openEnd, 23.0)
+    val rangeOpenTo5 = FractionOpenRange(openEnd, 5.0)
+    val range10ToOpen = FractionOpenRange(10.0, openEnd)
+    val rangeOpenToOpen = FractionOpenRange(openEnd, openEnd)
 
-    @Test
+            @Test
     fun isOpen() {
         assertFalse("A range of only 5 must not be open", rangeOnly5.isOpen)
         assertFalse("A range of 5 to 17 must not be open", range5To17.isOpen)
@@ -247,8 +256,149 @@ class OpenRangeTest {
     }
 
     @Test
-    fun containsCompletely() {
+    fun intersection() {
 
+        val range10To17 by lazy { FractionOpenRange(startInclusive = 10.0, endInclusive = 17.0) }
+        val rangeOnly17 by lazy { FractionOpenRange(onlyValue = 17.0) }
+        val range17To23 by lazy { FractionOpenRange(startInclusive = 17.0, endInclusive = 23.0) }
+
+
+        // MARK: Single value A:
+
+        assertTrue("A range of only 5 must intersect one of only 5 at 5 only", rangeOnly5.intersection(rangeOnly5).equals(rangeOnly5))
+        assertTrue("A range of only 5 must not intersect one of only 10", rangeOnly5.intersection(rangeOnly10).isEmpty)
+        assertTrue("A range of only 5 must intersect one of 5 to 17 at 5 only", rangeOnly5.intersection(range5To17).equals(rangeOnly5))
+        assertTrue("A range of only 5 must not intersect one of 10 to 23", rangeOnly5.intersection(range10To23).isEmpty)
+        assertTrue("A range of only 5 must not intersect one of 17 to Open", rangeOnly5.intersection(range17ToOpen).isEmpty)
+        assertTrue("A range of only 5 must intersect one of Open to 23 at 5 only", rangeOnly5.intersection(rangeOpenTo23).equals(rangeOnly5))
+        assertTrue("A range of only 5 must intersect one of Open to 5 at 5 only", rangeOnly5.intersection(rangeOpenTo5).equals(rangeOnly5))
+        assertTrue("A range of only 5 must not intersect one of 10 to Open", rangeOnly5.intersection(range10ToOpen).isEmpty)
+        assertTrue("A range of only 5 must intersect one of Open to Open at 5 only", rangeOnly5.intersection(rangeOpenToOpen).equals(rangeOnly5))
+
+
+        // MARK: Single value B:
+
+        assertTrue("A range of only 10 must not intersect one of only 5", rangeOnly10.intersection(rangeOnly5).isEmpty)
+        assertTrue("A range of only 10 must intersect one of only 10", rangeOnly10.intersection(rangeOnly10).equals(rangeOnly10))
+        assertTrue("A range of only 10 must intersect one of 5 to 17", rangeOnly10.intersection(range5To17).equals(rangeOnly10))
+        assertTrue("A range of only 10 must intersect one of 10 to 23", rangeOnly10.intersection(range10To23).equals(rangeOnly10))
+        assertTrue("A range of only 10 must not intersect one of 17 to Open", rangeOnly10.intersection(range17ToOpen).isEmpty)
+        assertTrue("A range of only 10 must intersect one of Open to 23", rangeOnly10.intersection(rangeOpenTo23).equals(rangeOnly10))
+        assertTrue("A range of only 10 must not intersect one of Open to 5", rangeOnly10.intersection(rangeOpenTo5).isEmpty)
+        assertTrue("A range of only 10 must intersect one of 10 to Open", rangeOnly10.intersection(range10ToOpen).equals(rangeOnly10))
+        assertTrue("A range of only 10 must intersect one of Open to Open", rangeOnly10.intersection(rangeOpenToOpen).equals(rangeOnly10))
+
+
+        // MARK: Closed range A:
+
+        assertTrue("A range of 5 to 17 must intersect one of only 5 at 5 only", range5To17.intersection(rangeOnly5).equals(rangeOnly5))
+        assertTrue("A range of 5 to 17 must intersect one of only 10 at 10 only", range5To17.intersection(rangeOnly10).equals(rangeOnly10))
+        assertTrue("A range of 5 to 17 must intersect one of 5 to 17 completely", range5To17.intersection(range5To17).equals(range5To17))
+        assertTrue("A range of 5 to 17 must intersect one of 10 to 23 at 10 to 17", range5To17.intersection(range10To23).equals(range10To17))
+        assertTrue("A range of 5 to 17 must intersect one of 17 to Open at 17 only", range5To17.intersection(range17ToOpen).equals(rangeOnly17))
+        assertTrue("A range of 5 to 17 must intersect one of Open to 23 at 5 to 17", range5To17.intersection(rangeOpenTo23).equals(range5To17))
+        assertTrue("A range of 5 to 17 must intersect one of Open to 5 at only 7", range5To17.intersection(rangeOpenTo5).equals(rangeOnly5))
+        assertTrue("A range of 5 to 17 must intersect one of 10 to Open", range5To17.intersection(range10ToOpen).equals(range10To17))
+        assertTrue("A range of 5 to 17 must intersect one of Open to Open", range5To17.intersection(rangeOpenToOpen).equals(range5To17))
+
+
+        // MARK: Closed range B:
+
+        assertTrue("A range of 10 to 23 must not intersect one of only 5", range10To23.intersection(rangeOnly5).isEmpty)
+        assertTrue("A range of 10 to 23 must intersect one of only 10 at 10 only", range10To23.intersection(rangeOnly10).equals(rangeOnly10))
+        assertTrue("A range of 10 to 23 must intersect one of 5 to 17 at 10 to 17", range10To23.intersection(range5To17).equals(range10To17))
+        assertTrue("A range of 10 to 23 must intersect one of 10 to 23 completely", range10To23.intersection(range10To23).intersects(range10To23))
+        assertTrue("A range of 10 to 23 must intersect one of 17 to Open at 17 to 23", range10To23.intersection(range17ToOpen).equals(range17To23))
+        assertTrue("A range of 10 to 23 must intersect one of Open to 23 at 10 to 23", range10To23.intersection(rangeOpenTo23).equals(range10To23))
+        assertTrue("A range of 10 to 23 must not intersect one of Open to 5", range10To23.intersection(rangeOpenTo5).isEmpty)
+        assertTrue("A range of 10 to 23 must intersect one of 10 to Open at 10 to 23", range10To23.intersection(range10ToOpen).equals(range10To23))
+        assertTrue("A range of 10 to 23 must intersect one of Open to Open at 10 to 23", range10To23.intersection(rangeOpenToOpen).equals(range10To23))
+
+
+        // MARK: Right-open range A:
+
+        assertTrue("A range of 17 to Open must not intersect one of only 5", range17ToOpen.intersection(rangeOnly5).isEmpty)
+        assertTrue("A range of 17 to Open must not intersect one of only 10", range17ToOpen.intersection(rangeOnly10).isEmpty)
+        assertTrue("A range of 17 to Open must intersect one of 5 to 17 at 5 to 17", range17ToOpen.intersection(range5To17).equals(rangeOnly17))
+        assertTrue("A range of 17 to Open must intersect one of 10 to 23 at 17 to 23", range17ToOpen.intersection(range10To23).equals(range17To23))
+        assertTrue("A range of 17 to Open must intersect one of 17 to Open completely", range17ToOpen.intersection(range17ToOpen).equals(range17ToOpen))
+        assertTrue("A range of 17 to Open must intersect one of Open to 23 at 17 to 23", range17ToOpen.intersection(rangeOpenTo23).equals(range17To23))
+        assertTrue("A range of 17 to Open must not intersect one of Open to 5", range17ToOpen.intersection(rangeOpenTo5).isEmpty)
+        assertTrue("A range of 17 to Open must intersect one of 10 to Open at 17 to Open", range17ToOpen.intersection(range10ToOpen).equals(range17ToOpen))
+        assertTrue("A range of 17 to Open must intersect one of Open to Open at 17 to Open", range17ToOpen.intersection(rangeOpenToOpen).equals(range17ToOpen))
+
+
+        // MARK: Left-open range B:
+
+        assertTrue("A range of Open to 23 must intersect one of only 5 at 5 only", rangeOpenTo23.intersection(rangeOnly5).equals(rangeOnly5))
+        assertTrue("A range of Open to 23 must intersect one of only 10 at 10 only", rangeOpenTo23.intersection(rangeOnly10).equals(rangeOnly10))
+        assertTrue("A range of Open to 23 must intersect one of 5 to 17 at 5 to 17", rangeOpenTo23.intersection(range5To17).equals(range5To17))
+        assertTrue("A range of Open to 23 must intersect one of 10 to 23 at 10 to 23", rangeOpenTo23.intersection(range10To23).equals(range10To23))
+        assertTrue("A range of Open to 23 must intersect one of 17 to Open at 17 to 23", rangeOpenTo23.intersection(range17ToOpen).equals(range17To23))
+        assertTrue("A range of Open to 23 must intersect one of Open to 23 completely", rangeOpenTo23.intersection(rangeOpenTo23).equals(rangeOpenTo23))
+        assertTrue("A range of Open to 23 must intersect one of Open to 5 at Open to 5", rangeOpenTo23.intersection(rangeOpenTo5).equals(rangeOpenTo5))
+        assertTrue("A range of Open to 23 must intersect one of 10 to Open at 10 to 23", rangeOpenTo23.intersection(range10ToOpen).equals(range10To23))
+        assertTrue("A range of Open to 23 must intersect one of Open to Open at Open to 23", rangeOpenTo23.intersection(rangeOpenToOpen).equals(rangeOpenTo23))
+
+
+        // MARK: Left-open range A:
+
+        assertTrue("A range of Open to 5 must intersect one of only 5 at 5 only", rangeOpenTo5.intersection(rangeOnly5).equals(rangeOnly5))
+        assertTrue("A range of Open to 5 must not intersect one of only 10", rangeOpenTo5.intersection(rangeOnly10).isEmpty)
+        assertTrue("A range of Open to 5 must intersect one of 5 to 17 at 5 only", rangeOpenTo5.intersection(range5To17).equals(rangeOnly5))
+        assertTrue("A range of Open to 5 must not intersect one of 10 to 23", rangeOpenTo5.intersection(range10To23).isEmpty)
+        assertTrue("A range of Open to 5 must not intersect one of 17 to Open", rangeOpenTo5.intersection(range17ToOpen).isEmpty)
+        assertTrue("A range of Open to 5 must intersect one of Open to 23 at Open to 5", rangeOpenTo5.intersection(rangeOpenTo23).equals(rangeOpenTo5))
+        assertTrue("A range of Open to 5 must intersect one of Open to 5 completely", rangeOpenTo5.intersection(rangeOpenTo5).equals(rangeOpenTo5))
+        assertTrue("A range of Open to 5 must not intersect one of 10 to Open", rangeOpenTo5.intersection(range10ToOpen).isEmpty)
+        assertTrue("A range of Open to 5 must intersect one of Open to Open at Open to 5", rangeOpenTo5.intersection(rangeOpenToOpen).equals(rangeOpenTo5))
+
+
+        // MARK: Right-open range B:
+
+        assertTrue("A range of 10 to Open must not intersect one of only 5", range10ToOpen.intersection(rangeOnly5).isEmpty)
+        assertTrue("A range of 10 to Open must intersect one of only 10 at 10 only", range10ToOpen.intersection(rangeOnly10).equals(rangeOnly10))
+        assertTrue("A range of 10 to Open must intersect one of 5 to 17 at 10 to 17", range10ToOpen.intersection(range5To17).equals(range10To17))
+        assertTrue("A range of 10 to Open must intersect one of 10 to 23 at 10 to 23", range10ToOpen.intersection(range10To23).equals(range10To23))
+        assertTrue("A range of 10 to Open must intersect one of 17 to Open at 17 to Open", range10ToOpen.intersection(range17ToOpen).equals(range17ToOpen))
+        assertTrue("A range of 10 to Open must intersect one of Open to 23 at 10 to 23", range10ToOpen.intersection(rangeOpenTo23).equals(range10To23))
+        assertTrue("A range of 10 to Open must not intersect one of Open to 5", range10ToOpen.intersection(rangeOpenTo5).isEmpty)
+        assertTrue("A range of 10 to Open must intersect one of 10 to Open completely", range10ToOpen.intersection(range10ToOpen).equals(range10ToOpen))
+        assertTrue("A range of 10 to Open must intersect one of Open to Open at 10 to Open", range10ToOpen.intersection(rangeOpenToOpen).equals(range10ToOpen))
+
+
+        // MARK: Infinite range:
+
+        assertTrue("A range of Open to Open must intersect one of only 5 at only 5", rangeOpenToOpen.intersection(rangeOnly5).equals(rangeOnly5))
+        assertTrue("A range of Open to Open must intersect one of only 10 at only 10", rangeOpenToOpen.intersection(rangeOnly10).equals(rangeOnly10))
+        assertTrue("A range of Open to Open must intersect one of 5 to 17 at 5 to 17", rangeOpenToOpen.intersection(range5To17).equals(range5To17))
+        assertTrue("A range of Open to Open must intersect one of 10 to 23 at 10 to 23", rangeOpenToOpen.intersection(range10To23).equals(range10To23))
+        assertTrue("A range of Open to Open must intersect one of 17 to Open at 17 to Open", rangeOpenToOpen.intersection(range17ToOpen).equals(range17ToOpen))
+        assertTrue("A range of Open to Open must intersect one of Open to 23 at Open to 23", rangeOpenToOpen.intersection(rangeOpenTo23).equals(rangeOpenTo23))
+        assertTrue("A range of Open to Open must intersect one of Open to 5 at Open to 5", rangeOpenToOpen.intersection(rangeOpenTo5).equals(rangeOpenTo5))
+        assertTrue("A range of Open to Open must intersect one of 10 to Open at 10 to Open", rangeOpenToOpen.intersection(range10ToOpen).equals(range10ToOpen))
+        assertTrue("A range of Open to Open must intersect one of Open to Open completely", rangeOpenToOpen.intersection(rangeOpenToOpen).equals(rangeOpenToOpen))
+
+
+        var temporaryHoldingVariable: Any? = null
+        val closedIntersectClosed = measureTimeInterval(trials = intersectionTrialCount, mode = total) {
+            temporaryHoldingVariable = range5To17.intersection(range10To23)
+        }
+        println("It took $closedIntersectClosed seconds to calculate $intersectionTrialCount times that $range5To17 ∩ $range10To23 = $temporaryHoldingVariable")
+
+        val closedIntersectOpen = measureTimeInterval(trials = intersectionTrialCount, mode = total) {
+            temporaryHoldingVariable = range5To17.intersection(range10ToOpen)
+        }
+        println("It took $closedIntersectOpen seconds to calculate $intersectionTrialCount times that $range5To17 ∩ $range10ToOpen = $temporaryHoldingVariable")
+
+        val closedIntersectPoint = measureTimeInterval(trials = intersectionTrialCount, mode = total) {
+            temporaryHoldingVariable = range5To17.intersection(rangeOnly10)
+        }
+        println("It took $closedIntersectPoint seconds to calculate $intersectionTrialCount times that $range5To17 ∩ $rangeOnly10 = $temporaryHoldingVariable")
+    }
+
+    @Test
+    fun containsCompletely() {
     }
 
 }

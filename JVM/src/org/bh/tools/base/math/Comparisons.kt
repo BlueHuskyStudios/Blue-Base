@@ -225,6 +225,28 @@ fun Integer.equals(rhs: Integer, tolerance: Integer = defaultIntegerCalculationT
 
 
 /**
+ * Determines whether this fraction is less than or equal to the other, within a given tolerance.
+ *
+ * @param rhs       The other fraction to compare to this one
+ * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
+ *                  Defaults to [defaultFractionCalculationTolerance]
+ * @return `true` iff this value and the other are equal within the given tolerance
+ */
+fun Fraction.isLessThanOrEqualTo(rhs: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean = (this + tolerance) <= rhs
+
+
+/**
+ * Determines whether this fraction is greater than or equal to the other, within a given tolerance.
+ *
+ * @param rhs       The other fraction to compare to this one
+ * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
+ *                  Defaults to [defaultFractionCalculationTolerance]
+ * @return `true` iff this value and the other are equal within the given tolerance
+ */
+fun Fraction.isGreaterThanOrEqualTo(rhs: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean = (this - tolerance) >= rhs
+
+
+/**
  * Determines whether this integer is between `a` and `b`, within the given tolerance
  */
 fun Integer.isBetween(a: Integer, b: Integer, tolerance: Integer = defaultIntegerCalculationTolerance): Boolean {

@@ -2,6 +2,7 @@
 
 package org.bh.tools.base.struct
 
+import org.bh.tools.base.abstraction.Fraction
 import org.bh.tools.base.collections.Index
 import org.bh.tools.base.math.*
 
@@ -26,20 +27,20 @@ open class OpenRange<NumberType: Comparable<NumberType>>
      */
     (startInclusive: NumberType?, endInclusive: NumberType?) {
 
-    /**
-     * The first value of this range. `null` indicates that it is open and has no defined start.
-     */
+    /** The first value of this range. `null` indicates that it is open and has no defined start. */
     val startInclusive: NumberType?
 
-    /**
-     * The last value of this range. `null` indicates that it is open and has no defined end.
-     */
+    /** The last value of this range. `null` indicates that it is open and has no defined end. */
     val endInclusive: NumberType?
+
+    /** Indicates whether this range is empty; there is no stored value; no start or end. */
+    open val isEmpty = false
 
     private val isLeftOpen = startInclusive == null
     private val isRightOpen = endInclusive == null
 
     init {
+        @Suppress("LeakingThis")
         if (startInclusive != null && endInclusive != null && startInclusive > endInclusive) {
             this.startInclusive = endInclusive
             this.endInclusive = startInclusive
@@ -62,6 +63,9 @@ open class OpenRange<NumberType: Comparable<NumberType>>
 
     /** Indicates whether this range extends from -∞ to +∞ */
     open val isInfinite: Boolean by lazy { isStartOpen && isEndOpen }
+
+    /** Indicates whether this is just a single value; start and end are equal and it is not open */
+    open val isPoint: Boolean by lazy { !isOpen && startInclusive == endInclusive }
 
 
     /**
@@ -88,7 +92,31 @@ open class OpenRange<NumberType: Comparable<NumberType>>
     }
 
 
-    fun intersects(other: OpenRange<NumberType>): Boolean {
+//    fun intersects(other: OpenRange<NumberType>): Boolean {
+//        if (isInfinite) { // (-∞, ∞) ∩ (?, ?)
+//            return true
+//        }
+///*                   */ when (startInclusive) {
+///* (-∞, ?) ∩ ( ?, ?) */     null -> when (other.startInclusive) {
+///* (-∞, ?) ∩ (-∞, ?) */         null -> return true
+///* (-∞, ?) ∩ ( #, ?) */         else -> when (endInclusive) {
+///* (-∞, ∞) ∩ ( #, ?) */             null -> when (other.endInclusive) {
+///* (-∞, ∞) ∩ ( #, ∞) */                 null -> return true
+///* (-∞, ∞) ∩ ( #, #) */                 else -> return true
+///*                   */             }
+///* (-∞, ∞) ∩ (-∞, #) */             else -> when (other.endInclusive) {
+///* (-∞, #) ∩ (-∞, #) */                 null -> return true
+///* (-∞, #) ∩ ( #, #) */                 else -> return endInclusive < other.startInclusive
+///*                   */             }
+///*                   */         }
+///*                   */     }
+///* ( #, ?) ∩ ( ?, ?) */     else -> when (other.startInclusive) {
+///*                   */     }
+///*                   */ }
+//    }
+
+
+    open fun intersects(other: OpenRange<NumberType>): Boolean {
         if (startInclusive == null) { // (-∞, ?) ∩ ( ?, ?)
             if (endInclusive == null) { // (-∞, ∞) ∩ ( ?, ?)
                 return true
@@ -134,10 +162,7 @@ open class OpenRange<NumberType: Comparable<NumberType>>
     }
 
 
-    fun union(other: OpenRange<NumberType>): OpenRange<NumberType> {
-        if (!intersects(other)) {
-            return emptyRange()
-        }
+    open fun union(other: OpenRange<NumberType>): OpenRange<NumberType> {
         val newStart: NumberType?
             = if (this.startInclusive != null && other.startInclusive != null) min(this.startInclusive, other.startInclusive)
             else null
@@ -146,18 +171,36 @@ open class OpenRange<NumberType: Comparable<NumberType>>
             = if (this.endInclusive != null && other.endInclusive != null) max(this.endInclusive, other.endInclusive)
             else null
 
-        return OpenRange(newStart, newEnd)
+        return OpenRange(startInclusive = newStart, endInclusive = newEnd)
     }
+
+
+    open fun intersection(other: OpenRange<NumberType>): OpenRange<NumberType> {
+        if (!intersects(other)) {
+            return empty()
+        }
+
+        val newStart: NumberType?
+            = if (this.startInclusive != null && other.startInclusive != null) max(this.startInclusive, other.startInclusive)
+            else this.startInclusive ?: other.startInclusive
+
+        val newEnd: NumberType?
+            = if (this.endInclusive != null && other.endInclusive != null) min(this.endInclusive, other.endInclusive)
+            else this.endInclusive ?: other.endInclusive
+
+        return OpenRange(startInclusive = newStart, endInclusive = newEnd)
+    }
+
 
     fun containsCompletely(other: OpenRange<NumberType>): Boolean = when {
         isLeftOpen -> when {
             isRightOpen -> true
             other.isRightOpen -> false
-            else -> other.endInclusive!! <= this.endInclusive!!
+            else -> other.endInclusive!! <= this.endInclusive!! // FIXME: Possible NPE
         }
         isRightOpen -> when {
             other.isLeftOpen -> false
-            else -> other.startInclusive!! >= this.startInclusive!!
+            else -> other.startInclusive!! >= this.startInclusive!! // FIXME: Possible NPE
         }
         else -> when {
             other.isLeftOpen || other.isRightOpen -> false
@@ -218,43 +261,323 @@ open class OpenRange<NumberType: Comparable<NumberType>>
 
 
     companion object {
-        val open = null
+        /** A special value that represents an open start of an open range */
+        inline val openStart get() = openEnd
+        /** A special value that represents an open end of an open range */
+        inline val openEnd get() = null
+
+        /** A range that covers all values */
+        fun<NumberType: Comparable<NumberType>> infiniteRange(): OpenRange<NumberType> = OpenRange(openStart, openEnd)
+
+        /** A special range that does not an can not contain any value */
+        fun<NumberType: Comparable<NumberType>> empty(): OpenRange<NumberType> = _EmptyOpenRange()
     }
 }
 
-val<NumberType: Comparable<NumberType>> OpenRange<NumberType>.start: NumberType? get() = startInclusive
-val<NumberType: Comparable<NumberType>> OpenRange<NumberType>.end: NumberType? get() = endInclusive
+/** The inclusive start of this range */
+inline val<NumberType: Comparable<NumberType>> OpenRange<NumberType>.start: NumberType? get() = startInclusive
+/** The inclusive end of this range */
+inline val<NumberType: Comparable<NumberType>> OpenRange<NumberType>.end: NumberType? get() = endInclusive
 
 
+
+abstract class ComputableOpenRange<NumberType: Comparable<NumberType>>(startInclusive: NumberType?, endInclusive: NumberType?) : OpenRange<NumberType>(startInclusive, endInclusive) {
+
+
+
+    /** Indicates whether this is just a single value; start and end are equal within the given `tolerange` and it is not open */
+    abstract fun isPoint(tolerance: NumberType): Boolean
+
+    /** Indicates whether this is just a single value; start and end are equal and it is not open */
+    override abstract val isPoint: Boolean
+
+    /**
+     * Calls [equals(other, tolerance)] with a default tolerance
+     */
+    abstract fun equals(other: ComputableOpenRange<NumberType>): Boolean
+
+
+    /**
+     * Determines whether this range is equal to the other, within a given tolerance
+     *
+     * @param other     The other range which might be equal to this one
+     * @param tolerance The distance by which this range and the other one can be off while still considered equal.
+     *
+     * @return `true` iff this and the other ranges are said to be equal
+     */
+    fun equals(other: ComputableOpenRange<NumberType>, tolerance: NumberType): Boolean {
+        val startEquals = when (startInclusive) {
+            null -> other.startInclusive == null
+            else -> when (other.startInclusive) {
+                null -> return false
+                else -> isEqual(startInclusive, other.startInclusive, tolerance = tolerance)
+            }
+        }
+
+        if (!startEquals) {
+            return false
+        }
+
+        val endEquals = when (endInclusive) {
+            null -> other.endInclusive == null
+            else -> when (other.endInclusive) {
+                null -> return false
+                else -> isEqual(endInclusive, other.endInclusive, tolerance = tolerance)
+            }
+        }
+
+        return endEquals
+    }
+
+
+    /**
+     * Calls [intersects(other, tolerance)] with a default tolerance
+     */
+    abstract fun intersects(other: ComputableOpenRange<NumberType>): Boolean
+
+
+    /**
+     * Determines whether this range intersects the other, within a given tolerance
+     *
+     * @param other     The other range which might intersect this one
+     * @param tolerance The distance by which this range and the other one can be off while still considered intersecting.
+     *
+     * @return `true` iff this and the other ranges are said to intersect
+     */
+    open fun intersects(other: ComputableOpenRange<NumberType>, tolerance: NumberType): Boolean {
+        if (startInclusive == null) { // (-∞, ?) ∩ ( ?, ?)
+            if (endInclusive == null) { // (-∞, ∞) ∩ ( ?, ?)
+                return true
+            } else { // (-∞, #) ∩ ( ?, ?)
+                if (other.startInclusive == null) { // (-∞, #) ∩ (-∞, ?)
+                    return true
+                } else { // (-∞, #) ∩ ( #, ?)
+                    return isLessThanOrEqual(other.startInclusive, endInclusive, tolerance = tolerance)
+                }
+            }
+        } else { // ( #, ?) ∩ ( ?, ?)
+            if (endInclusive == null) { // ( #, ∞) ∩ ( ?, ?)
+                if (other.startInclusive == null) { // ( #, ∞) ∩ (-∞, ?)
+                    if (other.endInclusive == null)  { // ( #, ∞) ∩ (-∞, ∞)
+                        return true
+                    } else { // ( #, ∞) ∩ (-∞, #)
+                        return isLessThanOrEqual(startInclusive, other.endInclusive, tolerance = tolerance)
+                    }
+                } else { // ( #, ∞) ∩ ( #, ?)
+                    if (other.endInclusive == null)  { // ( #, ∞) ∩ ( #, ∞)
+                        return true
+                    } else { // ( #, ∞) ∩ ( #, #)
+                        return isLessThanOrEqual(startInclusive, other.endInclusive, tolerance = tolerance)
+                    }
+                }
+            } else { // ( #, #) ∩ ( ?, ?)
+                if (other.startInclusive == null) { // ( #, #) ∩ (-∞, ?)
+                    if (other.endInclusive == null) { // ( #, #) ∩ (-∞, ∞)
+                        return true
+                    } else { // ( #, #) ∩ (-∞, #)
+                        return isLessThanOrEqual(startInclusive, other.endInclusive, tolerance = tolerance)
+                    }
+                } else { // ( #, #) ∩ ( #, ?)
+                    if (other.endInclusive == null) { // ( #, #) ∩ ( #, ∞)
+                        return isLessThanOrEqual(other.startInclusive, endInclusive, tolerance = tolerance)
+                    } else { // ( #, #) ∩ ( #, #)
+                        return isLessThanOrEqual(startInclusive, other.endInclusive, tolerance = tolerance)
+                                && isLessThanOrEqual(other.startInclusive, endInclusive, tolerance = tolerance)
+                    }
+                }
+            }
+        }
+    }
+
+    abstract fun intersection(other: ComputableOpenRange<NumberType>): ComputableOpenRange<NumberType>
+
+
+    /**
+     * Only used internally: Determines whether `lhs` equals `rhs` within the given `tolerance`
+     */
+    abstract protected fun isEqual(lhs: NumberType, rhs: NumberType, tolerance: NumberType): Boolean
+
+
+    /**
+     * Only used internally: Determines whether `lhs` is less than or equal to `rhs` within the given `tolerance`
+     */
+    abstract protected fun isLessThanOrEqual(lhs: NumberType, rhs: NumberType, tolerance: NumberType): Boolean
+}
+
+
+/**
+ * A default implementation of [ComputableOpenRange] which uses [Fraction]s
+ */
+open class FractionOpenRange(startInclusive: Fraction?, endInclusive: Fraction?) : ComputableOpenRange<Fraction>(startInclusive, endInclusive) {
+
+    constructor(onlyValue: Fraction): this(startInclusive = onlyValue, endInclusive = onlyValue)
+
+
+    override val isPoint: Boolean by lazy { isPoint(tolerance = defaultFractionCalculationTolerance) }
+
+    override fun isPoint(tolerance: Fraction): Boolean {
+        return startInclusive != null && endInclusive != null && startInclusive.equals(endInclusive, tolerance = tolerance)
+    }
+
+
+    override fun equals(other: ComputableOpenRange<Fraction>): Boolean
+            = equals(other, defaultFractionCalculationTolerance)
+
+
+    override fun isEqual(lhs: Fraction, rhs: Fraction, tolerance: Fraction): Boolean
+            = lhs.equals(rhs, tolerance = tolerance)
+
+
+    override fun intersects(other: ComputableOpenRange<Fraction>): Boolean
+            = intersects(other, tolerance = defaultFractionCalculationTolerance)
+
+
+    override fun isLessThanOrEqual(lhs: Fraction, rhs: Fraction, tolerance: Fraction): Boolean
+            = lhs.isLessThanOrEqualTo(rhs, tolerance = tolerance)
+
+
+    override fun intersection(other: ComputableOpenRange<Fraction>): FractionOpenRange
+            = FractionOpenRange.from(super.intersection(other))
+
+
+    companion object {
+        fun from(other: OpenRange<Fraction>): FractionOpenRange {
+            if (other.isEmpty) {
+                return empty()
+            } else {
+                return FractionOpenRange(startInclusive = other.startInclusive, endInclusive = other.endInclusive)
+            }
+        }
+
+
+        /**
+         * A special type of [FractionOpenRange] that contains no value, cannot intersect anything, is not open, is
+         * not a point, etc.
+         *
+         * This is considered equal to any open range of the same type that is also empty.
+         *
+         * A union of this and another range results in the other range exactly.
+         */
+        fun empty(): FractionOpenRange = empty
+
+
+        /**
+         * A special type of [FractionOpenRange] that contains no value, cannot intersect anything, is not open, is
+         * not a point, etc.
+         *
+         * This is considered equal to any open range of the same type that is also empty.
+         *
+         * A union of this and another range results in the other range exactly.
+         */
+        object empty: FractionOpenRange(null, null) {
+            @Suppress("OVERRIDE_BY_INLINE")
+            override inline val isOpen: Boolean get() = false
+
+            @Suppress("OVERRIDE_BY_INLINE")
+            override inline val isEmpty: Boolean get() = true
+
+            override fun contains(value: Fraction): Boolean = false
+
+            override fun intersects(other: OpenRange<Fraction>): Boolean = false
+
+            override fun intersects(other: ComputableOpenRange<Fraction>): Boolean = false
+
+            override fun intersects(other: ComputableOpenRange<Fraction>, tolerance: Fraction): Boolean = false
+
+            override fun intersection(other: OpenRange<Fraction>): OpenRange<Fraction> = this
+
+            override fun intersection(other: ComputableOpenRange<Fraction>): FractionOpenRange = this
+
+            @Suppress("OVERRIDE_BY_INLINE")
+            override inline val isStartOpen: Boolean get() = false
+
+            @Suppress("OVERRIDE_BY_INLINE")
+            override inline val isEndOpen: Boolean get() = false
+
+            override val isInfinite: Boolean get() = false
+
+            override val isPoint: Boolean get() = false
+
+            /** @return `true` iff `other` is an empty open range of any type */
+            override fun equals(other: Any?): Boolean = other is OpenRange<*> && other.isEmpty
+
+            /** @return `other.isEmpty` */
+            override fun equals(other: ComputableOpenRange<Fraction>): Boolean = other.isEmpty
+
+            override fun hashCode(): Int = 1
+
+            override fun isPoint(tolerance: Fraction): Boolean = false
+
+            override fun toString(): String = "(empty)"
+
+            override fun union(other: OpenRange<Fraction>): OpenRange<Fraction> = other
+        }
+    }
+}
+
+
+
+
+// MARK: - ClosedRange extensions
 
 typealias IndexRange = ClosedRange<Index>
 
-val<NumberType: Comparable<NumberType>> ClosedRange<NumberType>.location: NumberType get() = this.start
 
-val IndexRange.size: Int get() = this.endInclusive - this.start
-val IndexRange.length: Int get() = this.size
-val IndexRange.count: Int get() = this.size
 
-val<NumberType: Comparable<NumberType>> ClosedRange<NumberType>.min: NumberType get() = this.start
-val<NumberType: Comparable<NumberType>> ClosedRange<NumberType>.max: NumberType get() = this.endInclusive
+/** The initial point of this range */
+inline val<NumberType: Comparable<NumberType>> ClosedRange<NumberType>.location: NumberType get() = this.start
+
+/** The distance between [start][ClosedRange.start] and [endInclusive][ClosedRange.endInclusive] */
+inline val IndexRange.size: Int get() = this.endInclusive - this.start
+/** Semantic alias for [size] */
+inline val IndexRange.length: Int get() = this.size
+/** Semantic alias for [size] */
+inline val IndexRange.count: Int get() = this.size
+
+/** The lowest value in a closed range */
+inline val<NumberType: Comparable<NumberType>> ClosedRange<NumberType>.min: NumberType get() = this.start
+/** The highest value in a closed range */
+inline val<NumberType: Comparable<NumberType>> ClosedRange<NumberType>.max: NumberType get() = this.endInclusive
 
 fun<NumberType: Comparable<NumberType>> ClosedRange<NumberType>.containsCompletely(other: ClosedRange<NumberType>): Boolean
         = contains(other.start) && contains(other.endInclusive)
 
-fun<NumberType: Comparable<NumberType>> infiniteRange(): OpenRange<NumberType> = OpenRange(null, null)
-fun<NumberType: Comparable<NumberType>> emptyRange(): OpenRange<NumberType> = _EmptyOpenRange()
 
 fun<NumberType: Comparable<NumberType>> NumberType.isWithin(range: OpenRange<NumberType>): Boolean
         = range.contains(this)
 
-/**
- * A range which contains nothing, has neither a start nor an end, and is not open.
- */
-private class _EmptyOpenRange<NumberType: Comparable<NumberType>> : OpenRange<NumberType>(null, null) {
-    override val isOpen: Boolean get() = false
-    override fun contains(value: NumberType): Boolean {
-        return false
-    }
+/** A range which contains nothing, has neither a start nor an end, and is not open. */
+private class _EmptyOpenRange<NumberType: Comparable<NumberType>> : OpenRange<NumberType>(null, null) { // TODO: Test to make sure this can't break
+    @Suppress("OVERRIDE_BY_INLINE")
+    override inline val isOpen: Boolean get() = false
+
+    @Suppress("OVERRIDE_BY_INLINE")
+    override inline val isEmpty: Boolean get() = true
+
+    override fun contains(value: NumberType): Boolean = false
+
+    override fun intersects(other: OpenRange<NumberType>): Boolean = false
+
+    override fun intersection(other: OpenRange<NumberType>): OpenRange<NumberType> = this
+
+    @Suppress("OVERRIDE_BY_INLINE")
+    override inline val isStartOpen: Boolean get() = false
+
+    @Suppress("OVERRIDE_BY_INLINE")
+    override inline val isEndOpen: Boolean get() = false
+
+    override val isInfinite: Boolean get() = false
+
+    override val isPoint: Boolean get() = false
+
+    /** @return `true` iff `other` is an empty open range of any type */
+    override fun equals(other: Any?): Boolean = other is OpenRange<*> && other.isEmpty
+
+    override fun hashCode(): Int = 0
+
+    override fun toString(): String = "(empty)"
+
+    override fun union(other: OpenRange<NumberType>): OpenRange<NumberType> = other
 }
 
 
