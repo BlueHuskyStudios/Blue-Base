@@ -19,9 +19,13 @@ import java.lang.Math.abs
  */
 open class LineSegment<out NumberType : Number, out PointType : Point<NumberType>>(open val start: PointType, open val end: PointType) : Cloneable {
 
+    /** The first point's X coordinate */
     inline val x1 get() = start.x
+    /** The first point's Y coordinate */
     inline val y1 get() = start.y
+    /** The second point's X coordinate */
     inline val x2 get() = end.x
+    /** The second point's Y coordinate */
     inline val y2 get() = end.y
 
     override fun toString(): String {
@@ -280,8 +284,8 @@ sealed class IntersectionDescription {
     /**
      * One of the left line segment's vertices touches the right one's edge
      *
-     * @param leftVertexLocation The location of the touching vertex
-     * @param isLeftStartVertex `true` iff the left line segment's touching vertex is its starting vertex
+     * @property leftVertexLocation The location of the touching vertex
+     * @property isLeftStartVertex `true` iff the left line segment's touching vertex is its starting vertex
      */
     class leftVertexTouchesRightEdge<out NumberType : Number>(val leftVertexLocation: Point<NumberType>, val isLeftStartVertex: Boolean) : IntersectionDescription() {
         override fun equals(other: Any?): Boolean {

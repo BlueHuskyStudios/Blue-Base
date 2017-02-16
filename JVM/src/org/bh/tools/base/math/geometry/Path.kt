@@ -8,6 +8,8 @@ import org.bh.tools.base.collections.*
 import org.bh.tools.base.math.Comparator
 import org.bh.tools.base.math.ComparisonResult
 import org.bh.tools.base.math.geometry.IntegerPath.Companion.pathFromGenericSegments
+import org.bh.tools.base.math.geometry.IntersectionDescription.*
+import org.bh.tools.base.math.geometry.OtherSegmentRelationshipToCurrent.*
 import java.util.*
 import java.util.Queue
 
@@ -37,10 +39,58 @@ typealias AnyPath = Path<*, *, *>
 
 
 
+/**
+ * A function used to compare each and every segment against each and every other segment
+ */
+typealias EachSegmentComparator<SegmentType> = (currentSegment: SegmentType, otherSegment: SegmentType, relationship: OtherSegmentRelationshipToCurrent) -> Boolean
+
+
+
+/** Describes the relationship between two segments of a path, from the perspective of one */
+enum class OtherSegmentRelationshipToCurrent {
+    /**
+     * The other segment is the left neighbor of this one.
+     * This means its end vertex should touch current's start vertex.
+     */
+    otherIsLeftNeighborOfCurrent,
+
+    /**
+     * The other segment is actually the current segment. They are the same object in memory.
+     */
+    otherIsCurrent,
+
+    /**
+     * The other segment is the right neighbor of this one.
+     * This means its start vertex should touch current's end vertex.
+     */
+    otherIsRightNeighborOfCurrent,
+
+    /**
+     * The other segment is neither a neighbor of nor the same as the current one.
+     */
+    otherDoesNotTouchCurrent;
+
+    companion object {
+        @JvmStatic
+        fun from(currentSegmentIndex: Index, otherSegmentIndex: Index): OtherSegmentRelationshipToCurrent {
+            return when (currentSegmentIndex - otherSegmentIndex) {
+                -1 -> otherIsLeftNeighborOfCurrent
+                0 -> otherIsCurrent
+                1 -> otherIsRightNeighborOfCurrent
+                else -> otherDoesNotTouchCurrent
+            }
+        }
+    }
+}
+
+
+
 interface ComputablePath
     <NumberType, PointType, out SegmentType>
     : Path<NumberType, PointType, SegmentType>
     where NumberType: Number, PointType: ComputablePoint<NumberType>, SegmentType: ComputableLineSegment<NumberType, PointType> {
+
+
     /**
      * Indicates whether this path touches or crosses over itself at any point
      */
@@ -56,10 +106,53 @@ interface ComputablePath
      */
     val endPoint: PointType?
 
+
     /**
      * Appends the given point to the end of the path
      */
     operator fun plus(rhs: PointType): ComputablePath<NumberType, PointType, SegmentType>
+
+
+    fun anyTwoSegments(comparator: EachSegmentComparator<ComputableLineSegment<NumberType, PointType>>): Boolean {
+        if (segments.length < 2) {
+            return false
+        }
+
+        for (currentSegmentIndex in (0 until segments.length)) {
+            val currentSegment = segments[currentSegmentIndex]
+            for (otherSegmentIndex in (0 until segments.length)) {
+                val otherSegment = segments[otherSegmentIndex]
+                if (comparator(currentSegment, otherSegment, OtherSegmentRelationshipToCurrent.from(currentSegmentIndex, otherSegmentIndex))) {
+                    return true
+                }
+            }
+        }
+
+        return false
+    }
+
+
+
+    companion object {
+        /**
+         * Determines if the two given segments intersect. Vertices touching doesn't count.
+         */
+        fun <NumberType, PointType, SegmentType>
+            doSegmentsIntersect(left: SegmentType, right: SegmentType)
+            : Boolean
+            where NumberType : Number, PointType : ComputablePoint<NumberType>, SegmentType : ComputableLineSegment<NumberType, PointType>
+            = when (left.describeIntersection(right)) {
+                is IntersectionDescription.none,
+                is IntersectionDescription.leftVertexTouchesRightVertex<*>
+                    -> false
+
+                is IntersectionDescription.completeOverlap,
+                is IntersectionDescription.leftVertexTouchesRightEdge<*>,
+                is IntersectionDescription.rightVertexTouchesLeftEdge<*>,
+                is IntersectionDescription.edgesCross<*>
+                    -> true
+            }
+    }
 }
 typealias AnyComputablePath = ComputablePath<*, *, *>
 
@@ -75,8 +168,8 @@ open class IntegerPath(override val segments: List<IntegerLineSegment> = listOf(
                 return listOf()
             }
 
-            val allButFirstPoint = points.subList(1, toIndex = points.size) // toIndex is exclusive
-            val segments = allButFirstPoint.reduceTo(mutableListOf(IntegerLineSegment(start = points[0].integerValue, end = points[1].integerValue))) {
+            val allButFirstTwoPoints = points.subList(fromIndex = 2, toIndex = points.size) // toIndex is exclusive
+            val segments = allButFirstTwoPoints.reduceTo(mutableListOf(IntegerLineSegment(start = points[0].integerValue, end = points[1].integerValue))) {
                 previousSegments: MutableList<IntegerLineSegment>,
                 currentPoint: ComputablePoint<*> ->
 
@@ -129,26 +222,65 @@ open class IntegerPath(override val segments: List<IntegerLineSegment> = listOf(
 
 
     fun findIsClosed(): Boolean {
-        return segments.firstOrNullComparingPairs { (previous, current) ->
+        return null != segments.firstOrNullComparingPairs { (previous, current) ->
             /*return*/ previous.end != current.start
-        } != null
+        }
     }
 
 
     override val isClosed: Boolean by lazy { findIsClosed() }
 
 
-    override val intersectsSelf: Boolean get() = null != this.points.firstOrNullComparingTriads { (left, current, right) ->
-        return@firstOrNullComparingTriads when (IntegerLineSegment(left, current).describeIntersection(IntegerLineSegment(current, right))) {
-            is IntersectionDescription.none -> false
-            else -> true
+    /**
+     * Indicates whether any two segments in this path intersect.
+     *
+     * The following are **not** considered to be intersections:
+     *  - The two segments in no way intersect
+     *  - The two compared segments are in fact the same segment in memory
+     *  - The two compared segments are neighbors and one vertex of one touches one opposing vertex of the other (start touches end or vice versa)
+     *
+     *  All other forms of intersection return `true` immediately
+     */
+    override val intersectsSelf: Boolean by lazy {
+        /*return*/ anyTwoSegments { currentSegment, otherSegment, relationship ->
+            /*return*/ when (relationship) {
+                otherIsCurrent -> /*return*/ false // Don't evaluate current against itself
+
+                otherIsLeftNeighborOfCurrent,
+                otherIsRightNeighborOfCurrent -> {
+                    val intersection = currentSegment.describeIntersection(otherSegment)
+                    when (intersection) {
+                        is none -> /*return*/ false
+
+                        // Neighbors touch vertices? If they're opposing (start touches end or vice versa), that's normal.
+                        is leftVertexTouchesRightVertex<*> -> /*return*/ intersection.isLeftStartVertex != intersection.isRightStartVertex
+
+                        is leftVertexTouchesRightEdge<*>,
+                        is rightVertexTouchesLeftEdge<*>,
+                        is edgesCross<*>,
+                        is completeOverlap -> /*return*/ true
+                    }
+                }
+
+                otherDoesNotTouchCurrent -> {
+                    val intersection = currentSegment.describeIntersection(otherSegment)
+                    when (intersection) {
+                        is none -> /*return*/ false
+
+                        is leftVertexTouchesRightVertex<*>,
+                        is leftVertexTouchesRightEdge<*>,
+                        is rightVertexTouchesLeftEdge<*>,
+                        is edgesCross<*>,
+                        is completeOverlap -> /*return*/ true
+                    }
+                }
+            }
         }
     }
 
 
-    override operator fun plus(rhs: IntegerPoint): IntegerPath {
-        return IntegerPath(segments = segments + IntegerLineSegment(start = segments.last.end, end = rhs))
-    }
+    override operator fun plus(rhs: IntegerPoint): IntegerPath
+            = IntegerPath(segments = segments + IntegerLineSegment(start = segments.last.end, end = rhs))
 }
 typealias Int64Path = IntegerPath
 typealias IntPath = IntegerPath

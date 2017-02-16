@@ -1,4 +1,9 @@
+@file:Suppress("unused")
+
 package org.bh.tools.base.math
+
+import org.bh.tools.base.abstraction.Fraction
+import org.bh.tools.base.abstraction.Integer
 
 /**
  * Averager, made for BHToolbox, is made by and copyrighted to Blue Husky Programming, ©2017 BH-0-PD.
@@ -11,17 +16,17 @@ package org.bh.tools.base.math
  * @license BH-0-PD to Blue Husky Programming, ©2017
  * @author Kyli Rouge of Blue Husky Studios
  * @since 2017-01-08
- * @version 1.0.0
+ * @version 1.1.0
  */
 class Averager : Number {
     /** Holds the current average. If startingNumber is specified, it is used. Else, this is 0  */
-    private var currentAverage: Double = 0.0
+    private var currentAverage: Fraction = 0.0
 
     /**
      * Remembers the number of times we've averaged this, to ensure proportional division. If startingNumber is specified, this
      * is 1. Else, it is 0.
      */
-    private var timesAveraged: Long = 0
+    private var timesAveraged: Integer = 0
 
     /**
      * Creates a new Averager. Of course, the current average and number of times averaged are both set to 0
@@ -36,7 +41,7 @@ class Averager : Number {
      *
      * @param startingNumber the number to start with.
      */
-    constructor(startingNumber: Double) {
+    constructor(startingNumber: Fraction) {
         currentAverage = startingNumber
         timesAveraged = 1
     }
@@ -44,7 +49,7 @@ class Averager : Number {
     /**
      * Adds the given numbers to the average. Any number of arguments can be given.
      *
-     * @param d one or more numbers to average.
+     * @param newValues one or more numbers to average.
      *
      * @return a copy of this, so calls can be chained. For example: `averager.average(arrayOfNumbers).average(123, 654);`
      *
@@ -52,16 +57,15 @@ class Averager : Number {
      * @since 2017-01-08
      * @version 1.0.0
      */
-    @Strictfp fun average(vararg d: Double): Averager {
-        for (e in d)
-            average(e)
+    @Strictfp fun average(vararg newValues: Fraction): Averager {
+        newValues.forEach { average(it) }
         return this
     }
 
     /**
      * Adds the given number to the average.
      *
-     * @param d one number to average.
+     * @param newValue one number to average.
      *
      * @return a copy of this, so calls can be chained. For example: `averager.average(myNumber).average(123);`
      *
@@ -69,8 +73,8 @@ class Averager : Number {
      * @since 2017-01-08
      * @version 1.0.0
      */
-    @Strictfp fun average(d: Double): Averager {
-        currentAverage = (currentAverage * timesAveraged + d) / ++timesAveraged
+    @Strictfp fun average(newValue: Fraction): Averager {
+        currentAverage = (currentAverage * timesAveraged + newValue) / ++timesAveraged
         return this
     }
 
@@ -83,9 +87,7 @@ class Averager : Number {
      * @since 2017-01-08
      * @version 1.0.0
      */
-    fun current(): Double {
-        return currentAverage
-    }
+    val current get() = currentAverage
 
     /**
      * Returns the number of times this has been averaged
@@ -96,9 +98,7 @@ class Averager : Number {
      * @since 2017-01-08
      * @version 1.0.0
      */
-    fun count(): Long {
-        return timesAveraged
-    }
+    val count get() = timesAveraged
 
     /**
      * Returns the number of times this has been averaged
@@ -115,6 +115,10 @@ class Averager : Number {
         return this
     }
 
+
+
+    // MARK: - Number conformance
+
     /**
      * @return the value of the current average, as an 8-bit integer.
      *
@@ -124,9 +128,7 @@ class Averager : Number {
      * @version 1.0.0
      */
     @Deprecated("This might be inaccurate. Use {@link #doubleValue()} instead.", ReplaceWith("toDouble()"))
-    override fun toByte(): Byte {
-        return toDouble().toByte()
-    }
+    override fun toByte(): Byte = toDouble().toByte()
 
     /**
      * @return the value of the current average, as a 16-bit integer.
@@ -137,9 +139,7 @@ class Averager : Number {
      * @version 1.0.0
      */
     @Deprecated("This might be inaccurate. Use {@link #doubleValue()} instead.", ReplaceWith("toDouble()"))
-    override fun toShort(): Short {
-        return toDouble().toShort()
-    }
+    override fun toShort(): Short = toDouble().toShort()
 
     /**
      * @return the value of the current average, as a 16-bit character.
@@ -150,9 +150,7 @@ class Averager : Number {
      * @version 1.0.0
      */
     @Deprecated("This might be inaccurate. Use {@link #doubleValue()} instead.", ReplaceWith("toDouble()"))
-    override fun toChar(): Char {
-        return toDouble().toChar()
-    }
+    override fun toChar(): Char = toDouble().toChar()
 
     /**
      * @return the value of the current average, as a 32-bit integer.
@@ -163,9 +161,7 @@ class Averager : Number {
      * @version 1.0.0
      */
     @Deprecated("This might be inaccurate. Use {@link #doubleValue()} instead.", ReplaceWith("toDouble()"))
-    override fun toInt(): Int {
-        return toDouble().toInt()
-    }
+    override fun toInt(): Int = toDouble().toInt()
 
     /**
      * @return the value of the current average, as a 64-bit integer.
@@ -176,9 +172,7 @@ class Averager : Number {
      * @version 1.0.0
      */
     @Deprecated("This might be inaccurate. Use {@link #doubleValue()} instead.", ReplaceWith("toDouble()"))
-    override fun toLong(): Long {
-        return toDouble().toLong()
-    }
+    override fun toLong(): Long = toDouble().toLong()
 
     /**
      * @return the value of the current average, as a 32-bit floating-point number.
@@ -189,9 +183,7 @@ class Averager : Number {
      * @version 1.0.0
      */
     @Deprecated("This might be inaccurate. Use {@link #doubleValue()} instead.", ReplaceWith("toDouble()"))
-    override fun toFloat(): Float {
-        return toDouble().toFloat()
-    }
+    override fun toFloat(): Float = toDouble().toFloat()
 
     /**
      * @return the value of the current average, as a 64-bit floating-point number.
@@ -200,7 +192,5 @@ class Averager : Number {
      * @since 2017-01-08
      * @version 1.0.0
      */
-    override fun toDouble(): Double {
-        return current()
-    }
+    override fun toDouble(): Double = current
 }
