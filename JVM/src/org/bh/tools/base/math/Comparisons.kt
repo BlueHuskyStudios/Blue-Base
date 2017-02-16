@@ -232,7 +232,7 @@ fun Integer.equals(rhs: Integer, tolerance: Integer = defaultIntegerCalculationT
  *                  Defaults to [defaultFractionCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
-fun Fraction.isLessThanOrEqualTo(rhs: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean = (this + tolerance) <= rhs
+fun Fraction.isLessThanOrEqualTo(rhs: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean = (this - tolerance) <= rhs
 
 
 /**
@@ -243,7 +243,7 @@ fun Fraction.isLessThanOrEqualTo(rhs: Fraction, tolerance: Fraction = defaultFra
  *                  Defaults to [defaultFractionCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
-fun Fraction.isGreaterThanOrEqualTo(rhs: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean = (this - tolerance) >= rhs
+fun Fraction.isGreaterThanOrEqualTo(rhs: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean = (this + tolerance) >= rhs
 
 
 /**

@@ -117,6 +117,10 @@ open class OpenRange<NumberType: Comparable<NumberType>>
 
 
     open fun intersects(other: OpenRange<NumberType>): Boolean {
+        if (other.isEmpty) { // Empty ranges never intersect anything
+            return false
+        }
+
         if (startInclusive == null) { // (-∞, ?) ∩ ( ?, ?)
             if (endInclusive == null) { // (-∞, ∞) ∩ ( ?, ?)
                 return true
