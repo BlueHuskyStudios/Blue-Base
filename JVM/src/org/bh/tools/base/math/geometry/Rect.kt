@@ -241,4 +241,15 @@ class FractionRect(origin: ComputablePoint<Fraction>, size: ComputableSize<Fract
 typealias Float64Rect = FractionRect
 typealias FloatRect = FractionRect
 
+
 val AnyRect.fractionValue: FractionRect get() = FractionRect(x = x.fractionValue, y = y.fractionValue, width = width.fractionValue, height = height.fractionValue)
+
+
+infix operator fun FractionRect.times(size: FractionSize): FractionRect {
+    return FractionRect(
+            x = x * size.width,
+            y = y * size.height,
+            width = width * size.width,
+            height = height * size.height
+    )
+}

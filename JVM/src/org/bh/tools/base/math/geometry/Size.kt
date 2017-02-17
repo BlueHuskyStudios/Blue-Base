@@ -1,7 +1,6 @@
 package org.bh.tools.base.math.geometry
 
 import org.bh.tools.base.abstraction.Fraction
-import org.bh.tools.base.abstraction.Int64
 import org.bh.tools.base.abstraction.Integer
 import org.bh.tools.base.math.*
 import java.util.*
@@ -193,6 +192,8 @@ class FractionSize(width: Fraction, height: Fraction) : ComputableSize<Fraction>
 
 
     constructor(width: Integer, height: Integer) : this(width.fractionValue, height.fractionValue)
+    constructor(squareSide: Fraction) : this(squareSide, squareSide)
+    constructor(squareSide: Integer) : this(squareSide = squareSide.fractionValue)
 
 
     override val isEmpty: Boolean by lazy { this == zero }
