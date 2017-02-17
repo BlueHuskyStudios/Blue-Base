@@ -33,8 +33,8 @@ import java.util.*
 val Array<*>.count: Int get() = this.size
 val Array<*>.length: Int get() = this.size
 
-val List<Any>.count: Int get() = this.size
-val List<Any>.length: Int get() = this.size
+val Collection<*>.count: Int get() = this.size
+val Collection<*>.length: Int get() = this.size
 
 
 fun <T> Array<T>.deepEquals(other: Array<T>): Boolean {
@@ -78,9 +78,9 @@ fun <ElementType, OutputType>
         Array<ElementType>.filterMap(predicateTransform: (ElementType) -> Pair<Boolean, () -> OutputType?>)
         : List<OutputType?>
         = this
-            .map { predicateTransform(it) }
-            .filter { it.first }
-            .map { it.second() }
+        .map { predicateTransform(it) }
+        .filter { it.first }
+        .map { it.second() }
 
 
 /**
@@ -88,5 +88,5 @@ fun <ElementType, OutputType>
  */
 object a {
     /** Returns an array of the given elements */
-    inline operator fun <reified Element> get(vararg elements: Element) : Array<Element> = arrayOf(*elements)
+    inline operator fun <reified Element> get(vararg elements: Element): Array<Element> = arrayOf(*elements)
 }
