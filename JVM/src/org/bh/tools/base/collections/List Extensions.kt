@@ -1,7 +1,5 @@
 package org.bh.tools.base.collections
 
-import org.bh.tools.base.abstraction.Int32
-
 /*
  * To help you work with lists
  *
@@ -21,3 +19,11 @@ fun <ElementType> List<ElementType>.adding(index: Index, newElement: ElementType
     newList.add(index, newElement)
     return newList
 }
+
+
+fun <Element> List(): List<Element> = listOf()
+fun <Element> List(vararg initialElements: Element): List<Element> = listOf(*initialElements)
+
+
+fun <Element> MutableList(): MutableList<Element> = mutableListOf()
+fun <Element> MutableList(vararg initialElements: Element): MutableList<Element> = mutableListOf(*initialElements)
