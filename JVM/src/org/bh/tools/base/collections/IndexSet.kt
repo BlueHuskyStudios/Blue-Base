@@ -2,11 +2,13 @@
 
 package org.bh.tools.base.collections
 
+import org.bh.tools.base.abstraction.Int32
+import org.bh.tools.base.abstraction.Int32Array
 import org.bh.tools.base.math.integerValue
 import org.bh.tools.base.struct.*
 
-typealias Index = Int
-typealias IndexArray = IntArray
+typealias Index = Int32
+typealias IndexArray = Int32Array
 
 /**
  * IndexSet, made for Blue Base, is copyright Blue Husky Software ©2016 BH-1-PS <hr/>
