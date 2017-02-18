@@ -30,12 +30,17 @@ class OpenRangeTest {
     val range10ToOpen = FractionOpenRange(10.0, openEnd)
     val rangeOpenToOpen = FractionOpenRange(openEnd, openEnd)
 
-            @Test
+    @Test
     fun isOpen() {
+        assertFalse("An empty range must not be open", rangeEmpty.isOpen)
         assertFalse("A range of only 5 must not be open", rangeOnly5.isOpen)
+        assertFalse("A range of only 10 must not be open", rangeOnly10.isOpen)
         assertFalse("A range of 5 to 17 must not be open", range5To17.isOpen)
+        assertFalse("A range of 10 to 23 must not be open", range10To23.isOpen)
         assertTrue("A range of 17 to Open must be open", range17ToOpen.isOpen)
+        assertTrue("A range of Open to 23 must be open", rangeOpenTo23.isOpen)
         assertTrue("A range of Open to 5 must be open", rangeOpenTo5.isOpen)
+        assertTrue("A range of 10 to Open must be open", range10ToOpen.isOpen)
         assertTrue("A range of Open to Open must be open", rangeOpenToOpen.isOpen)
     }
 
