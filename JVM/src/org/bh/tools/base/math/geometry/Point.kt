@@ -2,9 +2,7 @@
 
 package org.bh.tools.base.math.geometry
 
-import org.bh.tools.base.abstraction.Fraction
-import org.bh.tools.base.abstraction.Int64
-import org.bh.tools.base.abstraction.Integer
+import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.math.*
 import java.awt.geom.Point2D
 
@@ -319,6 +317,8 @@ open class FractionPoint(x: Fraction, y: Fraction) : ComputablePoint<Fraction>(x
 }
 typealias Float64Point = FractionPoint
 typealias FloatPoint = FractionPoint
+
+val java.awt.Point.fractionValue get() = FractionPoint(this)
 
 
 //infix operator fun IntPoint.times(rhs: IntPoint): IntPoint
