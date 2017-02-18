@@ -56,3 +56,7 @@ typealias Tuple1<First> = Single<First>
 typealias Tuple2<First, Second> = Pair<First, Second>
 /** A tuple containing three values */
 typealias Tuple3<First, Second, Third> = Triple<First, Second, Third>
+
+
+
+fun <T, U> T.transform(transformer: (T)->U): U = transformer(this)

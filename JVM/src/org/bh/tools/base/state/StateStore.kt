@@ -2,6 +2,8 @@
 
 package org.bh.tools.base.state
 
+import org.bh.tools.base.collections.DeltaStack
+
 /**
  * Copyright BHStudios ©2016 BH-1-PS. Made for Snek.
  *
@@ -42,4 +44,22 @@ interface StateStore<StateType: ChangeableState<StateType, StateChangeType>, Sta
      * @return The flattened state with all changes applied
      */
     fun flattenState(): StateType
+}
+
+
+/**
+ * A basic implementation of [StateStore], with every function implemented and no fanciness.
+ */
+open class BasicStateStore<StateType: ChangeableState<StateType, StateChangeType>, StateChangeType: StateChange<StateChangeType,
+        StateType>>(baseState: StateType): StateStore<StateType, StateChangeType> {
+
+    private val _stateStack = DeltaStack(baseState = baseState)
+
+    override fun pushState(newState: StateChangeType) = _stateStack.pushState(newState)
+
+    override fun popState(): StateType = _stateStack.popState()
+
+    override fun currentState(): StateType = _stateStack.currentState()
+
+    override fun flattenState(): StateType = _stateStack.flattenState()
 }

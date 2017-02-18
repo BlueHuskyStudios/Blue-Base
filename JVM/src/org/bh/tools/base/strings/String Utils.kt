@@ -2,13 +2,9 @@
 
 package org.bh.tools.base.strings
 
-import org.bh.tools.base.abstraction.Fraction
-import org.bh.tools.base.abstraction.Integer
+import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.collections.reduceTo
-import org.bh.tools.base.math.components
-import org.bh.tools.base.math.hasFractionComponent
-import org.bh.tools.base.math.integerValue
-import org.bh.tools.base.math.rounded
+import org.bh.tools.base.math.*
 import org.bh.tools.base.struct.int32Value
 
 /*
@@ -84,9 +80,15 @@ fun CharSequence.containsIgnoreCase(cs: CharSequence): Boolean
 
 
 /**
- * Repeats the given string `rhs` times.
+ * Repeats the given string [rhs] times.
  */
-operator fun String.times(rhs: Integer): String = (0..rhs).map { this }.reduce { old, current -> old + current }
+inline infix operator fun String.times(rhs: Integer): String = repeat(rhs.int32Value)
+
+
+/**
+ * Repeats the given string [rhs] times.
+ */
+operator fun String.times(rhs: Int32): String = times(rhs.integerValue)
 
 
 operator fun String.times(rhs: Fraction): String {
