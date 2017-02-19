@@ -514,6 +514,9 @@ val AnyLineSegment.integerValue: IntegerLineSegment get() = this as? IntegerLine
 
 open class FractionLineSegment(start: FractionPoint, end: FractionPoint) : ComputableLineSegment<Fraction, FractionPoint>(start, end) {
 
+    constructor(x1: Fraction, y1: Fraction, x2: Fraction, y2: Fraction)
+            : this(FractionPoint(x1, y1), FractionPoint(x2, y2))
+
 
     override fun contains(point: ComputablePoint<Fraction>): Boolean {
         return contains(point, tolerance = defaultFractionCalculationTolerance)
