@@ -91,7 +91,7 @@ private fun Size<*>.apology(type: String,
                             otherTypeAType: String = "width",
                             otherTypeB: Class<*> = height::class.java,
                             otherTypeBType: String = "height"): SizeOperatorUnavailableApology
-        = SizeOperatorUnavailableApology(type, width.javaClass, height.javaClass,
+        = SizeOperatorUnavailableApology(type, width::class.java, height::class.java,
         otherMainType, otherTypeA, otherTypeAType, otherTypeB, otherTypeBType)
 
 

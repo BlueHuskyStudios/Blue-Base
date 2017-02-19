@@ -1,9 +1,6 @@
 package org.bh.tools.base.math
 
-import org.bh.tools.base.abstraction.Float32
-import org.bh.tools.base.abstraction.Float64
-import org.bh.tools.base.abstraction.Fraction
-import org.bh.tools.base.abstraction.Integer
+import org.bh.tools.base.abstraction.*
 import java.lang.StrictMath.abs
 
 /* Comparisons, made for Blue Base, is copyright Blue Husky Software ©2016 BH-1-PS.
@@ -135,7 +132,7 @@ enum class ComparisonResult(
                     } else {
                         backupResult = (other.fractionValue - raw.fractionValue).clampedInt32Value
                     }
-                    print("Sorry; I hadn't thought about subtracting a ${other.javaClass} from a ${raw.javaClass}...")
+                    print("Sorry; I hadn't thought about subtracting a ${other::class.java} from a ${raw::class.java}...")
                     print("I'll attempt to convert them to floats and do the math from there!")
                     return backupResult
                 }

@@ -133,7 +133,7 @@ private fun Point<*>.apology(type: String,
                              otherTypeAType: String = "x",
                              otherTypeB: Class<*> = y::class.java,
                              otherTypeBType: String = "y"): PointOperatorUnavailableApology
-        = PointOperatorUnavailableApology(type, x.javaClass, y.javaClass,
+        = PointOperatorUnavailableApology(type, x::class.java, y::class.java,
         otherMainType, otherTypeA, otherTypeAType, otherTypeB, otherTypeBType)
 
 class IntegerPoint(x: Integer, y: Integer) : ComputablePoint<Integer>(x, y) {
