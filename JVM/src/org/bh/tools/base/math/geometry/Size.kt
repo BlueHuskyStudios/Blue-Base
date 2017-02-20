@@ -1,7 +1,6 @@
 package org.bh.tools.base.math.geometry
 
-import org.bh.tools.base.abstraction.Fraction
-import org.bh.tools.base.abstraction.Integer
+import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.math.*
 import java.util.*
 
@@ -274,27 +273,34 @@ val FractionSize.integerValue: IntegerSize get() = IntegerSize(width.integerValu
 
 
 
-inline val <NumberType : Number> Size<NumberType>.fractionValue: FractionSize get() = if (this is FractionSize) this else FractionSize(width.fractionValue, height.fractionValue)
+inline val <NumberType : Number> Size<NumberType>.fractionValue: FractionSize
+    get() = if (this is FractionSize) this else FractionSize(width.fractionValue, height.fractionValue)
 
 
-// Silliness
+// MARK: - Silliness
 
+/**
+ * Generates some random point (x, y) where 0 <= x <= width and 0 <= y <= height.
+ */
 @Suppress("UNCHECKED_CAST") // checked transitively
 val <NumberType : Number> Size<NumberType>.randomPoint: Point<NumberType> get() {
     val random = Random()
-    val x: NumberType
-    val y: NumberType
-    if (width.isNativeInteger && height.isNativeInteger) {
-        x = random.nextInt((width.integerValue + 1).int32Value) as NumberType
-        y = random.nextInt((height.integerValue + 1).int32Value) as NumberType
+
+    return if (width.isNativeInteger && height.isNativeInteger) {
+        Point(
+            x = random.nextInteger((width.integerValue + 1).integerValue) as NumberType,
+            y = random.nextInteger((height.integerValue + 1).integerValue) as NumberType
+        )
     } else if (width.isNativeFraction && height.isNativeFraction) {
-        x = (random.nextDouble() * (width.fractionValue + 1).float64Value) as NumberType
-        y = (random.nextDouble() * (height.fractionValue + 1).float64Value) as NumberType
+        Point(
+            x = (random.nextFraction() * (width.fractionValue + 1)) as NumberType,
+            y = (random.nextFraction() * (height.fractionValue + 1)) as NumberType
+        )
     } else {
         print("Type not supported: ${width::class} x ${width::class}")
-        x = width
-        y = height
+        Point(
+            x = width,
+            y = height
+        )
     }
-
-    return Point(x, y)
 }
