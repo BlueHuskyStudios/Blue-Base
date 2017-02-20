@@ -226,7 +226,8 @@ typealias Int64Point = IntegerPoint
 typealias IntPoint = IntegerPoint
 
 open class FractionPoint(x: Fraction, y: Fraction) : ComputablePoint<Fraction>(x, y) {
-    constructor(x: Int64, y: Int64) : this(x.fractionValue, y.fractionValue)
+    constructor(x: Integer, y: Integer) : this(x.fractionValue, y.fractionValue)
+    constructor(x: Int32, y: Int32) : this(x.fractionValue, y.fractionValue)
     constructor(awtValue: Point2D) : this(awtValue.x, awtValue.y)
 
     override infix operator fun <OtherType : Number> plus(rhs: Point<OtherType>): FractionPoint = plus(Pair(rhs.x, rhs.y))

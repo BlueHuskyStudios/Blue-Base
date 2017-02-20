@@ -191,6 +191,7 @@ class FractionSize(width: Fraction, height: Fraction) : ComputableSize<Fraction>
 
 
     constructor(width: Integer, height: Integer) : this(width.fractionValue, height.fractionValue)
+    constructor(width: Int32, height: Int32) : this(width.fractionValue, height.fractionValue)
     constructor(squareSide: Fraction) : this(squareSide, squareSide)
     constructor(squareSide: Integer) : this(squareSide = squareSide.fractionValue)
 

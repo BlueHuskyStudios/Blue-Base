@@ -162,6 +162,9 @@ private typealias FractionRectBaseType = ComputableRect<Fraction, ComputablePoin
 
 
 
+/**
+ * A default implementation of [ComputableRect] using [Fraction]s
+ */
 class FractionRect(origin: ComputablePoint<Fraction>, size: ComputableSize<Fraction>) : FractionRectBaseType(origin, size) {
 
     companion object {
