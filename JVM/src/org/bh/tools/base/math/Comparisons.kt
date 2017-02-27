@@ -181,22 +181,22 @@ enum class ComparisonResult(
 /**
  * The default amount by which 32-bit floating-point calculations and comparisons can be off
  */
-val defaultFloat32CalculationTolerance: Float32 get() = 0.0001f
+inline val defaultFloat32CalculationTolerance: Float32 get() = 0.0001f
 
 /**
  * The default amount by which 64-bit floating-point calculations and comparisons can be off
  */
-val defaultFloat64CalculationTolerance: Float64 get() = 0.0001
+inline val defaultFloat64CalculationTolerance: Float64 get() = 0.0001
 
 /**
  * The default amount by which fractional calculations and comparisons can be off
  */
-val defaultFractionCalculationTolerance: Fraction get() = 0.0001
+inline val defaultFractionCalculationTolerance: Fraction get() = 0.0001
 
 /**
  * The default amount by which integer calculations and comparisons can be off
  */
-val defaultIntegerCalculationTolerance: Integer get() = 0
+inline val defaultIntegerCalculationTolerance: Integer get() = 0
 
 
 /**

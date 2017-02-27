@@ -67,7 +67,7 @@ data class CubicBezierPathSegment(
     inline val nonNullEndControlPoint get() = endControlPoint ?: end
 
 
-    override fun contains(point: ComputablePoint<Fraction>, tolerance: Fraction): Boolean {
+    override fun contains(point: Point<Fraction>, tolerance: Fraction): Boolean {
         return super.contains(point, tolerance)
     }
 

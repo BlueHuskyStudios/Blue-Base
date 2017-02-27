@@ -1,5 +1,6 @@
-package org.bh.tools.base.collections
+package org.bh.tools.base.collections.extensions
 
+import org.bh.tools.base.collections.*
 import org.bh.tools.base.math.max
 import org.bh.tools.base.math.min
 import org.bh.tools.base.struct.ClosedRange

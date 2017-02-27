@@ -6,6 +6,7 @@ import NotFound
 import org.bh.tools.base.collections.ArrayPosition.end
 import org.bh.tools.base.collections.ArrayPosition.start
 import org.bh.tools.base.collections.SearchBehavior.*
+import org.bh.tools.base.collections.extensions.*
 import java.util.*
 import java.util.stream.Stream
 

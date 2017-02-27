@@ -6,13 +6,12 @@ package org.bh.tools.base.struct
 
 import org.bh.tools.base.abstraction.Int32
 import org.bh.tools.base.abstraction.Int64
-import org.bh.tools.base.collections.toString
-import org.bh.tools.base.math.Comparable64
-import org.bh.tools.base.math.int32Value
-import org.bh.tools.base.math.int64Value
+import org.bh.tools.base.abstraction.Integer
+import org.bh.tools.base.collections.extensions.toString
+import org.bh.tools.base.math.*
 import org.bh.tools.base.struct.VersionChannel.stable
 
-typealias VersionStage = Long
+typealias VersionStage = Integer
 
 /**
  * Version, made for BHToolbox, is copyright Blue Husky Software ©2014 BH-1-PS
@@ -43,11 +42,11 @@ data class Version
     /**
      * Creates a version with the given channel and stages. For instance, if it's version 1.2.3 β, you would call
      * `Version(1,2,3, β)`
-     * @param initChannel The channel of the version
-     * @param initStages  The stages (number) of the version
+     * @param channel The channel of the version
+     * @param stages  The stages (number) of the version
      */
-    constructor(vararg initStages: VersionStage, initChannel: VersionChannel = stable)
-            : this(stages = initStages.asList(), channel = initChannel)
+    constructor(vararg stages: VersionStage, channel: VersionChannel = stable)
+            : this(stages = stages.asList(), channel = channel)
 
 
     /**
@@ -83,6 +82,13 @@ data class Version
         }
     }
 }
+
+/** Creates a new version with the given stages and the default channel */
+fun v(vararg versionStage: VersionStage): Version = Version(stages = *versionStage)
+
+/** Creates a new version with the given stages and channel */
+fun v(vararg versionStage: VersionStage, channel: VersionChannel): Version = Version(stages = *versionStage, channel = channel)
+
 
 
 /**

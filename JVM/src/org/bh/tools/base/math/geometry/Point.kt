@@ -113,6 +113,8 @@ abstract class ComputablePoint<NumberType : Number>(x: NumberType, y: NumberType
     abstract fun copy(x: NumberType = this.x, y: NumberType = this.y): ComputablePoint<NumberType>
 }
 
+
+
 private class PointOperatorUnavailableApology(
         operator: String,
         widthType: Class<*>,
@@ -127,6 +129,7 @@ private class PointOperatorUnavailableApology(
         "and ${heightType.simpleName} y combined with ${otherMainType.simpleName} having " +
         "${otherTypeA.simpleName} $otherTypeAType and ${otherTypeB.simpleName} $otherTypeBType when I wrote it.")
 
+
 private fun Point<*>.apology(type: String,
                              otherMainType: Class<*> = Point::class.java,
                              otherTypeA: Class<*> = x::class.java,
@@ -135,6 +138,8 @@ private fun Point<*>.apology(type: String,
                              otherTypeBType: String = "y"): PointOperatorUnavailableApology
         = PointOperatorUnavailableApology(type, x::class.java, y::class.java,
         otherMainType, otherTypeA, otherTypeAType, otherTypeB, otherTypeBType)
+
+
 
 class IntegerPoint(x: Integer, y: Integer) : ComputablePoint<Integer>(x, y) {
     override infix operator fun <OtherType : Number> plus(rhs: Point<OtherType>): IntegerPoint = plus(Pair(rhs.x, rhs.y))

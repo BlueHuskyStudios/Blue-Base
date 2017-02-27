@@ -5,6 +5,7 @@ package org.bh.tools.base.math.geometry
 import org.bh.tools.base.abstraction.Fraction
 import org.bh.tools.base.abstraction.Integer
 import org.bh.tools.base.collections.*
+import org.bh.tools.base.collections.extensions.*
 import org.bh.tools.base.math.Comparator
 import org.bh.tools.base.math.ComparisonResult
 import org.bh.tools.base.math.geometry.IntegerPath.Companion.pathFromGenericSegments
@@ -153,6 +154,10 @@ interface ComputablePath
                     -> true
             }
     }
+
+    fun contains(point: Point<NumberType>): Boolean {
+        return segments.any { it.contains(point) }
+    }
 }
 typealias AnyComputablePath = ComputablePath<*, *, *>
 
@@ -201,10 +206,12 @@ open class IntegerPath(override val segments: List<IntegerLineSegment> = listOf(
     }
 
     constructor(points: List<IntegerPoint>, isClosed: Boolean): this(segments = segmentsFromGenericPoints(points, isClosed = isClosed))
+    constructor(vararg points: IntegerPoint, isClosed: Boolean): this(points = points.asList(), isClosed = isClosed)
 
 
     fun getAllPoints(): List<IntegerPoint> {
-        return segments.reduceTo(mutableListOf(segments.first.start)) {
+        return if (segments.isEmpty()) listOf()
+        else segments.reduceTo(mutableListOf(segments.first.start)) {
             previousPoints: MutableList<IntegerPoint>,
             currentSegment: IntegerLineSegment ->
 

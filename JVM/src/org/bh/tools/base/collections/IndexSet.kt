@@ -4,6 +4,7 @@ package org.bh.tools.base.collections
 
 import org.bh.tools.base.abstraction.Int32
 import org.bh.tools.base.abstraction.Int32Array
+import org.bh.tools.base.collections.extensions.*
 import org.bh.tools.base.math.integerValue
 import org.bh.tools.base.struct.*
 

@@ -3,7 +3,7 @@
 package org.bh.tools.base.strings
 
 import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.collections.reduceTo
+import org.bh.tools.base.collections.extensions.reduceTo
 import org.bh.tools.base.math.*
 import org.bh.tools.base.struct.int32Value
 

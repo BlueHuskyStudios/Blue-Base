@@ -1,4 +1,6 @@
-package org.bh.tools.base.collections
+package org.bh.tools.base.collections.extensions
+
+import org.bh.tools.base.collections.Index
 
 /*
  * To help you work with lists

@@ -59,4 +59,4 @@ typealias Tuple3<First, Second, Third> = Triple<First, Second, Third>
 
 
 
-fun <T, U> T.transform(transformer: (T)->U): U = transformer(this)
+fun <Input, Output> Input.transform(transformer: (Input)->Output): Output = transformer(this)

@@ -1,4 +1,4 @@
-package org.bh.tools.base.collections
+package org.bh.tools.base.collections.extensions
 
 /*
  * Copyright BHStudios ©2016 BH-1-PS. Made for Snek.
