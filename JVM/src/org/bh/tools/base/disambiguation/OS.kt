@@ -3,7 +3,10 @@
 package org.bh.tools.base.disambiguation
 
 import org.bh.tools.base.abstraction.Integer
+import org.bh.tools.base.disambiguation.OSArchitecture.*
+import org.bh.tools.base.disambiguation.OSArchitecture.unknown
 import org.bh.tools.base.disambiguation.OSSupport.*
+import org.bh.tools.base.disambiguation.OSSupport.unknown
 import org.bh.tools.base.func.tuple
 import org.bh.tools.base.struct.Version
 import org.bh.tools.base.struct.v
@@ -67,6 +70,41 @@ sealed class OS(
             architecture = architecture)
 
 
+    /**
+     * Indicates whether this is likely a desktop OS. This may still be wrong if the OS is being run in an odd way
+     * (e.g. specialized Android with a large screen, mouse, and keyboard) or not correctly reporting.
+     *
+     * When it's too ambiguous (e.g. `unknown` or `other`), `false` is reported.
+     */
+    val isDesktop: Boolean by lazy {
+        when (this) {
+            is macOS -> false
+            is windows,
+            is linux -> when (architecture) {
+                is i386,
+                is i686,
+                is x86,
+                is x86_64,
+                is amd64 -> true
+
+                is arm6,
+                is arm7,
+                is arm64 -> false
+
+                is powerPC,
+                is ppc,
+                is sparc -> true
+
+                is other,
+                is OSArchitecture.unknown -> false
+            }
+            is android -> false
+            is unknown -> false
+        }
+    }
+
+
+
     companion object {
         /** A placeholder in case iOS ever supports JVM apps */
         @Deprecated("iOS does not support JVM apps, and Blue Base does not yet support Kotlin Native",
@@ -119,6 +157,7 @@ sealed class OS(
                         architecture = OSArchitecture.fromRaw(rawArchitecture))
     }
 }
+
 
 
 /** An operating system's architecture */
