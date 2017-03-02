@@ -29,3 +29,26 @@ fun <Element> List(vararg initialElements: Element): List<Element> = listOf(*ini
 
 fun <Element> MutableList(): MutableList<Element> = mutableListOf()
 fun <Element> MutableList(vararg initialElements: Element): MutableList<Element> = mutableListOf(*initialElements)
+
+
+/**
+ * If this list is large enough to contain an item at the given [index], that item is returned. Else, [backup] is returned
+ *
+ * @param index  The index of the item to get
+ * @param backup The block that will be passed [index] if the list is too short to contain [index]. Its return value
+ *               will then be returned from this function.
+ *
+ * @return The item at [index] if [count] is less than [index]. Else, the result of [backup]
+ */
+operator fun <Element> List<Element>.get(index: Index, backup: (Index) -> Element) = getOrElse(index, backup)
+
+
+/**
+ * If this list is large enough to contain an item at the given [index], that item is returned. Else, [backup] is returned
+ *
+ * @param index The index of the item to get
+ * @param backup The value that will be returned if the list is too short to contain [index]
+ *
+ * @return The item at [index] if [count] is less than [index]. Else, [backup]
+ */
+operator fun <Element> List<Element>.get(index: Index, backup: Element) = get(index, { backup })
