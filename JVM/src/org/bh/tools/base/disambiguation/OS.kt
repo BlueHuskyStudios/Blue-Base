@@ -4,9 +4,7 @@ package org.bh.tools.base.disambiguation
 
 import org.bh.tools.base.abstraction.Integer
 import org.bh.tools.base.disambiguation.OSArchitecture.*
-import org.bh.tools.base.disambiguation.OSArchitecture.unknown
 import org.bh.tools.base.disambiguation.OSSupport.*
-import org.bh.tools.base.disambiguation.OSSupport.unknown
 import org.bh.tools.base.func.tuple
 import org.bh.tools.base.struct.Version
 import org.bh.tools.base.struct.v
