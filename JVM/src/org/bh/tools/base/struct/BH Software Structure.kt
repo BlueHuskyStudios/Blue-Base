@@ -78,8 +78,8 @@ interface DataAccessor<out DataType : Data, in AccessDetailType, out AccessStatu
      *
      * @param details       Any details or instructions pertaining to how the data should be accessed
      * @param didAccessData The block that will be called once the data has been accessed.
-     *                      - `accessedData` - The data that was accessed, or `null` if it couldn't be accessed
-     *                      - `status`       - The status of the access. This may represent an error, metadata, etc.
+     *   - `accessedData` - The data that was accessed, or `null` if it couldn't be accessed
+     *   - `status`       - The status of the access. This may represent an error, metadata, etc.
      */
     fun accessData(details: AccessDetailType, didAccessData: (accessedData: DataType?, status: AccessStatusType) -> Unit)
 }
