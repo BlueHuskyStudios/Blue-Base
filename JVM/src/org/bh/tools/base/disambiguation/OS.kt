@@ -102,6 +102,16 @@ sealed class OS(
     }
 
 
+    override fun toString(): String {
+        val ret = StringBuilder(rawName)
+        rawVersion?.let {
+            ret.append(" (").append(it).append(")")
+        }
+        ret.append(" ").append(architecture)
+        return ret.toString()
+    }
+
+
 
     companion object {
         /** A placeholder in case iOS ever supports JVM apps */
@@ -183,6 +193,11 @@ sealed class OSArchitecture(
     class other(raw: String) : OSArchitecture(raw)
 
     object unknown : OSArchitecture("unknown")
+
+
+    override fun toString(): String {
+        return raw
+    }
 
 
     companion object {

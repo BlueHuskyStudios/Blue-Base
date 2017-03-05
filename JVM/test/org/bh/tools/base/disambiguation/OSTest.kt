@@ -3,6 +3,8 @@
 package org.bh.tools.base.disambiguation
 
 
+import org.bh.tools.base.math.integerValue
+import org.bh.tools.base.strings.times
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import kotlin.reflect.KClass
@@ -587,7 +589,30 @@ class OSTest {
                     expectedSubtype, actualSubtype)
         }
     }
+
+    @Test
+    fun current() {
+        val osString = OS.current.toString()
+        val separatorLength = osString.length * 2.0
+        val paddingLength = (separatorLength / 2.0) - (osString.length / 2.0)
+        val paddedOSString = (" " * paddingLength.integerValue) + osString
+
+        val topSeparator
+        val bottomSeparator = separatorPiece * (separatorLength / separatorPiece.length).integerValue
+
+        println("")
+        println(" === === === Tests performed on: === === ===")
+        println("")
+        println(paddedOSString)
+        println("")
+        println(" === === === === === === === === === === ===")
+        println("")
+    }
+
 }
+
+const val separatorPiece = " ==="
+const val osOutputTitle = " Tests performed on:"
 
 private data class TestCase <OSType: OS, out OSSubtype>(
         val expectedOSClass: KClass<OSType>,

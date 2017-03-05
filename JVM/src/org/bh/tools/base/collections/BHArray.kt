@@ -1,4 +1,4 @@
-@file:Suppress("unused", "UNUSED_PARAMETER")
+@file:Suppress("unused", "UNUSED_PARAMETER", "DEPRECATION", "INTERFACE_STATIC_METHOD_CALL_FROM_JAVA6_TARGET", "*", "UNCHECKED_CAST")
 
 package org.bh.tools.base.collections
 
