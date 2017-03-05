@@ -107,8 +107,12 @@ val Integer.clampedInt32Value: Int32 get()
     = clamp(low = Int32.min.integerValue, value = this, high = Int32.max.integerValue).int32Value
 
 
-val Integer.clampToPositive: Integer get() = if (this < 0) 0 else this
-val Fraction.clampToPositive: Fraction get() = if (this < 0.0) 0.0 else this
+val Int8.clampToPositive: Int8 get() = if (this < 0) 0 else this
+val Int16.clampToPositive: Int16 get() = if (this < 0) 0 else this
+val Int32.clampToPositive: Int32 get() = if (this < 0) 0 else this
+val Int64.clampToPositive: Int64 get() = if (this < 0) 0 else this
+val Float32.clampToPositive: Float32 get() = if (this < 0.0f) 0.0f else this
+val Float64.clampToPositive: Float64 get() = if (this < 0.0) 0.0 else this
 
 
 

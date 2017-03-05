@@ -5,8 +5,9 @@ package org.bh.tools.base.disambiguation
 
 import org.bh.tools.base.math.integerValue
 import org.bh.tools.base.strings.times
-import org.junit.Assert.assertEquals
+import org.junit.Assert.*
 import org.junit.Test
+import java.util.logging.Logger
 import kotlin.reflect.KClass
 
 
@@ -592,23 +593,34 @@ class OSTest {
 
     @Test
     fun current() {
-        val osString = OS.current.toString()
-        val separatorLength = osString.length * 2.0
-        val paddingLength = (separatorLength / 2.0) - (osString.length / 2.0)
-        val paddedOSString = (" " * paddingLength.integerValue) + osString
+        val currentOS = OS.current
 
-        val topSeparator
-        val bottomSeparator = separatorPiece * (separatorLength / separatorPiece.length).integerValue
+        Logger.getGlobal().info {
+            val osString = currentOS.toString()
+            val maxWidth = osString.length * 2.0
 
-        println("")
-        println(" === === === Tests performed on: === === ===")
-        println("")
-        println(paddedOSString)
-        println("")
-        println(" === === === === === === === === === === ===")
-        println("")
+            val numberOfTopSeparatorPiecesPerSide = (((maxWidth - osOutputTitle.length) / 2.0) / separatorPiece.length).integerValue
+            val topSeparatorSide = separatorPiece * numberOfTopSeparatorPiecesPerSide
+            val topSeparator = topSeparatorSide + osOutputTitle + topSeparatorSide
+            val bottomSeparator = topSeparatorSide * 2 + (separatorPiece * (osOutputTitle.length / separatorPiece.length))
+
+            val paddingLength = (bottomSeparator.length / 2.0) - (osString.length / 2.0)
+            val paddedOSString = (" " * paddingLength.integerValue) + osString
+
+            /* return */ "\r\n\r\n\r\n$topSeparator\r\n\r\n$paddedOSString\r\n\r\n$bottomSeparator\r\n\r\n\r\n"
+        }
+
+        assertNotEquals("Current OS's architecture should be known", OSArchitecture.unknown::class, currentOS.architecture::class)
+
+        @Suppress("UNUSED_VARIABLE")
+        val unused = when (currentOS) {
+            is OS.windows -> assertNotEquals("Current OS's subtype should be known", WindowsSubtype.unknown, currentOS.subtype)
+            is OS.macOS -> assertNotEquals("Current OS's subtype should be known", MacOSSubtype.unknown, currentOS.subtype)
+            is OS.linux -> assertNotEquals("Current OS's subtype should be known", LinuxSubtype.unknown, currentOS.subtype)
+            is OS.android -> assertNotEquals("Current OS's subtype should be known", AndroidSubtype.unknown, currentOS.subtype)
+            is OS.unknown -> assertTrue("Current OS should be known", false)
+        }
     }
-
 }
 
 const val separatorPiece = " ==="
