@@ -52,3 +52,8 @@ operator fun <Element> List<Element>.get(index: Index, backup: (Index) -> Elemen
  * @return The item at [index] if [count] is less than [index]. Else, [backup]
  */
 operator fun <Element> List<Element>.get(index: Index, backup: Element) = get(index, { backup })
+
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun <ElementType, IterableType: List<ElementType>> IterableType.nonEmpty(): IterableType? = if (isEmpty()) null else this
+inline val <ElementType, IterableType: List<ElementType>> IterableType.nonEmpty get() = nonEmpty()
