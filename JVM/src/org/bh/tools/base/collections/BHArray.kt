@@ -1,4 +1,4 @@
-@file:Suppress("unused", "UNUSED_PARAMETER")
+@file:Suppress("unused", "UNUSED_PARAMETER", "DEPRECATION", "INTERFACE_STATIC_METHOD_CALL_FROM_JAVA6_TARGET", "*", "UNCHECKED_CAST")
 
 package org.bh.tools.base.collections
 
@@ -6,6 +6,7 @@ import NotFound
 import org.bh.tools.base.collections.ArrayPosition.end
 import org.bh.tools.base.collections.ArrayPosition.start
 import org.bh.tools.base.collections.SearchBehavior.*
+import org.bh.tools.base.collections.extensions.*
 import java.util.*
 import java.util.stream.Stream
 

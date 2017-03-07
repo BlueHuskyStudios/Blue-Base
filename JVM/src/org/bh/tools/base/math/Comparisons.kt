@@ -1,9 +1,6 @@
 package org.bh.tools.base.math
 
-import org.bh.tools.base.abstraction.Float32
-import org.bh.tools.base.abstraction.Float64
-import org.bh.tools.base.abstraction.Fraction
-import org.bh.tools.base.abstraction.Integer
+import org.bh.tools.base.abstraction.*
 import java.lang.StrictMath.abs
 
 /* Comparisons, made for Blue Base, is copyright Blue Husky Software ©2016 BH-1-PS.
@@ -135,7 +132,7 @@ enum class ComparisonResult(
                     } else {
                         backupResult = (other.fractionValue - raw.fractionValue).clampedInt32Value
                     }
-                    print("Sorry; I hadn't thought about subtracting a ${other.javaClass} from a ${raw.javaClass}...")
+                    print("Sorry; I hadn't thought about subtracting a ${other::class.java} from a ${raw::class.java}...")
                     print("I'll attempt to convert them to floats and do the math from there!")
                     return backupResult
                 }
@@ -184,22 +181,22 @@ enum class ComparisonResult(
 /**
  * The default amount by which 32-bit floating-point calculations and comparisons can be off
  */
-val defaultFloat32CalculationTolerance: Float32 get() = 0.0001f
+inline val defaultFloat32CalculationTolerance: Float32 get() = 0.0001f
 
 /**
  * The default amount by which 64-bit floating-point calculations and comparisons can be off
  */
-val defaultFloat64CalculationTolerance: Float64 get() = 0.0001
+inline val defaultFloat64CalculationTolerance: Float64 get() = 0.0001
 
 /**
  * The default amount by which fractional calculations and comparisons can be off
  */
-val defaultFractionCalculationTolerance: Fraction get() = 0.0001
+inline val defaultFractionCalculationTolerance: Fraction get() = 0.0001
 
 /**
  * The default amount by which integer calculations and comparisons can be off
  */
-val defaultIntegerCalculationTolerance: Integer get() = 0
+inline val defaultIntegerCalculationTolerance: Integer get() = 0
 
 
 /**

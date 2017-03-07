@@ -3,6 +3,8 @@
 package org.bh.tools.base.collections
 
 import org.bh.tools.base.abstraction.Integer
+import org.bh.tools.base.collections.extensions.firstOrNull
+import org.bh.tools.base.collections.extensions.removeFirst
 import org.bh.tools.base.math.int32Value
 import org.bh.tools.base.math.integerValue
 

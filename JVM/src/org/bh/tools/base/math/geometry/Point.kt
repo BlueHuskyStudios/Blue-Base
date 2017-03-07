@@ -2,9 +2,7 @@
 
 package org.bh.tools.base.math.geometry
 
-import org.bh.tools.base.abstraction.Fraction
-import org.bh.tools.base.abstraction.Int64
-import org.bh.tools.base.abstraction.Integer
+import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.math.*
 import java.awt.geom.Point2D
 
@@ -115,6 +113,8 @@ abstract class ComputablePoint<NumberType : Number>(x: NumberType, y: NumberType
     abstract fun copy(x: NumberType = this.x, y: NumberType = this.y): ComputablePoint<NumberType>
 }
 
+
+
 private class PointOperatorUnavailableApology(
         operator: String,
         widthType: Class<*>,
@@ -129,14 +129,17 @@ private class PointOperatorUnavailableApology(
         "and ${heightType.simpleName} y combined with ${otherMainType.simpleName} having " +
         "${otherTypeA.simpleName} $otherTypeAType and ${otherTypeB.simpleName} $otherTypeBType when I wrote it.")
 
+
 private fun Point<*>.apology(type: String,
                              otherMainType: Class<*> = Point::class.java,
                              otherTypeA: Class<*> = x::class.java,
                              otherTypeAType: String = "x",
                              otherTypeB: Class<*> = y::class.java,
                              otherTypeBType: String = "y"): PointOperatorUnavailableApology
-        = PointOperatorUnavailableApology(type, x.javaClass, y.javaClass,
+        = PointOperatorUnavailableApology(type, x::class.java, y::class.java,
         otherMainType, otherTypeA, otherTypeAType, otherTypeB, otherTypeBType)
+
+
 
 class IntegerPoint(x: Integer, y: Integer) : ComputablePoint<Integer>(x, y) {
     override infix operator fun <OtherType : Number> plus(rhs: Point<OtherType>): IntegerPoint = plus(Pair(rhs.x, rhs.y))
@@ -228,7 +231,8 @@ typealias Int64Point = IntegerPoint
 typealias IntPoint = IntegerPoint
 
 open class FractionPoint(x: Fraction, y: Fraction) : ComputablePoint<Fraction>(x, y) {
-    constructor(x: Int64, y: Int64) : this(x.fractionValue, y.fractionValue)
+    constructor(x: Integer, y: Integer) : this(x.fractionValue, y.fractionValue)
+    constructor(x: Int32, y: Int32) : this(x.fractionValue, y.fractionValue)
     constructor(awtValue: Point2D) : this(awtValue.x, awtValue.y)
 
     override infix operator fun <OtherType : Number> plus(rhs: Point<OtherType>): FractionPoint = plus(Pair(rhs.x, rhs.y))
@@ -319,6 +323,8 @@ open class FractionPoint(x: Fraction, y: Fraction) : ComputablePoint<Fraction>(x
 }
 typealias Float64Point = FractionPoint
 typealias FloatPoint = FractionPoint
+
+val java.awt.Point.fractionValue get() = FractionPoint(this)
 
 
 //infix operator fun IntPoint.times(rhs: IntPoint): IntPoint

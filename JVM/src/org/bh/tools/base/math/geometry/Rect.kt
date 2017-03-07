@@ -2,8 +2,7 @@
 
 package org.bh.tools.base.math.geometry
 
-import org.bh.tools.base.abstraction.Fraction
-import org.bh.tools.base.abstraction.Int64
+import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.math.*
 import java.awt.Rectangle
 import java.awt.geom.Rectangle2D
@@ -163,6 +162,9 @@ private typealias FractionRectBaseType = ComputableRect<Fraction, ComputablePoin
 
 
 
+/**
+ * A default implementation of [ComputableRect] using [Fraction]s
+ */
 class FractionRect(origin: ComputablePoint<Fraction>, size: ComputableSize<Fraction>) : FractionRectBaseType(origin, size) {
 
     companion object {
@@ -170,6 +172,8 @@ class FractionRect(origin: ComputablePoint<Fraction>, size: ComputableSize<Fract
     }
 
     constructor(x: Fraction, y: Fraction, width: Fraction, height: Fraction) : this(FractionPoint(x, y), FractionSize(width, height))
+    constructor(x: Integer, y: Integer, width: Integer, height: Integer) : this(FractionPoint(x, y), FractionSize(width, height))
+    constructor(x: Int32, y: Int32, width: Int32, height: Int32)  : this(FractionPoint(x, y), FractionSize(width, height))
 
     constructor(awtValue: Rectangle2D) : this(awtValue.x, awtValue.y, awtValue.width, awtValue.height)
 
@@ -243,6 +247,7 @@ typealias FloatRect = FractionRect
 
 
 val AnyRect.fractionValue: FractionRect get() = FractionRect(x = x.fractionValue, y = y.fractionValue, width = width.fractionValue, height = height.fractionValue)
+val java.awt.Rectangle.fractionValue: FractionRect get() = FractionRect(x = x, y = y, width = width, height = height)
 
 
 infix operator fun FractionRect.times(size: FractionSize): FractionRect {

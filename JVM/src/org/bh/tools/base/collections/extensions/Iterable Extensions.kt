@@ -1,4 +1,4 @@
-package org.bh.tools.base.collections
+package org.bh.tools.base.collections.extensions
 
 /*
  * Copyright BHStudios ©2016 BH-1-PS. Made for Snek.
@@ -196,3 +196,8 @@ inline fun <S, T: S> Collection<T>.safeReduce(operation: (S, T) -> S): S?
 fun <ElementType> Iterable<ElementType>.toString(prefix: CharSequence = "", glue: CharSequence, suffix: CharSequence = ""): String {
     return this.joinToString(prefix = prefix, separator = glue, postfix = suffix)
 }
+
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun <ElementType, IterableType: Iterable<ElementType>> IterableType.nonEmpty(): IterableType? = if (count() > 0) this else null
+inline val <ElementType, IterableType: Iterable<ElementType>> IterableType.nonEmpty get() = nonEmpty()

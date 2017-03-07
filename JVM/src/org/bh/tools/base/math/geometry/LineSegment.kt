@@ -72,7 +72,7 @@ abstract class ComputableLineSegment
      * @return `true` iff the given point lies on this line segment
      */
     @Suppress("KDocUnresolvedReference")
-    abstract fun contains(point: ComputablePoint<NumberType>): Boolean
+    abstract fun contains(point: Point<NumberType>): Boolean
 
 
     /**
@@ -83,7 +83,7 @@ abstract class ComputableLineSegment
      *
      * @return `true` iff the given point lies on this line
      */
-    abstract fun contains(point: ComputablePoint<NumberType>, tolerance: NumberType): Boolean
+    abstract fun contains(point: Point<NumberType>, tolerance: NumberType): Boolean
 
 
     /**
@@ -382,9 +382,9 @@ class IntegerLineSegment
     (start: IntegerPoint, end: IntegerPoint)
     : ComputableLineSegment<Integer, IntegerPoint>(start, end) {
 
-    override fun contains(point: ComputablePoint<Integer>): Boolean = contains(point, tolerance = 0)
+    override fun contains(point: Point<Integer>): Boolean = contains(point, tolerance = defaultIntegerCalculationTolerance)
 
-    override fun contains(point: ComputablePoint<Integer>, tolerance: Integer): Boolean {
+    override fun contains(point: Point<Integer>, tolerance: Integer): Boolean {
         if (start.x.equals(end.x, tolerance = tolerance)) { // it's vertical
             return point.x.equals(start.x, tolerance = tolerance) // just compare the horizontal
                     && point.y.isBetween(start.y, end.y, tolerance = tolerance)
@@ -514,12 +514,15 @@ val AnyLineSegment.integerValue: IntegerLineSegment get() = this as? IntegerLine
 
 open class FractionLineSegment(start: FractionPoint, end: FractionPoint) : ComputableLineSegment<Fraction, FractionPoint>(start, end) {
 
+    constructor(x1: Fraction, y1: Fraction, x2: Fraction, y2: Fraction)
+            : this(FractionPoint(x1, y1), FractionPoint(x2, y2))
 
-    override fun contains(point: ComputablePoint<Fraction>): Boolean {
+
+    override fun contains(point: Point<Fraction>): Boolean {
         return contains(point, tolerance = defaultFractionCalculationTolerance)
     }
 
-    override fun contains(point: ComputablePoint<Fraction>, tolerance: Fraction): Boolean {
+    override fun contains(point: Point<Fraction>, tolerance: Fraction): Boolean {
         if (start.x.equals(end.x, tolerance = tolerance)) { // it's vertical
             return point.x.equals(start.x, tolerance = tolerance) // just compare the horizontal
             && point.y.isBetween(start.y, end.y, tolerance = tolerance)

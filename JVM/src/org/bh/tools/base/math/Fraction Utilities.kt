@@ -2,14 +2,12 @@
 
 package org.bh.tools.base.math
 
-import org.bh.tools.base.abstraction.Fraction
-import org.bh.tools.base.abstraction.Integer
-import java.math.BigDecimal
-import java.math.MathContext
-import java.math.RoundingMode.*
-import org.bh.tools.base.math.RoundingThreshold.*
+import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.math.RoundingDirection.*
-import java.math.RoundingMode
+import org.bh.tools.base.math.RoundingThreshold.halfway
+import org.bh.tools.base.math.RoundingThreshold.integer
+import java.math.*
+import java.math.RoundingMode.*
 
 /*
  * For using fractions easier
@@ -64,6 +62,13 @@ fun Fraction.rounded(direction: RoundingDirection = RoundingDirection.default,
                      threshold: RoundingThreshold = RoundingThreshold.default): Fraction =
         if (isNaN() || isInfinite() || !hasFractionComponent) this
         else BigDecimal(this, MathContext.DECIMAL64).setScale(0, RoundingMode(this, direction, threshold)).fractionValue
+
+
+inline val Fraction.roundedInt8Value: Int8 get() = rounded().int8Value
+inline val Fraction.roundedInt16Value: Int16 get() = rounded().int16Value
+inline val Fraction.roundedInt32Value: Int32 get() = rounded().int32Value
+inline val Fraction.roundedInt64Value: Int64 get() = rounded().int64Value
+inline val Fraction.roundedIntegerValue: Integer get() = roundedInt64Value
 
 
 /**

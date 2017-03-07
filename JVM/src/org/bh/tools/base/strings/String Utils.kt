@@ -3,7 +3,7 @@
 package org.bh.tools.base.strings
 
 import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.collections.reduceTo
+import org.bh.tools.base.collections.extensions.reduceTo
 import org.bh.tools.base.math.*
 import org.bh.tools.base.struct.int32Value
 
@@ -82,18 +82,23 @@ fun CharSequence.containsIgnoreCase(cs: CharSequence): Boolean
 /**
  * Repeats the given string [rhs] times.
  */
-inline infix operator fun String.times(rhs: Integer): String = repeat(rhs.int32Value)
+@Suppress("NOTHING_TO_INLINE")
+inline infix operator fun String.times(rhs: Integer): String = repeat(rhs.int32Value.clampToPositive)
 
 
 /**
  * Repeats the given string [rhs] times.
  */
-operator fun String.times(rhs: Int32): String = times(rhs.integerValue)
+@Suppress("NOTHING_TO_INLINE")
+inline operator fun String.times(rhs: Int32): String = times(rhs.integerValue.clampToPositive)
 
 
 operator fun String.times(rhs: Fraction): String {
     if (!rhs.hasFractionComponent) {
         return times(rhs.integerValue)
+    }
+    if (rhs <= 0) {
+        return ""
     }
     val partialRepeatingString = (1..(rhs.integerValue - 1)).reduceTo(this) { concatenatedString, _ ->
         /*return*/ concatenatedString + this

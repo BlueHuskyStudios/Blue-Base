@@ -1,7 +1,6 @@
 package org.bh.tools.base.math.geometry
 
-import org.bh.tools.base.abstraction.Fraction
-import org.bh.tools.base.abstraction.Integer
+import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.math.*
 import java.util.*
 
@@ -45,6 +44,42 @@ abstract class ComputableSize
     : Size<NumberType>(width, height)
 where NumberType: Number {
 
+    abstract val isEmpty: Boolean
+
+    /** The smaller of the two dimensions */
+    abstract val minDimension: NumberType
+    /** The larger of the two dimensions */
+    abstract val maxDimension: NumberType
+
+
+    /** Always `0` */
+    abstract val minX: NumberType
+    /** Always `width / 2` */
+    abstract val midX: NumberType
+    /** Always `width` */
+    abstract val maxX: NumberType
+
+    /** Always `0` */
+    abstract val minY: NumberType
+    /** Always `height / 2` */
+    abstract val midY: NumberType
+    /** Always `height` */
+    abstract val maxY: NumberType
+
+
+    abstract val minXminY: Point<NumberType>
+    abstract val minXmidY: Point<NumberType>
+    abstract val minXmaxY: Point<NumberType>
+
+    abstract val midXminY: Point<NumberType>
+    abstract val midXmidY: Point<NumberType>
+    abstract val midXmaxY: Point<NumberType>
+
+    abstract val maxXminY: Point<NumberType>
+    abstract val maxXmidY: Point<NumberType>
+    abstract val maxXmaxY: Point<NumberType>
+
+
     abstract infix operator fun <OtherType : Number> plus(rhs: Size<OtherType>): Size<NumberType>
     abstract infix operator fun <OtherType : Number> minus(rhs: Size<OtherType>): Size<NumberType>
     abstract infix operator fun <OtherType : Number> times(rhs: Size<OtherType>): Size<NumberType>
@@ -59,13 +94,6 @@ where NumberType: Number {
     abstract infix operator fun <OtherType : Number> minus(rhs: Pair<OtherType, OtherType>): Size<NumberType>
     abstract infix operator fun <OtherType : Number> times(rhs: Pair<OtherType, OtherType>): Size<NumberType>
     abstract infix operator fun <OtherType : Number> div(rhs: Pair<OtherType, OtherType>): Size<NumberType>
-
-    abstract val isEmpty: Boolean
-
-    /** The smaller of the two dimensions */
-    abstract val minDimension: NumberType
-    /** The larger of the two dimensions */
-    abstract val maxDimension: NumberType
 }
 
 
@@ -91,7 +119,7 @@ private fun Size<*>.apology(type: String,
                             otherTypeAType: String = "width",
                             otherTypeB: Class<*> = height::class.java,
                             otherTypeBType: String = "height"): SizeOperatorUnavailableApology
-        = SizeOperatorUnavailableApology(type, width.javaClass, height.javaClass,
+        = SizeOperatorUnavailableApology(type, width::class.java, height::class.java,
         otherMainType, otherTypeA, otherTypeAType, otherTypeB, otherTypeBType)
 
 
@@ -103,6 +131,28 @@ class IntegerSize(width: Integer, height: Integer) : ComputableSize<Integer>(wid
 
 
     override val isEmpty: Boolean = this == zero
+
+
+    override val minX: Integer by lazy { 0L }
+    override val midX: Integer by lazy { width / 2 }
+    override val maxX: Integer by lazy { width }
+
+    override val minY: Integer by lazy { 0L }
+    override val midY: Integer by lazy { height / 2 }
+    override val maxY: Integer by lazy { height }
+
+
+    override val minXminY: IntegerPoint by lazy { IntegerPoint(minX, minY) }
+    override val minXmidY: IntegerPoint by lazy { IntegerPoint(minX, midY) }
+    override val minXmaxY: IntegerPoint by lazy { IntegerPoint(minX, maxY) }
+
+    override val midXminY: IntegerPoint by lazy { IntegerPoint(midX, minY) }
+    override val midXmidY: IntegerPoint by lazy { IntegerPoint(midX, midY) }
+    override val midXmaxY: IntegerPoint by lazy { IntegerPoint(midX, maxY) }
+
+    override val maxXminY: IntegerPoint by lazy { IntegerPoint(maxX, minY) }
+    override val maxXmidY: IntegerPoint by lazy { IntegerPoint(maxX, midY) }
+    override val maxXmaxY: IntegerPoint by lazy { IntegerPoint(maxX, maxY) }
 
 
     override infix operator fun <OtherType : Number> plus(rhs: Size<OtherType>): IntegerSize = plus(Pair(rhs.width, rhs.height))
@@ -192,11 +242,34 @@ class FractionSize(width: Fraction, height: Fraction) : ComputableSize<Fraction>
 
 
     constructor(width: Integer, height: Integer) : this(width.fractionValue, height.fractionValue)
+    constructor(width: Int32, height: Int32) : this(width.fractionValue, height.fractionValue)
     constructor(squareSide: Fraction) : this(squareSide, squareSide)
     constructor(squareSide: Integer) : this(squareSide = squareSide.fractionValue)
 
 
     override val isEmpty: Boolean by lazy { this == zero }
+
+
+    override val minX: Fraction by lazy { 0.0 }
+    override val midX: Fraction by lazy { width / 2 }
+    override val maxX: Fraction by lazy { width }
+
+    override val minY: Fraction by lazy { 0.0 }
+    override val midY: Fraction by lazy { height / 2 }
+    override val maxY: Fraction by lazy { height }
+
+
+    override val minXminY: FractionPoint by lazy { FractionPoint(minX, minY) }
+    override val minXmidY: FractionPoint by lazy { FractionPoint(minX, midY) }
+    override val minXmaxY: FractionPoint by lazy { FractionPoint(minX, maxY) }
+
+    override val midXminY: FractionPoint by lazy { FractionPoint(midX, minY) }
+    override val midXmidY: FractionPoint by lazy { FractionPoint(midX, midY) }
+    override val midXmaxY: FractionPoint by lazy { FractionPoint(midX, maxY) }
+
+    override val maxXminY: FractionPoint by lazy { FractionPoint(maxX, minY) }
+    override val maxXmidY: FractionPoint by lazy { FractionPoint(maxX, midY) }
+    override val maxXmaxY: FractionPoint by lazy { FractionPoint(maxX, maxY) }
 
 
     override infix operator fun <OtherType : Number> plus(rhs: Size<OtherType>): FractionSize = plus(Pair(rhs.width, rhs.height))
@@ -274,27 +347,34 @@ val FractionSize.integerValue: IntegerSize get() = IntegerSize(width.integerValu
 
 
 
-inline val <NumberType : Number> Size<NumberType>.fractionValue: FractionSize get() = if (this is FractionSize) this else FractionSize(width.fractionValue, height.fractionValue)
+inline val <NumberType : Number> Size<NumberType>.fractionValue: FractionSize
+    get() = if (this is FractionSize) this else FractionSize(width.fractionValue, height.fractionValue)
 
 
-// Silliness
+// MARK: - Silliness
 
+/**
+ * Generates some random point (x, y) where 0 <= x <= width and 0 <= y <= height.
+ */
 @Suppress("UNCHECKED_CAST") // checked transitively
 val <NumberType : Number> Size<NumberType>.randomPoint: Point<NumberType> get() {
     val random = Random()
-    val x: NumberType
-    val y: NumberType
-    if (width.isNativeInteger && height.isNativeInteger) {
-        x = random.nextInt((width.integerValue + 1).int32Value) as NumberType
-        y = random.nextInt((height.integerValue + 1).int32Value) as NumberType
+
+    return if (width.isNativeInteger && height.isNativeInteger) {
+        Point(
+            x = random.nextInteger((width.integerValue + 1).integerValue) as NumberType,
+            y = random.nextInteger((height.integerValue + 1).integerValue) as NumberType
+        )
     } else if (width.isNativeFraction && height.isNativeFraction) {
-        x = (random.nextDouble() * (width.fractionValue + 1).float64Value) as NumberType
-        y = (random.nextDouble() * (height.fractionValue + 1).float64Value) as NumberType
+        Point(
+            x = (random.nextFraction() * (width.fractionValue + 1)) as NumberType,
+            y = (random.nextFraction() * (height.fractionValue + 1)) as NumberType
+        )
     } else {
         print("Type not supported: ${width::class} x ${width::class}")
-        x = width
-        y = height
+        Point(
+            x = width,
+            y = height
+        )
     }
-
-    return Point(x, y)
 }
