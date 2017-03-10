@@ -243,6 +243,74 @@ fun Fraction.isLessThanOrEqualTo(rhs: Fraction, tolerance: Fraction = defaultFra
 fun Fraction.isGreaterThanOrEqualTo(rhs: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean = (this + tolerance) >= rhs
 
 
+
+/**
+ * Determines whether this fraction is less than the other, within a given tolerance.
+ *
+ * @param rhs       The other fraction to compare to this one
+ * @param tolerance `optional` - The amount by which the values can be off. Positive means this is more lenient,
+ *                  negative means it's less. `0.0` means it functions just like `<`. Defaults to
+ *                  [defaultFractionCalculationTolerance]
+ * @return `true` iff this value and the other are equal within the given tolerance
+ */
+fun Fraction.isLessThan(rhs: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean = (this - tolerance) < rhs
+
+
+/**
+ * Determines whether this fraction is greater than the other, within a given tolerance.
+ *
+ * @param rhs       The other fraction to compare to this one
+ * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
+ *                  Defaults to [defaultFractionCalculationTolerance]
+ * @return `true` iff this value and the other are equal within the given tolerance
+ */
+fun Fraction.isGreaterThan(rhs: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean = (this + tolerance) > rhs
+
+
+/**
+ * Determines whether this integer is less than or equal to the other, within a given tolerance.
+ *
+ * @param rhs       The other integer to compare to this one
+ * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
+ *                  Defaults to [defaultFractionCalculationTolerance]
+ * @return `true` iff this value and the other are equal within the given tolerance
+ */
+fun Integer.isLessThanOrEqualTo(rhs: Integer, tolerance: Integer = defaultIntegerCalculationTolerance): Boolean = (this - tolerance) <= rhs
+
+
+/**
+ * Determines whether this integer is greater than or equal to the other, within a given tolerance.
+ *
+ * @param rhs       The other integer to compare to this one
+ * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
+ *                  Defaults to [defaultFractionCalculationTolerance]
+ * @return `true` iff this value and the other are equal within the given tolerance
+ */
+fun Integer.isGreaterThanOrEqualTo(rhs: Integer, tolerance: Integer = defaultIntegerCalculationTolerance): Boolean = (this + tolerance) >= rhs
+
+
+/**
+ * Determines whether this integer is less than the other, within a given tolerance.
+ *
+ * @param rhs       The other integer to compare to this one
+ * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
+ *                  Defaults to [defaultFractionCalculationTolerance]
+ * @return `true` iff this value and the other are equal within the given tolerance
+ */
+fun Integer.isLessThan(rhs: Integer, tolerance: Integer = defaultIntegerCalculationTolerance): Boolean = (this - tolerance) < rhs
+
+
+/**
+ * Determines whether this integer is greater than the other, within a given tolerance.
+ *
+ * @param rhs       The other integer to compare to this one
+ * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
+ *                  Defaults to [defaultFractionCalculationTolerance]
+ * @return `true` iff this value and the other are equal within the given tolerance
+ */
+fun Integer.isGreaterThan(rhs: Integer, tolerance: Integer = defaultIntegerCalculationTolerance): Boolean = (this + tolerance) > rhs
+
+
 /**
  * Determines whether this integer is between `a` and `b`, within the given tolerance
  */

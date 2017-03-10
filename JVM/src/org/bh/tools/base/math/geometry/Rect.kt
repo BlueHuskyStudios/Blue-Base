@@ -35,35 +35,134 @@ typealias AnyRect = Rect<*, *, *>
 
 
 
+/**
+ * A type of [Rect] that can be used in computations and have computations performed on it
+ */
 abstract class ComputableRect<NumberType : Number, PointType: ComputablePoint<NumberType>,
         SizeType: ComputableSize<NumberType>>(origin: PointType, size: SizeType)
     : Rect<NumberType, PointType, SizeType>(origin, size) {
 
+    /** The lowest X value of this rectangle */
     abstract val minX: NumberType
+    /** The center X value of this rectangle */
     abstract val midX: NumberType
+    /** The highest X value of this rectangle */
     abstract val maxX: NumberType
 
+    /** The lowest Y value of this rectangle */
     abstract val minY: NumberType
+    /** The center Y value of this rectangle */
     abstract val midY: NumberType
+    /** The highest Y value of this rectangle */
     abstract val maxY: NumberType
 
+    /** The coordinates of the point at the lowest X value and lowest Y value of this rectangle */
     abstract val minXminY: PointType
+    /** The coordinates of the point at the lowest X value and center Y value of this rectangle */
     abstract val minXmidY: PointType
+    /** The coordinates of the point at the lowest X value and highest Y value of this rectangle */
     abstract val minXmaxY: PointType
 
+    /** The coordinates of the point at the center X value and lowest Y value of this rectangle */
     abstract val midXminY: PointType
+    /** The coordinates of the point at the center X value and center Y value of this rectangle */
     abstract val midXmidY: PointType
+    /** The coordinates of the point at the center X value and highest Y value of this rectangle */
     abstract val midXmaxY: PointType
 
+    /** The coordinates of the point at the highest X value and lowest Y value of this rectangle */
     abstract val maxXminY: PointType
+    /** The coordinates of the point at the highest X value and center Y value of this rectangle */
     abstract val maxXmidY: PointType
+    /** The coordinates of the point at the highest X value and highest Y value of this rectangle */
     abstract val maxXmaxY: PointType
 
-    val isEmpty: Boolean get() = size.isEmpty
+    /**
+     * Indicates whether this rectangle has a `0` area.
+     * By default this is simply whether [size].[isEmpty][ComputableSize.isEmpty]
+     */
+    inline val isEmpty: Boolean get() = size.isEmpty
 
+
+    /**
+     * Indicates whether this rectangle completely contains the given [other] one, within the given tolerance.
+     *
+     * @param other     The other rectangle
+     * @param tolerance _optional_ - The amount by which the sides of the [other] rectangle can each be outside this
+     *                  one before it is no longer considered completely contained within this one.
+     *
+     * @return `true` iff the other rectangle is completely contained within this one.
+     */
+    @Suppress("KDocUnresolvedReference")
     abstract fun contains(other: ComputableRect<NumberType, PointType, SizeType>): Boolean
+
+    /**
+     * Indicates whether this rectangle completely contains the given [other] one, within the given tolerance.
+     *
+     * @param other     The other rectangle
+     * @param tolerance _optional_ - The amount by which the sides of the [other] rectangle can each be outside this
+     *                  one before it is no longer considered completely contained within this one.
+     *
+     * @return `true` iff the other rectangle is completely contained within this one.
+     */
+    abstract fun contains(other: ComputableRect<NumberType, PointType, SizeType>, tolerance: NumberType): Boolean
+
+
+    /**
+     * Indicates whether this rectangle at all intersects the given [other] one, within the given tolerance. If only
+     * their edges or vertices touch, that is considered an intersection.
+     *
+     * @param other     The other rectangle
+     * @param tolerance _optional_ - The amount by which the sides of the [other] rectangle can be away from this one
+     *                  before it is no longer considered intersecting this one at all.
+     *
+     * @return `true` iff the other rectangle is completely contained within this one.
+     */
+    @Suppress("KDocUnresolvedReference")
     abstract fun intersects(other: ComputableRect<NumberType, PointType, SizeType>): Boolean
+
+    /**
+     * Indicates whether this rectangle at all intersects the given [other] one, within the given tolerance. If only
+     * their edges or vertices touch, that is considered an intersection.
+     *
+     * @param other     The other rectangle
+     * @param tolerance _optional_ - The amount by which the sides of the [other] rectangle can be away from this one
+     *                  before it is no longer considered intersecting this one at all.
+     *
+     * @return `true` iff the other rectangle is completely contained within this one.
+     */
+    abstract fun intersects(other: ComputableRect<NumberType, PointType, SizeType>, tolerance: NumberType): Boolean
+
+
+    /**
+     * Finds the portion of this rectangle that intersects the given [other] one, within the given tolerance. If only
+     * their edges or vertices touch, that is considered an intersection, despite having `0` area.
+     *
+     * @param other     The other rectangle
+     * @param tolerance _optional_ - The amount by which the sides of the [other] rectangle can be away from this one
+     *                  before it is no longer considered intersecting this one at all.
+     *
+     * @return The rectangular intersection of this and the given rectangles, or `null` that doesn't exist.
+     */
+    @Suppress("KDocUnresolvedReference")
     abstract fun intersection(other: ComputableRect<NumberType, PointType, SizeType>): ComputableRect<NumberType, PointType, SizeType>?
+
+    /**
+     * Finds the portion of this rectangle that intersects the given [other] one, within the given tolerance. If only
+     * their edges or vertices touch, that is considered an intersection, despite having `0` area.
+     *
+     * @param other     The other rectangle which might
+     * @param tolerance _optional_ - The amount by which the sides of the [other] rectangle can be away from this one
+     *                  before it is no longer considered intersecting this one at all.
+     *
+     * @return The rectangular intersection of this and the given rectangles, or `null` that doesn't exist.
+     */
+    abstract fun intersection(other: ComputableRect<NumberType, PointType, SizeType>, tolerance: NumberType): ComputableRect<NumberType, PointType, SizeType>?
+
+
+    /**
+     * Finds and returns the rectangle that contains both this and the given [other] one
+     */
     abstract fun union(other: ComputableRect<NumberType, PointType, SizeType>): ComputableRect<NumberType, PointType, SizeType>
 }
 
@@ -73,49 +172,57 @@ private typealias Int64RectBaseType = ComputableRect<Int64, ComputablePoint<Int6
 
 
 
+/**
+ * A default implementation of [ComputableRect] using [Integer]s
+ */
 class IntegerRect(origin: ComputablePoint<Int64>, size: ComputableSize<Int64>)
     : Int64RectBaseType(origin, size) {
 
     companion object {
-        val zero = IntegerRect(IntegerPoint.zero, IntegerSize.zero)
+        val zero by lazy { IntegerRect(IntegerPoint.zero, IntegerSize.zero) }
     }
 
     constructor(x: Int64, y: Int64, width: Int64, height: Int64) : this(IntPoint(x, y), IntegerSize(width, height))
 
-    override val minX get() = if (width < 0) x + width else x
-    override val midX get() = (minX + maxX) / 2
-    override val maxX get() = if (width < 0) x else x + width
+    override val minX by lazy { if (width < 0) x + width else x }
+    override val midX by lazy { (minX + maxX) / 2 }
+    override val maxX by lazy { if (width < 0) x else x + width }
 
-    override val minY get() = if (height < 0) y + height else y
-    override val midY get() = (minY + maxY) / 2
-    override val maxY get() = if (height < 0) y else y + height
+    override val minY by lazy { if (height < 0) y + height else y }
+    override val midY by lazy { (minY + maxY) / 2 }
+    override val maxY by lazy { if (height < 0) y else y + height }
 
-    override val minXminY get() = IntegerPoint(minX, minY)
-    override val minXmidY get() = IntegerPoint(minX, midY)
-    override val minXmaxY get() = IntegerPoint(minX, maxY)
+    override val minXminY by lazy { IntegerPoint(minX, minY) }
+    override val minXmidY by lazy { IntegerPoint(minX, midY) }
+    override val minXmaxY by lazy { IntegerPoint(minX, maxY) }
 
-    override val midXminY get() = IntegerPoint(midX, minY)
-    override val midXmidY get() = IntegerPoint(midX, midY)
-    override val midXmaxY get() = IntegerPoint(midX, maxY)
+    override val midXminY by lazy { IntegerPoint(midX, minY) }
+    override val midXmidY by lazy { IntegerPoint(midX, midY) }
+    override val midXmaxY by lazy { IntegerPoint(midX, maxY) }
 
-    override val maxXminY get() = IntegerPoint(maxX, minY)
-    override val maxXmidY get() = IntegerPoint(maxX, midY)
-    override val maxXmaxY get() = IntegerPoint(maxX, maxY)
+    override val maxXminY by lazy { IntegerPoint(maxX, minY) }
+    override val maxXmidY by lazy { IntegerPoint(maxX, midY) }
+    override val maxXmaxY by lazy { IntegerPoint(maxX, maxY) }
 
 
 
-    val awtValue: Rectangle get() = Rectangle(x.int32Value, y.int32Value, width.int32Value, height.int32Value)
+    val awtValue: Rectangle by lazy { Rectangle(x.int32Value, y.int32Value, width.int32Value, height.int32Value) }
 
     override fun contains(other: Int64RectBaseType): Boolean
-            = this.minX <= x
-            && this.minY <= y
-            && this.maxX >= x
-            && this.maxY >= y
+            = contains(other, defaultIntegerCalculationTolerance)
+
+    override fun contains(other: Int64RectBaseType, tolerance: Integer): Boolean
+            = this.minX.isLessThanOrEqualTo(x, tolerance = tolerance)
+            && this.minY.isLessThanOrEqualTo(y, tolerance = tolerance)
+            && this.maxX.isGreaterThanOrEqualTo(x, tolerance = tolerance)
+            && this.maxY.isGreaterThanOrEqualTo(y, tolerance = tolerance)
 
 
-    override fun intersects(other: Int64RectBaseType): Boolean {
-        return intersection(other) != null
-    }
+    override fun intersects(other: Int64RectBaseType): Boolean
+            = intersection(other) != null
+
+    override fun intersects(other: Int64RectBaseType, tolerance: Integer): Boolean
+            = intersection(other, tolerance = tolerance) != null
 
 
     override fun union(other: Int64RectBaseType): Int64RectBaseType {
@@ -130,7 +237,7 @@ class IntegerRect(origin: ComputablePoint<Int64>, size: ComputableSize<Int64>)
         } else if (isEmptySecondRect) {
             return this
         }
-        val x = org.bh.tools.base.math.min(this.minX, other.minX)
+        val x = min(this.minX, other.minX)
         val y = min(this.minY, other.minY)
         val width = max(this.maxX, other.maxX) - x
         val height = max(this.maxY, other.maxY) - y
@@ -138,10 +245,17 @@ class IntegerRect(origin: ComputablePoint<Int64>, size: ComputableSize<Int64>)
     }
 
 
-    override fun intersection(other: Int64RectBaseType): Int64RectBaseType? {
+    override fun intersection(other: Int64RectBaseType): Int64RectBaseType?
+            = intersection(other, tolerance = -defaultIntegerCalculationTolerance)
+
+
+    override fun intersection(other: Int64RectBaseType, tolerance: Integer): Int64RectBaseType? {
         // Adapted from https://github.com/apple/swift-corelibs-foundation/blob/87815eab0cff7d971f1fbdbfbe98729ec92dbe3d/Foundation/NSGeometry.swift#L604
 
-        if (this.maxX <= other.minX || other.maxX <= this.minX || this.maxY <= other.minY || other.maxY <= this.minY) {
+        if (this.maxX.isLessThanOrEqualTo(other.minX, tolerance = tolerance)
+                || other.maxX.isLessThanOrEqualTo(this.minX, tolerance = tolerance)
+                || this.maxY.isLessThanOrEqualTo(other.minY, tolerance = tolerance)
+                || other.maxY.isLessThanOrEqualTo(this.minY, tolerance = tolerance)) {
             return null
         }
         val x = max(this.minX, other.minX)
@@ -154,7 +268,10 @@ class IntegerRect(origin: ComputablePoint<Int64>, size: ComputableSize<Int64>)
 typealias Int64Rect = IntegerRect
 typealias IntRect = IntegerRect
 
-val AnyRect.intValue: IntegerRect get() = IntegerRect(x = x.integerValue, y = y.integerValue, width = width.integerValue, height = height.integerValue)
+/** Returns this rectangle as an [IntegerRect] */
+val AnyRect.integerValue: IntegerRect
+    get() = if (this is IntegerRect) this
+    else IntegerRect(x = x.integerValue, y = y.integerValue, width = width.integerValue, height = height.integerValue)
 
 
 
@@ -165,7 +282,8 @@ private typealias FractionRectBaseType = ComputableRect<Fraction, ComputablePoin
 /**
  * A default implementation of [ComputableRect] using [Fraction]s
  */
-class FractionRect(origin: ComputablePoint<Fraction>, size: ComputableSize<Fraction>) : FractionRectBaseType(origin, size) {
+class FractionRect(origin: ComputablePoint<Fraction>, size: ComputableSize<Fraction>)
+    : FractionRectBaseType(origin, size) {
 
     companion object {
         val zero = FractionRect(FractionPoint.zero, Float64Size.zero)
@@ -177,38 +295,43 @@ class FractionRect(origin: ComputablePoint<Fraction>, size: ComputableSize<Fract
 
     constructor(awtValue: Rectangle2D) : this(awtValue.x, awtValue.y, awtValue.width, awtValue.height)
 
-    override val minX get() = if (width < 0) x + width else x
-    override val midX get() = (minX + maxX) / 2
-    override val maxX get() = if (width < 0) x else x + width
+    override val minX by lazy { if (width < 0) x + width else x }
+    override val midX by lazy { (minX + maxX) / 2 }
+    override val maxX by lazy { if (width < 0) x else x + width }
 
-    override val minY get() = if (height < 0) y + height else y
-    override val midY get() = (minY + maxY) / 2
-    override val maxY get() = if (height < 0) y else y + height
+    override val minY by lazy { if (height < 0) y + height else y }
+    override val midY by lazy { (minY + maxY) / 2 }
+    override val maxY by lazy { if (height < 0) y else y + height }
 
-    override val minXminY get() = FractionPoint(minX, minY)
-    override val minXmidY get() = FractionPoint(minX, midY)
-    override val minXmaxY get() = FractionPoint(minX, maxY)
+    override val minXminY by lazy { FractionPoint(minX, minY) }
+    override val minXmidY by lazy { FractionPoint(minX, midY) }
+    override val minXmaxY by lazy { FractionPoint(minX, maxY) }
 
-    override val midXminY get() = FractionPoint(midX, minY)
-    override val midXmidY get() = FractionPoint(midX, midY)
-    override val midXmaxY get() = FractionPoint(midX, maxY)
+    override val midXminY by lazy { FractionPoint(midX, minY) }
+    override val midXmidY by lazy { FractionPoint(midX, midY) }
+    override val midXmaxY by lazy { FractionPoint(midX, maxY) }
 
-    override val maxXminY get() = FractionPoint(maxX, minY)
-    override val maxXmidY get() = FractionPoint(maxX, midY)
-    override val maxXmaxY get() = FractionPoint(maxX, maxY)
+    override val maxXminY by lazy { FractionPoint(maxX, minY) }
+    override val maxXmidY by lazy { FractionPoint(maxX, midY) }
+    override val maxXmaxY by lazy { FractionPoint(maxX, maxY) }
 
     val awtValue: Rectangle2D get() = Rectangle2D.Double(x, y, width, height)
 
     override fun contains(other: FractionRectBaseType): Boolean
-            = this.minX <= x
-            && this.minY <= y
-            && this.maxX >= x
-            && this.maxY >= y
+            = contains(other, defaultFractionCalculationTolerance)
+
+    override fun contains(other: FractionRectBaseType, tolerance: Fraction): Boolean
+            = this.minX.isLessThanOrEqualTo(x, tolerance = tolerance)
+            && this.minY.isLessThanOrEqualTo(y, tolerance = tolerance)
+            && this.maxX.isGreaterThanOrEqualTo(x, tolerance = tolerance)
+            && this.maxY.isGreaterThanOrEqualTo(y, tolerance = tolerance)
 
 
-    override fun intersects(other: FractionRectBaseType): Boolean {
-        return intersection(other) != null
-    }
+    override fun intersects(other: FractionRectBaseType): Boolean
+            = intersection(other) != null
+
+    override fun intersects(other: FractionRectBaseType, tolerance: Fraction): Boolean
+            = intersection(other, tolerance = tolerance) != null
 
 
     override fun union(other: FractionRectBaseType): FractionRectBaseType {
@@ -231,8 +354,14 @@ class FractionRect(origin: ComputablePoint<Fraction>, size: ComputableSize<Fract
     }
 
 
-    override fun intersection(other: FractionRectBaseType): FractionRectBaseType? {
-        if (this.maxX <= other.minX || other.maxX <= this.minX || this.maxY <= other.minY || other.maxY <= this.minY) {
+    override fun intersection(other: FractionRectBaseType): FractionRectBaseType?
+            = intersection(other, tolerance = -defaultFractionCalculationTolerance)
+
+    override fun intersection(other: FractionRectBaseType, tolerance: Fraction): FractionRectBaseType? {
+        if (this.maxX.isLessThan(other.minX, tolerance = tolerance)
+                || other.maxX.isLessThan(this.minX, tolerance = tolerance)
+                || this.maxY.isLessThan(other.minY, tolerance = tolerance)
+                || other.maxY.isLessThan(this.minY, tolerance = tolerance)) {
             return null
         }
         val x = max(this.minX, other.minX)

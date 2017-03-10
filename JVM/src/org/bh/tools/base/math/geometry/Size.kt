@@ -44,6 +44,7 @@ abstract class ComputableSize
     : Size<NumberType>(width, height)
 where NumberType: Number {
 
+    /** Indicates whether this size has a `0` area. */
     abstract val isEmpty: Boolean
 
     /** The smaller of the two dimensions */

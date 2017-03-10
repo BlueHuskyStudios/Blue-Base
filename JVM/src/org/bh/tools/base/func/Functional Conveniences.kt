@@ -19,7 +19,6 @@ import java.io.Serializable
  * There is no meaning attached to value in this class; it can be used for any purpose.
  * Single exhibits value semantics, i.e. singles are equal if both components are equal.
  *
- *
  * @param First The type of the first (and only) value.
  * @property first The first (and only) value.
  * @constructor Creates a new instance of Single.
@@ -56,6 +55,19 @@ typealias Tuple1<First> = Single<First>
 typealias Tuple2<First, Second> = Pair<First, Second>
 /** A tuple containing three values */
 typealias Tuple3<First, Second, Third> = Triple<First, Second, Third>
+
+
+interface TupleConvertible<out TupleType> {
+    /**
+     * Converts this into a tuple. The default implementation simply calls [tupleValue].
+     */
+    fun toTuple() = tupleValue
+
+    /**
+     * Converts this into a tuple. It's recommended that this is done `by lazy`.
+     */
+    val tupleValue: TupleType
+}
 
 
 

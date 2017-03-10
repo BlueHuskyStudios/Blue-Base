@@ -3,6 +3,7 @@
 package org.bh.tools.base.math.geometry
 
 import org.bh.tools.base.abstraction.*
+import org.bh.tools.base.func.tuple
 import org.bh.tools.base.math.*
 import java.awt.geom.Point2D
 
@@ -45,6 +46,9 @@ open class Point<out NumberType : Number>(val x: NumberType, val y: NumberType) 
     override fun hashCode(): Int {
         return super.hashCode() xor x.hashCode() xor y.hashCode()
     }
+
+    fun toTuple() = tupleValue
+    val tupleValue by lazy { tuple(x, y) }
 }
 /**
  * Any kind of point, of any subclass, using any kind of number
@@ -59,6 +63,7 @@ typealias Coordinate<NumberType> = Point<NumberType>
 
 val <NumberType : Number> Point<NumberType>.pairValue: Pair<NumberType, NumberType> get() = Pair(x, y)
 val <NumberType : Number> Point<NumberType>.integerValue: IntegerPoint get() = this as? IntegerPoint ?: IntegerPoint(x.integerValue, y.integerValue)
+fun <NumberType : Number> Point<NumberType>.integerValue(rounding: RoundingDirection): IntegerPoint = this as? IntegerPoint ?: IntegerPoint(x.integerValue(rounding), y.integerValue(rounding))
 val <NumberType : Number> Point<NumberType>.fractionValue: FractionPoint get() = this as? FractionPoint ?: FractionPoint(x.fractionValue, y.fractionValue)
 
 

@@ -1,9 +1,9 @@
 package org.bh.tools.base.util
 
-import org.bh.tools.base.abstraction.Fraction
 import org.bh.tools.base.abstraction.Integer
 import org.bh.tools.base.math.Averager
 import org.bh.tools.base.util.TimeConversion.Companion.nanosecondsToTimeInterval
+import org.junit.Assert.assertTrue
 import kotlin.system.measureNanoTime
 
 /*
@@ -94,3 +94,8 @@ enum class TimeTrialMeasurementMode {
     /** Return the sum of all results */
     total
 }
+
+
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun assertionFailure(message: String = "") = assertTrue(message, false)
