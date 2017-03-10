@@ -15,6 +15,7 @@ import org.bh.tools.base.abstraction.*
  * Implementing classes can be converted to a number
  */
 interface NumberConvertible<out NumberType: Number> {
+    /** This object as a number */
     val numberValue: NumberType
 }
 
@@ -62,17 +63,23 @@ inline val Number.int64Value: Int64 get() = this.toLong()
  */
 inline val Number.integerValue: Integer get() = this.int64Value
 
+fun Number.integerValue(rounded: RoundingDirection): Integer = when {
+    this.isNativeInteger -> this.integerValue
+    //this.isNativeFraction ->
+    else -> this.fractionValue.rounded(rounded).integerValue
+}
 
 
 
-val Number.isNativeInteger: Boolean get()
+/** Indicates whether this is an integer native to the platform */
+inline val Number.isNativeInteger: Boolean get()
     = when (this) {
         is Int8, is Int16, is Int32, is Int64 -> true
         else -> false
     }
 
-
-val Number.isNativeFraction: Boolean get()
+/** Indicates whether this is a fraction native to the platform */
+inline val Number.isNativeFraction: Boolean get()
     = when (this) {
         is Float32, is Float64 -> true
         else -> false
@@ -107,12 +114,18 @@ val Integer.clampedInt32Value: Int32 get()
     = clamp(low = Int32.min.integerValue, value = this, high = Int32.max.integerValue).int32Value
 
 
-val Int8.clampToPositive: Int8 get() = if (this < 0) 0 else this
-val Int16.clampToPositive: Int16 get() = if (this < 0) 0 else this
-val Int32.clampToPositive: Int32 get() = if (this < 0) 0 else this
-val Int64.clampToPositive: Int64 get() = if (this < 0) 0 else this
-val Float32.clampToPositive: Float32 get() = if (this < 0.0f) 0.0f else this
-val Float64.clampToPositive: Float64 get() = if (this < 0.0) 0.0 else this
+/** Returns this integer if it is positive, else `0`. */
+inline val Int8.clampToPositive   : Int8    get() = if (this < 0)    0    else this
+/** Returns this integer if it is positive, else `0`. */
+inline val Int16.clampToPositive  : Int16   get() = if (this < 0)    0    else this
+/** Returns this integer if it is positive, else `0`. */
+inline val Int32.clampToPositive  : Int32   get() = if (this < 0)    0    else this
+/** Returns this integer if it is positive, else `0`. */
+inline val Int64.clampToPositive  : Int64   get() = if (this < 0)    0    else this
+/** Returns this fraction if it is positive, else `0`. */
+inline val Float32.clampToPositive: Float32 get() = if (this < 0.0f) 0.0f else this
+/** Returns this fraction if it is positive, else `0`. */
+inline val Float64.clampToPositive: Float64 get() = if (this < 0.0)  0.0  else this
 
 
 

@@ -4,6 +4,7 @@ package org.bh.tools.base.math.geometry
 
 import org.bh.tools.base.abstraction.Fraction
 import org.bh.tools.base.abstraction.Integer
+import org.bh.tools.base.func.*
 import org.bh.tools.base.math.*
 import java.awt.geom.AffineTransform
 import java.lang.Math.abs
@@ -17,7 +18,12 @@ import java.lang.Math.abs
  * @author Kyli Rouge
  * @since 2016-12-11
  */
-open class LineSegment<out NumberType : Number, out PointType : Point<NumberType>>(open val start: PointType, open val end: PointType) : Cloneable {
+open class LineSegment<NumberType : Number, out PointType : Point<NumberType>>(
+        /** The point at the start of the line segment */
+        open val start: PointType,
+        /** The point at the end of the line segment */
+        open val end: PointType)
+    : Cloneable, TupleConvertible<Tuple2<PointType, PointType>> {
 
     /** The first point's X coordinate */
     inline val x1 get() = start.x
@@ -37,6 +43,13 @@ open class LineSegment<out NumberType : Number, out PointType : Point<NumberType
     override public fun clone(): LineSegment<NumberType, Point<NumberType>> {
         return LineSegment(start.clone(), end.clone())
     }
+
+    /**
+     * Converts this line segment into a tuple of `(start, end)`
+     * @see start
+     * @see end
+     */
+    override val tupleValue by lazy { tuple(start, end) }
 }
 
 
@@ -378,6 +391,9 @@ sealed class IntersectionDescription {
 }
 
 
+/**
+ * An implementation of [ComputableLineSegment] using [Integer]s
+ */
 class IntegerLineSegment
     (start: IntegerPoint, end: IntegerPoint)
     : ComputableLineSegment<Integer, IntegerPoint>(start, end) {
@@ -478,32 +494,22 @@ class IntegerLineSegment
 
 
     companion object {
+        /**
+         * Finds the intersection point of the two given lines, within the given tolerance.
+         *
+         * Currently, this is done via [FractionLineSegment].[rawIntersection][FractionLineSegment.rawIntersection]
+         * using [fractionValue] and [integerValue][FractionPoint.integerValue]
+         *
+         * @param line1     The first line which might intersect the second
+         * @param line2     The second line which might intersect the first
+         * @param tolerance The amount by which the vertices of the given lines can be apart by which they are still considered touching.
+         *
+         * @return The point at which the lines intersect, or `null` if they do not.
+         */
         fun findLineIntersection(line1: ComputableLineSegment<Integer, IntegerPoint>,
                                  line2: ComputableLineSegment<Integer, IntegerPoint>,
-                                 tolerance: Integer = defaultIntegerCalculationTolerance): ComputablePoint<Integer>? {
-
-            if (line1.equals(line2, tolerance = tolerance)) {
-                return line1.start
-            }
-
-            val line1XDelta = line1.start.x - line1.end.x
-            val line1YDelta = line1.end.y - line1.start.y
-            val line1Delta = (line1XDelta * line1.start.y) + (line1YDelta * line1.start.x)
-
-            val line2XDelta = line2.start.x - line2.end.x
-            val line2YDelta = line2.end.y - line2.start.y
-            val line2Delta = (line2XDelta * line2.start.y) + (line2YDelta * line2.start.x)
-
-            val angularDifference = abs((line2XDelta * line1YDelta) - (line1XDelta * line2YDelta))
-            val areParallel = angularDifference <= tolerance
-
-            return if (areParallel) {
-                null
-            } else {
-                IntegerPoint(((line2XDelta * line1Delta) - (line1XDelta * line2Delta)) / angularDifference,
-                           ((line1YDelta * line2Delta) - (line2YDelta * line1Delta)) / angularDifference)
-            }
-        }
+                                 tolerance: Integer = defaultIntegerCalculationTolerance): ComputablePoint<Integer>?
+                = line1.fractionValue.rawIntersection(line2.fractionValue, tolerance = tolerance.fractionValue)?.integerValue
     }
 }
 typealias Int64LineSegment = IntegerLineSegment
@@ -611,13 +617,45 @@ open class FractionLineSegment(start: FractionPoint, end: FractionPoint) : Compu
             = findLineIntersection(this, other)
 
     companion object {
+        /**
+         * Finds the intersection of the two given lines to the given tolerance, if it exists.
+         *
+         * This currently uses a Kotlin version of the algorithm described here:
+         * http://stackoverflow.com/a/1968345/3939277 which was derived from the comment-linked F# translation here:
+         * http://pastebin.com/nf56MHP7
+         *
+         * The intersection is currently preceded by a rudamentary check for collinear segments' vertices touching,
+         * which may or may not have a general solution. If it does, that will hopefully be documented here:
+         * http://math.stackexchange.com/q/2177005/317419
+         * If such a general solution is found, this will be updated to use that.
+         *
+         * @param line1     The first line which might intersect the second
+         * @param line2     The second line which might intersect the first
+         * @param tolerance _optional_ - The amount by which the vertices of the given lines can be apart by which they are still considered touching.
+         *
+         * @return The point at which the lines intersect, or `null` if they do not.
+         */
         fun findLineIntersection(line1: ComputableLineSegment<Fraction, FractionPoint>,
                                  line2: ComputableLineSegment<Fraction, FractionPoint>,
                                  tolerance: Fraction = defaultFractionCalculationTolerance): ComputablePoint<Fraction>? {
 
+            // There may not be any algorithm that detects collinear vertex-only intersections, so always perform this primitive check first:
+
             if (line1.equals(line2, tolerance = tolerance)) {
                 return line1.start
+            } else if (line1.start.equals(line2.start, tolerance = tolerance) || line1.start.equals(line2.end, tolerance = tolerance)) {
+                return line1.start
+            } else if (line1.end.equals(line2.start, tolerance = tolerance) || line1.end.equals(line2.end, tolerance = tolerance)) {
+                return line1.end
             }
+
+            // Also check for basic bounding box intersection; if the boxes don't intersect then the lines cannot: http://math.stackexchange.com/q/2177005/317419
+
+            else if (!line1.bounds.intersects(line2.bounds)) {
+                return null
+            }
+
+            // Otherwise, use a more general algorithm:
 
             val line1XDelta = line1.start.x - line1.end.x
             val line1YDelta = line1.end.y - line1.start.y
@@ -633,16 +671,22 @@ open class FractionLineSegment(start: FractionPoint, end: FractionPoint) : Compu
             return if (areParallel) { // parallel line segments can still intersect if they share a vertex
                 if (line1.start == line2.start
                         || line1.start == line2.end) {
-                    return line1.start
+                    line1.start
                 } else if (line1.end == line2.start
                         || line1.end == line2.end) {
-                    return line1.end
+                    line1.end
                 } else {
                     null
                 }
             } else {
-                FractionPoint(((line2XDelta * line1Delta) - (line1XDelta * line2Delta)) / angularDifference,
-                        ((line1YDelta * line2Delta) - (line2YDelta * line1Delta)) / angularDifference)
+                val x = ((line2XDelta * line1Delta) - (line1XDelta * line2Delta)) / angularDifference
+                val y = ((line1YDelta * line2Delta) - (line2YDelta * line1Delta)) / angularDifference
+
+                if (x.isNaN() || y.isNaN()) {
+                    null
+                } else {
+                    FractionPoint(x, y)
+                }
             }
         }
     }

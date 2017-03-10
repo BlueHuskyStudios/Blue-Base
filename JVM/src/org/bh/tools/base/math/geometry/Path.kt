@@ -4,7 +4,7 @@ package org.bh.tools.base.math.geometry
 
 import org.bh.tools.base.abstraction.Fraction
 import org.bh.tools.base.abstraction.Integer
-import org.bh.tools.base.collections.*
+import org.bh.tools.base.collections.Index
 import org.bh.tools.base.collections.extensions.*
 import org.bh.tools.base.math.Comparator
 import org.bh.tools.base.math.ComparisonResult
@@ -12,7 +12,6 @@ import org.bh.tools.base.math.geometry.IntegerPath.Companion.pathFromGenericSegm
 import org.bh.tools.base.math.geometry.IntersectionDescription.*
 import org.bh.tools.base.math.geometry.OtherSegmentRelationshipToCurrent.*
 import java.util.*
-import java.util.Queue
 
 /**
  * A path comprised of a set of points
@@ -20,7 +19,7 @@ import java.util.Queue
  * @author Kyli
  * @since 2016-12-17
  */
-interface Path<out NumberType: Number, out PointType: Point<NumberType>, out SegmentType: LineSegment<NumberType, PointType>> {
+interface Path<NumberType: Number, out PointType: Point<NumberType>, out SegmentType: LineSegment<NumberType, PointType>> {
     /**
      * The segments in the path
      */
@@ -260,7 +259,7 @@ open class IntegerPath(override val segments: List<IntegerLineSegment> = listOf(
                         is none -> /*return*/ false
 
                         // Neighbors touch vertices? If they're opposing (start touches end or vice versa), that's normal.
-                        is leftVertexTouchesRightVertex<*> -> /*return*/ intersection.isLeftStartVertex != intersection.isRightStartVertex
+                        is leftVertexTouchesRightVertex<*> -> /*return*/ intersection.isLeftStartVertex == intersection.isRightStartVertex
 
                         is leftVertexTouchesRightEdge<*>,
                         is rightVertexTouchesLeftEdge<*>,
