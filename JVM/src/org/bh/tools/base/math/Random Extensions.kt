@@ -1,6 +1,8 @@
 package org.bh.tools.base.math
 
+import org.bh.tools.base.abstraction.Fraction
 import org.bh.tools.base.abstraction.Integer
+import org.bh.tools.base.struct.*
 import java.util.*
 
 /*
@@ -11,13 +13,29 @@ import java.util.*
  * @since 2017-02-19
  */
 
-fun Random.nextInteger(bound: Integer): Integer {
-    if (bound <= 0)
-        throw IllegalArgumentException("bound must be greater than 0")
+fun Random.nextFraction(bounds: OpenRange<Fraction>): Fraction {
 
-    val r = (nextFraction() - 0.5) / 2 // -1.0 to 1.0
-    return (r * Integer.max).clampedIntegerValue
+    val closedRange = ClosedRange(bounds.startInclusive ?: Fraction.min, bounds.endInclusive ?: Fraction.max)
+
+    val r = nextFraction() // 0.0 to 1.0
+    return ((r * closedRange.size) + closedRange.min)
 }
+
+
+fun Random.nextInteger(minimumValue: Integer, maximumValue: Integer): Integer {
+    return nextInteger(OpenRange(startInclusive = minimumValue, endInclusive = maximumValue))
+}
+
+
+fun Random.nextInteger(maximumValue: Integer): Integer = nextInteger(minimumValue = 0L, maximumValue = maximumValue)
+
+
+fun Random.nextInteger(bounds: OpenRange<Integer>): Integer {
+    return nextFraction(bounds.fractionValue).integerValue
+}
+
+
+fun Random.nextInteger() = nextInteger(bounds = OpenRange.infiniteRange())
 
 
 @Suppress("NOTHING_TO_INLINE")

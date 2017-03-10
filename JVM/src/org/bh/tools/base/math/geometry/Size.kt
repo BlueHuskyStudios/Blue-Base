@@ -358,13 +358,18 @@ inline val <NumberType : Number> Size<NumberType>.fractionValue: FractionSize
  * Generates some random point (x, y) where 0 <= x <= width and 0 <= y <= height.
  */
 @Suppress("UNCHECKED_CAST") // checked transitively
-val <NumberType : Number> Size<NumberType>.randomPoint: Point<NumberType> get() {
+val <NumberType : Number> ComputableSize<NumberType>.randomPoint: Point<NumberType> get() {
     val random = Random()
 
     return if (width.isNativeInteger && height.isNativeInteger) {
         Point(
-            x = random.nextInteger((width.integerValue + 1).integerValue) as NumberType,
-            y = random.nextInteger((height.integerValue + 1).integerValue) as NumberType
+            x = random.nextInteger(
+                    minimumValue = minX.integerValue,
+                    maximumValue = maxX.integerValue + 1
+            ) as NumberType,
+            y = random.nextInteger(
+                    minimumValue = minY.integerValue,
+                    maximumValue = maxY.integerValue + 1) as NumberType
         )
     } else if (width.isNativeFraction && height.isNativeFraction) {
         Point(

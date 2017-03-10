@@ -3,6 +3,7 @@
 package org.bh.tools.base.struct
 
 import org.bh.tools.base.abstraction.Fraction
+import org.bh.tools.base.abstraction.Integer
 import org.bh.tools.base.collections.Index
 import org.bh.tools.base.math.*
 
@@ -519,6 +520,13 @@ open class FractionOpenRange(startInclusive: Fraction?, endInclusive: Fraction?)
     }
 }
 
+val <NumberType> OpenRange<NumberType>.fractionValue
+        : FractionOpenRange
+        where NumberType : Number, NumberType : Comparable<NumberType>
+    get() =
+        if (this is FractionOpenRange) this
+        else FractionOpenRange(startInclusive = startInclusive?.fractionValue, endInclusive = endInclusive?.fractionValue)
+
 
 
 
@@ -588,33 +596,49 @@ private class _EmptyOpenRange<NumberType: Comparable<NumberType>> : OpenRange<Nu
 
 // MARK: - ClosedRange extensions
 
-
-
-fun<NumberType: Comparable<NumberType>> ClosedRange(onlyValue: NumberType): ClosedRange<NumberType>
+fun <NumberType: Comparable<NumberType>> ClosedRange(onlyValue: NumberType): ClosedRange<NumberType>
         = onlyValue..onlyValue
 
-fun<NumberType: Comparable<NumberType>> ClosedRange(start: NumberType, endInclusive: NumberType): ClosedRange<NumberType>
-        = if (start > endInclusive) endInclusive..start else start..endInclusive
+
+fun <NumberType: Comparable<NumberType>> ClosedRange(start: NumberType, endInclusive: NumberType): ClosedRange<NumberType>
+        = if (start > endInclusive) endInclusive..start
+        else start..endInclusive
+
 
 fun ClosedRange(location: Index, length: Int): IndexRange
-        = if (length < 0) (location + length)..location else location..(location + length)
+        = if (length < 0) (location + length)..location
+        else location..(location + length)
 
-val<NumberType: Comparable<NumberType>> ClosedRange<NumberType>.lowerBound: NumberType
+
+val <NumberType: Comparable<NumberType>> ClosedRange<NumberType>.lowerBound: NumberType
     get() = min(this.start, this.endInclusive)
-val<NumberType: Comparable<NumberType>> ClosedRange<NumberType>.upperBound: NumberType
+
+val <NumberType: Comparable<NumberType>> ClosedRange<NumberType>.upperBound: NumberType
     get() = max(this.start, this.endInclusive)
 
-operator fun<NumberType: Comparable<NumberType>> ClosedRange<NumberType>.compareTo(other: ClosedRange<NumberType>): Int {
-    if (this.start == other.start) {
-        if (this.endInclusive == other.endInclusive) {
-            return 0
+
+operator fun <NumberType: Comparable<NumberType>> ClosedRange<NumberType>.compareTo(other: ClosedRange<NumberType>): Int
+        = if (this.start == other.start) {
+            if (this.endInclusive == other.endInclusive) {
+                0
+            } else {
+                if (this.endInclusive < other.endInclusive) -1 else 1
+            }
         } else {
-            return if (this.endInclusive < other.endInclusive) -1 else 1
+            if (this.start < other.start) -1 else 1
         }
-    } else {
-        return if (this.start < other.start) -1 else 1
-    }
-}
+
+
+val ClosedRange<Integer>.size get() = this.max - this.min
+
+val ClosedRange<Fraction>.size get() = this.max - this.min
+
+val <NumberType> ClosedRange<NumberType>.fractionValue
+        : ClosedRange<Fraction>
+        where NumberType : Number, NumberType : Comparable<NumberType>
+    get() = ClosedRange(start = start.fractionValue, endInclusive = endInclusive.fractionValue)
+
+
 
 // This must be done because ClosedRange has a compareTo method but isn't Comparable. Because you can't do extensions conformity. |I
 class SortClosedRanges<NumberType>
@@ -623,8 +647,6 @@ class SortClosedRanges<NumberType>
     override fun compare(lhs: ClosedRange<NumberType>, rhs: ClosedRange<NumberType>): Int
         = lhs.compareTo(rhs)
 }
-
-//class SortOpenRanges<NumberType>: ComparableComparator<OpenRange<NumberType>>() where NumberType: Comparable<NumberType>
 
 
 
