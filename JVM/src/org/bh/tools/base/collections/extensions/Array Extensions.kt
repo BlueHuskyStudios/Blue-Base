@@ -31,11 +31,11 @@ import java.util.*
     return newArray
 }*/
 
-val Array<*>.count: Int get() = this.size
-val Array<*>.length: Int get() = this.size
+inline val Array<*>.count: Int get() = this.size
+inline val Array<*>.length: Int get() = this.size
 
-val Collection<*>.count: Int get() = this.size
-val Collection<*>.length: Int get() = this.size
+inline val Collection<*>.count: Int get() = this.size
+inline val Collection<*>.length: Int get() = this.size
 
 
 fun <T> Array<T>.deepEquals(other: Array<T>): Boolean {
