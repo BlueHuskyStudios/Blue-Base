@@ -401,16 +401,23 @@ class IntegerLineSegment
     override fun contains(point: Point<Integer>): Boolean = contains(point, tolerance = defaultIntegerCalculationTolerance)
 
     override fun contains(point: Point<Integer>, tolerance: Integer): Boolean {
-        if (start.x.equals(end.x, tolerance = tolerance)) { // it's vertical
-            return point.x.equals(start.x, tolerance = tolerance) // just compare the horizontal
+        point.integerValue.let { point ->
+            if (start.equals(point, tolerance = tolerance)
+                    || end.equals(point, tolerance = tolerance)) {
+                return true
+            }
+        }
+        return if (start.x.equals(end.x, tolerance = tolerance)) { // it's vertical
+            point.x.equals(start.x, tolerance = tolerance) // just compare the horizontal
                     && point.y.isBetween(start.y, end.y, tolerance = tolerance)
         } else if (start.y.equals(end.y, tolerance = tolerance)) { // it's horizontal
-            return point.y.equals(start.y, tolerance = tolerance) // just compare the vertical
+            point.y.equals(start.y, tolerance = tolerance) // just compare the vertical
                     && point.x.isBetween(start.x, end.x, tolerance = tolerance)
+        } else {
+            val m = (end.y - start.y) / (end.x - start.x)
+            val b = start.y - (m * start.x)
+            point.y.equals(((m * point.x) + b), tolerance = tolerance) // derived from y=mx+b
         }
-        val m = (end.y - start.y) / (end.x - start.x)
-        val b = start.y - (m * start.x)
-        return point.y.equals(((m * point.x) + b), tolerance = tolerance) // derived from y=mx+b
     }
 
 
@@ -529,16 +536,23 @@ open class FractionLineSegment(start: FractionPoint, end: FractionPoint) : Compu
     }
 
     override fun contains(point: Point<Fraction>, tolerance: Fraction): Boolean {
-        if (start.x.equals(end.x, tolerance = tolerance)) { // it's vertical
-            return point.x.equals(start.x, tolerance = tolerance) // just compare the horizontal
-            && point.y.isBetween(start.y, end.y, tolerance = tolerance)
-        } else if (start.y.equals(end.y, tolerance = tolerance)) { // it's horizontal
-            return point.y.equals(start.y, tolerance = tolerance) // just compare the vertical
-            && point.x.isBetween(start.x, end.x, tolerance = tolerance)
+        point.fractionValue.let { point ->
+            if (start.equals(point, tolerance = tolerance)
+                    || end.equals(point, tolerance = tolerance)) {
+                return true
+            }
         }
-        val m = (end.y - start.y) / (end.x - start.x)
-        val b = start.y - (m * start.x)
-        return point.y.equals(((m * point.x) + b), tolerance = tolerance) // derived from y=mx+b
+        return if (start.x.equals(end.x, tolerance = tolerance)) { // it's vertical
+            point.x.equals(start.x, tolerance = tolerance) // just compare the horizontal
+                    && point.y.isBetween(start.y, end.y, tolerance = tolerance)
+        } else if (start.y.equals(end.y, tolerance = tolerance)) { // it's horizontal
+            point.y.equals(start.y, tolerance = tolerance) // just compare the vertical
+                    && point.x.isBetween(start.x, end.x, tolerance = tolerance)
+        } else {
+            val m = (end.y - start.y) / (end.x - start.x)
+            val b = start.y - (m * start.x)
+            point.y.equals(((m * point.x) + b), tolerance = tolerance) // derived from y=mx+b
+        }
     }
 
     /**
