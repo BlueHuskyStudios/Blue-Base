@@ -89,6 +89,7 @@ open class DeltaStack<ContentType, DeltaType>
         synchronized(this) {
             val flatState = currentState()
             _stack.clear()
+            _baseState = flatState
             _resetCachedState(flatState)
 
             delegate?.deltaStackDidFlattenState(this)
