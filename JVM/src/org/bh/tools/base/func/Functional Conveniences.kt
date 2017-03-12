@@ -71,4 +71,4 @@ interface TupleConvertible<out TupleType> {
 
 
 
-fun <Input, Output> Input.transform(transformer: (Input)->Output): Output = transformer(this)
+inline fun <Input, Output> Input.transform(transformer: (Input)->Output): Output = let(transformer)
