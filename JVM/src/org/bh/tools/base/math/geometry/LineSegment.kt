@@ -8,6 +8,7 @@ import org.bh.tools.base.func.*
 import org.bh.tools.base.math.*
 import java.awt.geom.AffineTransform
 import java.lang.Math.abs
+import java.lang.Math.atan2
 
 
 /**
@@ -243,6 +244,7 @@ abstract class ComputableLineSegment
 }
 
 
+
 /**
  * Describes how and where two line segments intersect, if at all
  */
@@ -391,12 +393,44 @@ sealed class IntersectionDescription {
 }
 
 
+
+sealed class LineSegmentDirection(val exactRadians: Fraction) {
+    class yIncreasesMost(exactRadians: Fraction): LineSegmentDirection(exactRadians)
+    class xDecreasesMost(exactRadians: Fraction): LineSegmentDirection(exactRadians)
+    class yDecreasesMost(exactRadians: Fraction): LineSegmentDirection(exactRadians)
+    class xIncreasesMost(exactRadians: Fraction): LineSegmentDirection(exactRadians)
+
+
+    companion object {
+        @JvmStatic
+        fun fromRadians(radians: Fraction): LineSegmentDirection = when (anyRadiansToNormalizedRadians(radians)) {
+            in Fraction.quarter_pi..Fraction.three_quarter_pi -> yIncreasesMost(radians)
+            in Fraction.three_quarter_pi..Fraction.five_quarter_pi -> xDecreasesMost(radians)
+            in Fraction.five_quarter_pi..Fraction.seven_quarter_pi -> yDecreasesMost(radians)
+            else -> xIncreasesMost(radians)
+        }
+    }
+}
+
+
+
 /**
  * An implementation of [ComputableLineSegment] using [Integer]s
  */
 class IntegerLineSegment
     (start: IntegerPoint, end: IntegerPoint)
     : ComputableLineSegment<Integer, IntegerPoint>(start, end) {
+
+
+    /**
+     * The smallest rectangle that contains all points in this line
+     */
+    override val bounds: IntegerRect by lazy { IntegerRect(start, IntegerSize(x2 - x1, y2 - y1)) }
+
+    val direction: LineSegmentDirection get() {
+        val normalized = end - start
+        return LineSegmentDirection.fromRadians(atan2(normalized.y.fractionValue, normalized.x.fractionValue))
+    }
 
     override fun contains(point: Point<Integer>): Boolean = contains(point, tolerance = defaultIntegerCalculationTolerance)
 
@@ -419,12 +453,6 @@ class IntegerLineSegment
             point.y.equals(((m * point.x) + b), tolerance = tolerance) // derived from y=mx+b
         }
     }
-
-
-    /**
-     * The smallest rectangle that contains all points in this line
-     */
-    override val bounds: IntegerRect by lazy { IntegerRect(start, IntegerSize(x2 - x1, y2 - y1)) }
 
 
     /**

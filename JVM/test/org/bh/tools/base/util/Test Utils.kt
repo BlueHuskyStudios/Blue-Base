@@ -2,7 +2,7 @@ package org.bh.tools.base.util
 
 import org.bh.tools.base.abstraction.Integer
 import org.bh.tools.base.math.Averager
-import org.bh.tools.base.util.TimeConversion.Companion.nanosecondsToTimeInterval
+import org.bh.tools.base.util.TimeConversion.nanosecondsToTimeInterval
 import org.junit.Assert.assertTrue
 import kotlin.system.measureNanoTime
 
