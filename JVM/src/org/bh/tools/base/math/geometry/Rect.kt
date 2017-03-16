@@ -31,6 +31,7 @@ open class Rect<out NumberType : Number, out PointType: Point<NumberType>, out S
 }
 
 
+/** For matching any sort of [Rect] */
 typealias AnyRect = Rect<*, *, *>
 
 
@@ -264,14 +265,21 @@ class IntegerRect(origin: ComputablePoint<Int64>, size: ComputableSize<Int64>)
         val height = min(this.maxY, other.maxY) - y
         return IntegerRect(x, y, width, height)
     }
+
+
+    inline val integerValue: IntegerRect get() = this
 }
+/** A [Rect] that uses [Int64]s */
 typealias Int64Rect = IntegerRect
+/** A [Rect] that uses native integers */
 typealias IntRect = IntegerRect
 
 /** Returns this rectangle as an [IntegerRect] */
 val AnyRect.integerValue: IntegerRect
     get() = if (this is IntegerRect) this
     else IntegerRect(x = x.integerValue, y = y.integerValue, width = width.integerValue, height = height.integerValue)
+/** Creates a new [IntegerRect] from this AWT Rectangle */
+val java.awt.Rectangle.integerValue: IntegerRect get() = IntegerRect(x = x.integerValue, y = y.integerValue, width = width.integerValue, height = height.integerValue)
 
 
 
@@ -357,6 +365,7 @@ class FractionRect(origin: ComputablePoint<Fraction>, size: ComputableSize<Fract
     override fun intersection(other: FractionRectBaseType): FractionRectBaseType?
             = intersection(other, tolerance = -defaultFractionCalculationTolerance)
 
+
     override fun intersection(other: FractionRectBaseType, tolerance: Fraction): FractionRectBaseType? {
         if (this.maxX.isLessThan(other.minX, tolerance = tolerance)
                 || other.maxX.isLessThan(this.minX, tolerance = tolerance)
@@ -370,12 +379,21 @@ class FractionRect(origin: ComputablePoint<Fraction>, size: ComputableSize<Fract
         val height = min(this.maxY, other.maxY) - y
         return FractionRect(x, y, width, height)
     }
+
+
+    inline val fractionValue: FractionRect get() = this
 }
+/** A [Rect] that uses [Float64]s */
 typealias Float64Rect = FractionRect
+/** A [Rect] that uses native floating-point numbers */
 typealias FloatRect = FractionRect
 
 
-val AnyRect.fractionValue: FractionRect get() = FractionRect(x = x.fractionValue, y = y.fractionValue, width = width.fractionValue, height = height.fractionValue)
+/** Returns this rectangle as a [FractionRect] */
+val AnyRect.fractionValue: FractionRect
+    get() = if (this is FractionRect) this
+    else FractionRect(x = x.fractionValue, y = y.fractionValue, width = width.fractionValue, height = height.fractionValue)
+/** Creates a new [FractionRect] from this AWT Rectangle */
 val java.awt.Rectangle.fractionValue: FractionRect get() = FractionRect(x = x, y = y, width = width, height = height)
 
 
