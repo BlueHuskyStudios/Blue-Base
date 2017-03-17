@@ -14,13 +14,19 @@ import java.util.*
  * @see StateStore
  */
 open class DeltaStack<ContentType, DeltaType>
-        (baseState: ContentType)
-        : StateStore<ContentType, DeltaType>
-        where ContentType : ChangeableState<ContentType, DeltaType>, DeltaType : StateChange<DeltaType, ContentType>{
+        (
+                /**
+                 * The original base state, upon which changes will be made
+                 */
+                private val _originalState: @ParameterName("originalState") ContentType
+        )
+        : ResettableStateStore<ContentType, DeltaType>
+        where ContentType : ChangeableState<ContentType, DeltaType>,
+            DeltaType : StateChange<DeltaType, ContentType> {
 
     private val _stack = Stack<DeltaType>()
-    private var _cachedCurrentState: ContentType? = baseState
-    private var _baseState = baseState
+    private var _cachedCurrentState: ContentType? = _originalState
+    private var _baseState = _originalState
 
     /** The number of changes atop the base state */
     val size get() = _stack.size
@@ -57,6 +63,20 @@ open class DeltaStack<ContentType, DeltaType>
     }
 
 
+    override fun reset(newState: ContentType?) {
+        synchronized(this) {
+            if (newState != null) {
+                _baseState = newState
+            } else {
+                _baseState = _originalState
+            }
+
+            _stack.clear()
+            _resetCachedState(newState)
+        }
+    }
+
+
     private fun _resetCachedState(newState: ContentType? = null) {
         _cachedCurrentState = newState
     }
@@ -88,9 +108,7 @@ open class DeltaStack<ContentType, DeltaType>
     override fun flattenState(): ContentType {
         synchronized(this) {
             val flatState = currentState()
-            _stack.clear()
-            _baseState = flatState
-            _resetCachedState(flatState)
+            reset(flatState)
 
             delegate?.deltaStackDidFlattenState(this)
 
