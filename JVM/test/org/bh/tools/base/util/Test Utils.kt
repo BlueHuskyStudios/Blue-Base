@@ -56,7 +56,7 @@ inline fun averageTimeInterval(trials: Integer = defaultMeasurementTrialCount, b
         averager.average(nanosecondsToTimeInterval(measureNanoTime(block)))
     }
 
-    return averager.current
+    return averager.currentAverage
 }
 
 
@@ -97,5 +97,18 @@ enum class TimeTrialMeasurementMode {
 
 
 
+// MARK: - Assertions
+
 @Suppress("NOTHING_TO_INLINE")
-inline fun assertionFailure(message: String = "") = assertTrue(message, false)
+inline fun assertionFailure(message: String? = null) = assertTrue(message, false)
+
+
+
+inline fun assertThrows(message: String? = null, possibleThrow: () -> Unit) {
+    try {
+        possibleThrow()
+    } catch (_: Throwable) {
+        return
+    }
+    assertionFailure(message)
+}
