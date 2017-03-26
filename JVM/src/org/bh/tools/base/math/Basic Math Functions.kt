@@ -4,6 +4,7 @@
 package org.bh.tools.base.math
 
 import org.bh.tools.base.abstraction.*
+import java.lang.Math.abs
 
 /* Basic Math Functions, made for Blue Base, is copyright Blue Husky Software ©2016 BH-1-PS.
  *
@@ -84,3 +85,39 @@ infix fun Integer.toThePowerOf(exponent: Integer): Integer =
  * [max][Int.MAX_VALUE], then that max is returned. If [exponent] is negative, `0` is returned.
  */
 infix fun Int32.toThePowerOf(exponent: Int32): Int32 = this.integerValue.toThePowerOf(exponent.integerValue).clampedInt32Value
+
+
+/**
+ * Finds the absolute value of this fraction
+ */
+inline val Fraction.absoluteValue get() = abs(this)
+
+
+/**
+ * Finds the absolute value of this fraction
+ */
+inline val Float32.absoluteValue get() = abs(this)
+
+
+/**
+ * Finds the absolute value of this integer
+ */
+inline val Integer.absoluteValue get() = abs(this)
+
+
+/**
+ * Finds the absolute value of this integer
+ */
+inline val Int32.absoluteValue get() = abs(this)
+
+
+/**
+ * Finds the absolute value of this integer
+ */
+inline val Int16.absoluteValue get() = abs(this.integerValue)
+
+
+/**
+ * Finds the absolute value of this integer
+ */
+inline val Int8.absoluteValue get() = abs(this.integerValue)
