@@ -75,10 +75,15 @@ inline val Fraction.roundedIntegerValue: Integer get() = roundedInt64Value
  * Finds the [java.math.RoundingMode] appropriate the given [Fraction], [RoundingDirection], and [RoundingThreshold]
  *
  * @param fraction The fraction for which the rounding mode will be used
- * @param direction The direction in which rounding will occur
- * @param threshold The part of the number that will trigger a different result
+ * @param direction _optional_ - The direction in which rounding will occur.
+ *                  Defaults to [default][RoundingDirection.default]
+ * @param threshold _optional_ - The part of the number that will trigger a different result.
+ *                  Defaults to [default][RoundingThreshold.default]
  */
-fun RoundingMode(fraction: Fraction, direction: RoundingDirection, threshold: RoundingThreshold): RoundingMode = when (threshold) {
+fun RoundingMode(fraction: Fraction,
+                 direction: RoundingDirection = RoundingDirection.default,
+                 threshold: RoundingThreshold = RoundingThreshold.default
+): RoundingMode = when (threshold) {
     halfway -> when (direction) {
         up -> if (fraction > 0) HALF_UP else HALF_DOWN
         down -> if (fraction > 0) HALF_DOWN else HALF_UP
