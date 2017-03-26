@@ -1,9 +1,12 @@
+@file:JvmName("TestUtils")
 @file:Suppress("unused")
 
 package org.bh.tools.base.strings
 
 import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.collections.extensions.reduceTo
+import org.bh.tools.base.func.Tuple2
+import org.bh.tools.base.func.tuple
 import org.bh.tools.base.math.*
 import org.bh.tools.base.struct.int32Value
 
@@ -111,4 +114,41 @@ operator fun String.times(rhs: Fraction): String {
     } else {
         return partialRepeatingString + substring((0..remainingCharacterCount).int32Value)
     }
+}
+
+
+/**
+ * Finds and returns the characters that are different between the two strings, as a tuple of `(thisChar, otherChar)`.
+ * If they differ in length, all characters from the longer string are appended to the end, with `null` as the
+ * placeholder for the shorter string's nonexistant characters. Of course, if the strings are equal, an empty list is
+ * returned.
+ *
+ * For instance:
+ *
+ *  * `"123".differingCharacters("321")` returns `[('1', '3'), ('3', '1')]`
+ *  * `"one".differingCharacters("one + 2")` returns `[(null, ' '), (null, '+'), (null, ' '), (null, '2')]`
+ *  * `"B & A".differingCharacters("B")` returns `[(' ', null), ('&', null), (' ', null), ('A', null)]`
+ *
+ * @param other The string which might differ from this one
+ *
+ * @return A list of the differing characters, or an empty list if the strings are equal
+ */
+fun CharSequence.differingCharacters(other: CharSequence): List<Tuple2<Char?, Char?>> {
+    if (this == other) {
+        return listOf()
+    }
+    val endList: MutableList<Tuple2<Char?, Char?>> = mutableListOf()
+    (0..min(this.length, other.length)).forEach { index ->
+        val thisChar = this[index]
+        val otherChar = other[index]
+        if (thisChar != otherChar) {
+            endList += tuple(thisChar, otherChar)
+        }
+    }
+    if (this.length < other.length) {
+        endList += other.substring(this.length).toCharArray().asList().map { tuple(it, null) }
+    } else if (other.length > this.length) {
+        endList += other.substring(this.length).toCharArray().asList().map { tuple(null, it) }
+    }
+    return endList
 }

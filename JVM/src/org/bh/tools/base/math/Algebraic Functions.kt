@@ -2,8 +2,11 @@
 
 package org.bh.tools.base.math
 
-import org.bh.tools.base.abstraction.Integer
+import org.bh.tools.base.abstraction.*
+import org.bh.tools.base.math.RoundingDirection.up
+import org.bh.tools.base.math.RoundingThreshold.integer
 import java.lang.Math.abs
+import java.lang.Math.log10
 
 /*
  * Assists in doing algebra
@@ -83,3 +86,22 @@ inline fun isCoprime(a: Integer, b: Integer): Boolean = greatestCommonDivisor(a,
  */
 @Suppress("NOTHING_TO_INLINE")
 inline fun Integer.isCoprimeWith(other: Integer): Boolean = isCoprime(this, other)
+
+
+/**
+ * Finds the number of digits in this integer, not including a `-` sign
+ */
+fun Integer.numberOfDigits(): Int8 =
+        log10(this.fractionValue.absoluteValue).let { log10 ->
+            if (log10.hasFractionComponent) {
+                log10.rounded(direction = up, threshold = integer).int8Value
+            } else {
+                (log10 + 1).int8Value
+            }
+        }
+
+
+/**
+ * Finds the number of digits in this integer, not including a `-` sign
+ */
+fun Int32.numberOfDigits(): Int8 = integerValue.numberOfDigits()

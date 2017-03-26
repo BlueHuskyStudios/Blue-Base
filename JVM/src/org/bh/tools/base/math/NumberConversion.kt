@@ -11,6 +11,7 @@ import org.bh.tools.base.abstraction.*
  * @since 2016-10-21
  */
 
+
 /**
  * Implementing classes can be converted to a number
  */
@@ -37,26 +38,90 @@ inline val Number.float64Value: Float64 get() = this.toDouble()
 inline val Number.fractionValue: Fraction get() = this.float64Value
 
 
+/**
+ * Converts this number to a [Byte], but first checks if that's a sane move; throws exceptions when this is infinite or NaN
+ */
+@Throws(ArithmeticException::class)
+fun Number.toByteChecked(): Byte {
+    _checkBeforeConversionToNativeInteger()
+    return this.toByte()
+}
+
 
 /**
- * The 8-bit integer value of this [Number]
+ * Converts this number to a [Short], but first checks if that's a sane move; throws exceptions when this is infinite or NaN
  */
-inline val Number.int8Value: Int8 get() = this.toByte()
+@Throws(ArithmeticException::class)
+fun Number.toShortChecked(): Short {
+    _checkBeforeConversionToNativeInteger()
+    return this.toShort()
+}
+
+
+/**
+ * Converts this number to a [Int], but first checks if that's a sane move; throws exceptions when this is infinite or NaN
+ */
+@Throws(ArithmeticException::class)
+fun Number.toIntChecked(): Int {
+    _checkBeforeConversionToNativeInteger()
+    return this.toInt()
+}
+
+
+/**
+ * Converts this number to a [Long], but first checks if that's a sane move; throws exceptions when this is infinite or NaN
+ */
+@Throws(ArithmeticException::class)
+fun Number.toLongChecked(): Long {
+    _checkBeforeConversionToNativeInteger()
+    return this.toLong()
+}
+
+
+private fun Number._checkBeforeConversionToNativeInteger() {
+    _checkNaN()
+}
+
+
+private fun Number._checkNaN() {
+    if (this.isNaN) {
+        throw UnexpectedNaNException("NaN cannot be converted to an integer")
+    }
+}
+
+
+private fun Number._checkInfinite() {
+    if (this.isInfinite) {
+        throw UnexpectedInfinityException("Infinity cannot be converted to an integer")
+    }
+}
+
+
+
+typealias UnexpectedNaNException = ArithmeticException
+typealias UnexpectedInfinityException = ArithmeticException
+
+
+
+/**
+ * The 8-bit integer value of this [Number]. If this is not a number, an exception is thrown.
+ */
+inline val Number.int8Value: Int8 get() = this.toByteChecked()
 
 /**
  * The 16-bit integer value of this [Number]
  */
-inline val Number.int16Value: Int16 get() = this.toShort()
+inline val Number.int16Value: Int16 get() = this.toShortChecked()
 
 /**
  * The 32-bit integer value of this [Number]
  */
-inline val Number.int32Value: Int32 get() = this.toInt()
+inline val Number.int32Value: Int32 get() = this.toIntChecked()
 
 /**
  * The 64-bit integer value of this [Number]
  */
-inline val Number.int64Value: Int64 get() = this.toLong()
+inline val Number.int64Value: Int64 get() = this.toLongChecked()
 
 /**
  * The ideal integer value of this [Number]
@@ -91,18 +156,70 @@ inline val Number.isNativeFraction: Boolean get()
  * number is larger than the largest native int value, the largest native int value is returned. Likewise for the
  * smallest native int value. If it is within the range of valid native ints, its value is returned rounded to an int
  * using the default rounding method.
+ *
+ * @throws ArithmeticException if this [is not a number][isNaN]
  */
-val Fraction.clampedIntegerValue: Integer get()
-    = clamp(low = Integer.min.fractionValue, value = this, high = Integer.max.fractionValue).integerValue
+val Fraction.clampedIntegerValue: Integer get() = when {
+    isPositiveInfinity -> Integer.max
+    isNegativeInfinity -> Integer.min
+    else -> integerValue
+}
+
+/**
+ * This native floating-point number as a native integer, clamped to guard against overflow. That is to say, if
+ * this number is larger than the largest native 64-bit int value, the largest native 64-bit int value is returned.
+ * Likewise for the smallest native 64-bit int value. If it is within the range of valid native 64-bit ints, its value
+ * is returned rounded to a 64-bit int using the default rounding method.
+ *
+ * @throws ArithmeticException if this [is not a number][isNaN]
+ */
+val Fraction.clampedInt64Value: Int64 get() = when {
+    isPositiveInfinity -> Int64.max
+    isNegativeInfinity -> Int64.min
+    else -> int64Value
+}
 
 /**
  * This native floating-point number as a native integer, clamped to guard against overflow. That is to say, if
  * this number is larger than the largest native 32-bit int value, the largest native 32-bit int value is returned.
  * Likewise for the smallest native 32-bit int value. If it is within the range of valid native 32-bit ints, its value
  * is returned rounded to a 32-bit int using the default rounding method.
+ *
+ * @throws ArithmeticException if this [is not a number][isNaN]
  */
-val Fraction.clampedInt32Value: Int32 get()
-    = clamp(low = Int32.min.fractionValue, value = this, high = Int32.max.fractionValue).int32Value
+val Fraction.clampedInt32Value: Int32 get() = when {
+    isPositiveInfinity -> Int32.max
+    isNegativeInfinity -> Int32.min
+    else -> int32Value
+}
+
+/**
+ * This native floating-point number as a native integer, clamped to guard against overflow. That is to say, if
+ * this number is larger than the largest native 16-bit int value, the largest native 16-bit int value is returned.
+ * Likewise for the smallest native 16-bit int value. If it is within the range of valid native 16-bit ints, its value
+ * is returned rounded to a 16-bit int using the default rounding method.
+ *
+ * @throws ArithmeticException if this [is not a number][isNaN]
+ */
+val Fraction.clampedInt162Value: Int16 get() = when {
+    isPositiveInfinity -> Int16.max
+    isNegativeInfinity -> Int16.min
+    else -> int16Value
+}
+
+/**
+ * This native floating-point number as a native integer, clamped to guard against overflow. That is to say, if
+ * this number is larger than the largest native 8-bit int value, the largest native 8-bit int value is returned.
+ * Likewise for the smallest native 8-bit int value. If it is within the range of valid native 8-bit ints, its value
+ * is returned rounded to a 8-bit int using the default rounding method.
+ *
+ * @throws ArithmeticException if this [is not a number][isNaN]
+ */
+val Fraction.clampedInt8Value: Int8 get() = when {
+    isPositiveInfinity -> Int8.max
+    isNegativeInfinity -> Int8.min
+    else -> int8Value
+}
 
 /**
  * This native ideal-size integer as a native 32-bit integer, clamped to guard against overflow. That is to say, if
@@ -110,8 +227,26 @@ val Fraction.clampedInt32Value: Int32 get()
  * Likewise for the smallest native 32-bit int value. If it is within the range of valid native 32-bit ints, its value
  * is returned unchanged.
  */
-val Integer.clampedInt32Value: Int32 get()
-    = clamp(low = Int32.min.integerValue, value = this, high = Int32.max.integerValue).int32Value
+val Integer.clampedInt32Value: Int32
+    get() = clamp(low = Int32.min.integerValue, value = this, high = Int32.max.integerValue).int32Value
+
+/**
+ * This native ideal-size integer as a native 16-bit integer, clamped to guard against overflow. That is to say, if
+ * this number is larger than the largest native 16-bit int value, the largest native 16-bit int value is returned.
+ * Likewise for the smallest native 16-bit int value. If it is within the range of valid native 16-bit ints, its value
+ * is returned unchanged.
+ */
+val Integer.clampedInt16Value: Int16
+    get() = clamp(low = Int16.min.integerValue, value = this, high = Int16.max.integerValue).int16Value
+
+/**
+ * This native ideal-size integer as a native 8-bit integer, clamped to guard against overflow. That is to say, if
+ * this number is larger than the largest native 8-bit int value, the largest native 8-bit int value is returned.
+ * Likewise for the smallest native 8-bit int value. If it is within the range of valid native 8-bit ints, its value
+ * is returned unchanged.
+ */
+val Integer.clampedInt8Value: Int8
+    get() = clamp(low = Int8.min.integerValue, value = this, high = Int8.max.integerValue).int8Value
 
 
 /** Returns this integer if it is positive, else `0`. */
