@@ -100,7 +100,8 @@ fun RoundingMode(fraction: Fraction, direction: RoundingDirection, threshold: Ro
  */
 enum class RoundingThreshold {
     /**
-     * Rounding is triggered at the halfway mark. `x.0 - x.4999...` is treated differently than `x.5000...1 - x.999...`. To specify the behavior of `x.5`, see [RoundingDirection].
+     * Rounding is triggered at the halfway mark. `x.0 - x.4999...` is treated differently than `x.5000...1 - x.999...`.
+     * To specify the behavior of `x.5`, see [RoundingDirection].
      */
     halfway,
 
@@ -110,6 +111,9 @@ enum class RoundingThreshold {
     integer;
 
     companion object {
+        /**
+         * The default rounding threshold: [halfway]
+         */
         val default = halfway
     }
 }
@@ -118,26 +122,39 @@ enum class RoundingThreshold {
 
 /** Represents the direction to round a fraction if it is not already an integer */
 enum class RoundingDirection {
-    /** If the number is not already an integer, increase its value to the next-highest integer */
+    /**
+     * If the number is not already an integer, increase its value to the next-highest integer
+     */
     up,
 
-    /** If the number is not already an integer, decrease its value to the next-lowest integer */
+    /**
+     * If the number is not already an integer, decrease its value to the next-lowest integer
+     */
     down,
 
-    /** If the number is not already an integer, increase its value to the next-highest integer if it is positive, else decrease its value to the next-lowest integer if it is negative */
+    /**
+     * If the number is not already an integer, increase its value to the next-highest integer if it is positive, else
+     * decrease its value to the next-lowest integer if it is negative
+     */
     awayFromZero,
 
-    /** If the number is not already an integer, decrease its value to the next-lowest integer if it is positive, else increase its value to the next-highest integer if it is negative */
+    /**
+     * If the number is not already an integer, decrease its value to the next-lowest integer if it is positive, else
+     * increase its value to the next-highest integer if it is negative
+     */
     towardZero;
 
     companion object {
+        /**
+         * The default rounding direction: [away from zero][awayFromZero]
+         */
         val default = awayFromZero
     }
 }
 
 
 
-/** Returns `true` iff this is a native fraction and [isNaN()][Double.isNaN()] */
+/** Returns `true` iff this is a native fraction and [isNaN()][java.lang.Double.isNaN] */
 inline val Number.isNaN: Boolean get() = isNativeFraction && fractionValue.isNaN()
 
 /** Returns `true` iff this is a native fraction and [isInfinite()][Double.isInfinite()] */
@@ -149,14 +166,30 @@ inline val Number.isNegativeInfinity: Boolean get() = isInfinite && fractionValu
 /** Returns `true` iff [isInfinite] and is greater than `0.0` */
 inline val Number.isPositiveInfinity: Boolean get() = isInfinite && fractionValue > 0.0
 
-/** ∞ as an IEEE 32-bit float */
+/**
+ * ∞ as an IEEE 32-bit float
+ *
+ * @see Float.POSITIVE_INFINITY
+ */
 inline val Float.Companion.infinity get() = POSITIVE_INFINITY
 
-/** ∞ as an IEEE 64-bit float */
+/**
+ * ∞ as an IEEE 64-bit float
+ *
+ * @see Double.POSITIVE_INFINITY
+ */
 inline val Double.Companion.infinity get() = POSITIVE_INFINITY
 
-/** Not-A-Number as an IEEE 32-bit float */
+/**
+ * Not-A-Number as an IEEE 32-bit float
+ *
+ * @see Float.NaN
+ */
 inline val Float.Companion.nan get() = NaN
 
-/** Not-A-Number as an IEEE 64-bit float */
+/**
+ * Not-A-Number as an IEEE 64-bit float
+ *
+ * @see Double.NaN
+ */
 inline val Double.Companion.nan get() = NaN
