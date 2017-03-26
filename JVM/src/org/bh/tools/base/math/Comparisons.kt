@@ -59,6 +59,19 @@ fun <T : Comparable<T>> clamp(low: T, value: T, high: T): T
         = max(low, min(value, high))
 
 
+/**
+ * Returns the clamped fraction between `low` and `high`, such that ideally `value` is returned, but never will the
+ * returned number be less than `low` or greater than `high`.
+ *
+ * If `value` [is not a number][isNaN], it is returned verbatim, since it cannot be deemed higher than, equal to, or lower than anything else.
+ */
+fun clamp(low: Fraction, value: Fraction, high: Fraction): Fraction =
+        when {
+            value.isNaN() -> value // NaN cannot be compared as higher, equal, or lower
+            else -> clamp<Fraction>(low, value, high)
+        }
+
+
 
 open class ComparableComparator<T: Comparable<T>>: kotlin.Comparator<T> {
     override fun compare(lhs: T, rhs: T): Int {
