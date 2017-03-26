@@ -20,7 +20,7 @@ import java.util.*
  */
 fun Random.nextFraction(bounds: OpenRange<Fraction>): Fraction {
 
-    val closedRange = ClosedRange(bounds.startInclusive ?: Fraction.min, bounds.endInclusive ?: Fraction.max)
+    val closedRange = ClosedRange(bounds.startInclusive ?: Fraction.leastNonzeroMagnitude, bounds.endInclusive ?: Fraction.greatestFiniteMagnitude)
 
     val r = nextFraction() // 0.0 to 1.0
     return ((r * closedRange.size) + closedRange.min)

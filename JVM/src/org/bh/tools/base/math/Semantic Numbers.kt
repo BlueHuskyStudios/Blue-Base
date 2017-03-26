@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package org.bh.tools.base.math
 
 /*
@@ -9,20 +11,68 @@ package org.bh.tools.base.math
  * @since 2016-10-30
  */
 
-val Byte.Companion.min: Byte get() = Byte.MIN_VALUE
-val Byte.Companion.max: Byte get() = Byte.MAX_VALUE
 
-val Short.Companion.min: Short get() = Short.MIN_VALUE
-val Short.Companion.max: Short get() = Short.MAX_VALUE
+/**
+ * The smallest possible value of an 8-bit signed integer
+ */
+inline val Byte.Companion.min: Byte get() = Byte.MIN_VALUE
 
-val Int.Companion.min: Int get() = Int.MIN_VALUE
-val Int.Companion.max: Int get() = Int.MAX_VALUE
+/**
+ * The largest possible value of an 8-bit signed integer
+ */
+inline val Byte.Companion.max: Byte get() = Byte.MAX_VALUE
 
-val Long.Companion.min: Long get() = Long.MIN_VALUE
-val Long.Companion.max: Long get() = Long.MAX_VALUE
 
-val Float.Companion.min: Float get() = Float.MIN_VALUE
-val Float.Companion.max: Float get() = Float.MAX_VALUE
+/**
+ * The smallest possible value of a 16-bit signed integer
+ */
+inline val Short.Companion.min: Short get() = Short.MIN_VALUE
 
-val Double.Companion.min: Double get() = Double.MIN_VALUE
-val Double.Companion.max: Double get() = Double.MAX_VALUE
+/**
+ * The largest possible value of a 16-bit signed integer
+ */
+inline val Short.Companion.max: Short get() = Short.MAX_VALUE
+
+
+/**
+ * The smallest possible value of a 32-bit signed integer
+ */
+inline val Int.Companion.min: Int get() = Int.MIN_VALUE
+
+/**
+ * The largest possible value of a 32-bit signed integer
+ */
+inline val Int.Companion.max: Int get() = Int.MAX_VALUE
+
+
+/**
+ * The smallest possible value of a 64-bit signed integer
+ */
+inline val Long.Companion.min: Long get() = Long.MIN_VALUE
+
+/**
+ * The largest possible value of a 64-bit signed integer
+ */
+inline val Long.Companion.max: Long get() = Long.MAX_VALUE
+
+
+/**
+ * The smallest possible positive non-zero value of a 32-bit signed float
+ */
+inline val Float.Companion.leastNonzeroMagnitude: Float get() = Float.MIN_VALUE
+
+/**
+ * The largest possible positive non-infinite value of a 32-bit signed float
+ */
+inline val Float.Companion.greatestFiniteMagnitude: Float get() = Float.MAX_VALUE
+
+
+/**
+ * The smallest possible positive non-zero value of a 64-bit signed float
+ */
+inline val Double.Companion.leastNonzeroMagnitude: Double get() = Double.MIN_VALUE
+
+/**
+ * The largest possible positive non-infinite value of a 64-bit signed float
+ */
+inline val Double.Companion.greatestFiniteMagnitude: Double get() = Double.MAX_VALUE
