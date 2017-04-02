@@ -4,6 +4,7 @@
 package org.bh.tools.base.strings
 
 import org.bh.tools.base.abstraction.*
+import org.bh.tools.base.collections.Index
 import org.bh.tools.base.collections.extensions.reduceTo
 import org.bh.tools.base.func.Tuple2
 import org.bh.tools.base.func.tuple
@@ -123,32 +124,51 @@ operator fun String.times(rhs: Fraction): String {
  * placeholder for the shorter string's nonexistant characters. Of course, if the strings are equal, an empty list is
  * returned.
  *
+ * Note that this is a primitive/naïve difference algorithm, and will not be able to distinguish inserted characters
+ * from modified, removed, or appended ones. **This is not like Git's diff.**
+ *
  * For instance:
  *
- *  * `"123".differingCharacters("321")` returns `[('1', '3'), ('3', '1')]`
- *  * `"one".differingCharacters("one + 2")` returns `[(null, ' '), (null, '+'), (null, ' '), (null, '2')]`
- *  * `"B & A".differingCharacters("B")` returns `[(' ', null), ('&', null), (' ', null), ('A', null)]`
+ *  * `"123".differingCharacters("321")` returns `[(0, '1', '3'), (2, '3', '1')]`
+ *  * `"one".differingCharacters("one + 2")` returns `[(3, null, ' '), (4, null, '+'), (5, null, ' '), (6, null, '2')]`
+ *  * `"B & A".differingCharacters("B")` returns `[(1, ' ', null), (2, '&', null), (3, ' ', null), (4, 'A', null)]`
+ *  * `"ABC".differingCharacters("A BC")` returns `[(1, 'B', ' '), (2, 'C', 'B'), (3, 'C', null)]`
  *
  * @param other The string which might differ from this one
  *
  * @return A list of the differing characters, or an empty list if the strings are equal
  */
-fun CharSequence.differingCharacters(other: CharSequence): List<Tuple2<Char?, Char?>> {
+fun CharSequence.differingCharacters(other: CharSequence): List<DifferingCharacter> {
     if (this == other) {
         return listOf()
     }
-    val endList: MutableList<Tuple2<Char?, Char?>> = mutableListOf()
+
+    val endList: MutableList<DifferingCharacter> = mutableListOf()
     (0..min(this.length, other.length)).forEach { index ->
         val thisChar = this[index]
         val otherChar = other[index]
         if (thisChar != otherChar) {
-            endList += tuple(thisChar, otherChar)
+            endList += DifferingCharacter(index, thisChar, otherChar)
         }
     }
-    if (this.length < other.length) {
-        endList += other.substring(this.length).toCharArray().asList().map { tuple(it, null) }
+
+    if (this.length > other.length) {
+        val offset = other.length
+        endList += this.substring(offset).toCharArray().asList().mapIndexed { index, character -> DifferingCharacter(index + offset, character, null) }
     } else if (other.length > this.length) {
-        endList += other.substring(this.length).toCharArray().asList().map { tuple(null, it) }
+        val offset = this.length
+        endList += other.substring(offset).toCharArray().asList().mapIndexed { index, character -> DifferingCharacter(index + offset, null, character) }
     }
+
     return endList
 }
+
+
+/**
+ * Represents a character that differs between two strings, including the position where the difference was found and .
+ */
+data class DifferingCharacter(
+        val position: Index,
+        val charA: Char?,
+        val charB: Char?
+)
