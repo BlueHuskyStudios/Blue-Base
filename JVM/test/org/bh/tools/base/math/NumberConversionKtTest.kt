@@ -1,12 +1,12 @@
 package org.bh.tools.base.math
 
 
-import junit.framework.TestCase.assertTrue
 import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.collections.extensions.length
 import org.bh.tools.base.func.tuple
 import org.bh.tools.base.strings.differingCharacters
 import org.bh.tools.base.strings.toString
+import org.bh.tools.base.util.assertTrue
 import org.junit.Test
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -42,6 +42,7 @@ class NumberConversionKtTest {
     @Test
     fun Number_float32Value() {
         allSamples
+                .stream()
                 .map { tuple(it, it.float32Value) }
                 .forEach { (original, float32Value) ->
                     assertNumbersClose("Original number should equal float 32 value",
@@ -483,6 +484,9 @@ class NumberConversionKtTest {
 
 @Suppress("NOTHING_TO_INLINE")
 fun assertNumbersClose(message: String, original: Number, processed: Number) {
+    if (original.toFloat().equals(processed.toFloat(), defaultFloat32CalculationTolerance)) {
+        return
+    }
     val originalString = original.toDouble().toString()
     val processedString = processed.toDouble().toString()
     val differingCharacters = originalString.differingCharacters(processedString)
@@ -491,5 +495,11 @@ fun assertNumbersClose(message: String, original: Number, processed: Number) {
         in 6..12 -> 1
         else -> 2
     }
-    assertTrue(message, differingCharacters.length <= allowedDifference)
+    assertTrue({
+        "$message\r\n\r\n" +
+                "\tExpected:   \t$originalString\r\n" +
+                "\tActual:     \t$processedString\r\n" +
+                "\tDifference: \t$differingCharacters\r\n"
+    },
+            differingCharacters.length <= allowedDifference)
 }

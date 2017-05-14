@@ -4,6 +4,7 @@ package org.bh.tools.base.util
 
 import org.bh.tools.base.abstraction.Integer
 import org.bh.tools.base.collections.extensions.length
+import org.bh.tools.base.func.StringSupplier
 import org.bh.tools.base.math.Averager
 import org.bh.tools.base.util.TimeConversion.nanosecondsToTimeInterval
 import org.junit.Assert.assertEquals
@@ -110,6 +111,8 @@ enum class TimeTrialMeasurementMode {
 @JvmOverloads
 inline fun assertionFailure(message: String? = null) = assertTrue(message, false)
 
+inline fun assertionFailure(message: StringSupplier) = assertTrue(message(), false)
+
 
 @JvmOverloads
 inline fun assertThrows(message: String? = null, possibleThrow: () -> Unit) {
@@ -174,6 +177,13 @@ fun <Element,
             }
         }
     } else {
+        assertionFailure(message)
+    }
+}
+
+
+inline fun assertTrue(message: StringSupplier, condition: Boolean) {
+    if (!condition) {
         assertionFailure(message)
     }
 }

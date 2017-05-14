@@ -220,7 +220,65 @@ inline val defaultIntegerCalculationTolerance: Integer get() = 0
  *                  Defaults to [defaultFractionCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
-fun Fraction.equals(rhs: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean = abs(rhs - this) <= tolerance
+fun Fraction.equals(rhs: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean
+        = if (tolerance == 0.0) this == rhs
+        else abs(rhs - this) <= tolerance
+
+
+/**
+ * Determines whether this 32-bit fraction is equal to the other, within a given tolerance.
+ *
+ * @param rhs       The other fraction to compare to this one
+ * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
+ *                  Defaults to [defaultFractionCalculationTolerance]
+ * @return `true` iff this value and the other are equal within the given tolerance
+ */
+fun Float32.equals(rhs: Float32, tolerance: Float32 = defaultFloat32CalculationTolerance): Boolean {
+    if (tolerance == 0.0f) {
+        return this == rhs
+    }
+    if (this > Float32.greatestFiniteMagnitude && rhs > Float32.greatestFiniteMagnitude) {
+        return true
+    } else if (this < -Float32.greatestFiniteMagnitude && rhs < 0 && rhs.isInfinite) {
+        return true
+    } else {
+        return abs(rhs - this) <= tolerance
+    }
+}
+
+
+/**
+ * Determines whether this 64-bit fraction is equal to the other 32-bit one, within a given tolerance.
+ *
+ * @param rhs       The other fraction to compare to this one
+ * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
+ *                  Defaults to [defaultFractionCalculationTolerance]
+ * @return `true` iff this value and the other are equal within the given tolerance
+ */
+fun Float64.equals(rhs: Float32, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean {
+    if (tolerance == 0.0) {
+        return this.toFloat() == rhs
+    }
+    if (this > Float32.greatestFiniteMagnitude && rhs > 0 && rhs.isInfinite) {
+        return true
+    } else if (this < -Float32.greatestFiniteMagnitude && rhs < 0 && rhs.isInfinite) {
+        return true
+    } else {
+        return abs(rhs - this) <= tolerance
+    }
+}
+
+
+/**
+ * Determines whether this 32-bit fraction is equal to the other 64-bit one, within a given tolerance.
+ *
+ * @param rhs       The other fraction to compare to this one
+ * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
+ *                  Defaults to [defaultFractionCalculationTolerance]
+ * @return `true` iff this value and the other are equal within the given tolerance
+ */
+fun Float32.equals(rhs: Float64, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean
+        = rhs.equals(this, tolerance = tolerance)
 
 
 /**

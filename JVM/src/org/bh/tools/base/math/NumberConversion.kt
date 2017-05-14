@@ -78,11 +78,13 @@ fun Number.toLongChecked(): Long {
 }
 
 
+@Throws(UnexpectedNaNException::class)
 private fun Number._checkBeforeConversionToNativeInteger() {
     _checkNaN()
 }
 
 
+@Throws(UnexpectedNaNException::class)
 private fun Number._checkNaN() {
     if (this.isNaN) {
         throw UnexpectedNaNException("NaN cannot be converted to an integer")

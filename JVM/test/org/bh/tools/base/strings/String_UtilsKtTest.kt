@@ -44,11 +44,11 @@ class String_UtilsKtTest {
 private data class _DifferingCharactersTest(
         val firstString: String,
         val secondString: String,
-        val expectedDifference: List<Tuple2<Char?, Char?>>
+        val expectedDifference: List<DifferingCharacter>
 )
 private val _differingCharactersTests: List<_DifferingCharactersTest> = listOf(
         _DifferingCharactersTest("123", "123", listOf()),
-        _DifferingCharactersTest("123", "321", listOf(tuple('1', '3'), tuple('3', '1'))),
-        _DifferingCharactersTest("1", "1+2", listOf(tuple(null, '+'), tuple(null, '2'))),
-        _DifferingCharactersTest("B&A", "B", listOf(tuple('&', null), tuple('A', null)))
+        _DifferingCharactersTest("123", "321", listOf(DifferingCharacter(0, '1', '3'), DifferingCharacter(2, '3', '1'))),
+        _DifferingCharactersTest("1", "1+2", listOf(DifferingCharacter(1, null, '+'), DifferingCharacter(2, null, '2'))),
+        _DifferingCharactersTest("B&A", "B", listOf(DifferingCharacter(1, '&', null), DifferingCharacter(2, 'A', null)))
 )

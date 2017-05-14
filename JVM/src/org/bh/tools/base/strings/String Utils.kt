@@ -68,9 +68,11 @@ infix operator fun Any.plus(rhs: CharSequence): CharSequence = concat(this, rhs)
  */
 fun concat(lhs: Any, rhs: CharSequence): CharSequence {
     if (lhs is String) {
-        return lhs.plus(rhs)
+        val casted: String = lhs as String
+        return casted.plus(rhs)
     } else if (lhs is StringBuilder) {
-        return lhs.append(rhs)
+        val casted: StringBuilder = lhs as StringBuilder
+        return casted.append(rhs)
     } else {
         return StringBuilder().append(lhs).append(rhs)
     }
@@ -144,7 +146,7 @@ fun CharSequence.differingCharacters(other: CharSequence): List<DifferingCharact
     }
 
     val endList: MutableList<DifferingCharacter> = mutableListOf()
-    (0..min(this.length, other.length)).forEach { index ->
+    (0 until min(this.length, other.length)).forEach { index ->
         val thisChar = this[index]
         val otherChar = other[index]
         if (thisChar != otherChar) {
@@ -168,7 +170,14 @@ fun CharSequence.differingCharacters(other: CharSequence): List<DifferingCharact
  * Represents a character that differs between two strings, including the position where the difference was found and .
  */
 data class DifferingCharacter(
-        val position: Index,
-        val charA: Char?,
-        val charB: Char?
-)
+        val index: Index,
+        val left: Char?,
+        val right: Char?
+) {
+    override fun toString(): String {
+        val sb = StringBuilder("{index: $index")
+        if (left != null) sb += ", left: '$left'"
+        if (right != null) sb += ", right: '$right'"
+        return sb + "}"
+    }
+}

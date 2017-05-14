@@ -6,6 +6,7 @@ import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.math.RoundingDirection.*
 import org.bh.tools.base.math.RoundingThreshold.halfway
 import org.bh.tools.base.math.RoundingThreshold.integer
+import java.lang.Math.floor
 import java.math.*
 import java.math.RoundingMode.*
 
@@ -22,7 +23,7 @@ import java.math.RoundingMode.*
 
 /** Determines whether this [Fraction] has any values after the radix point */
 val Fraction.hasFractionComponent: Boolean get() {
-    return this != this.clampedIntegerValue.fractionValue
+    return this != floor(this)
 }
 
 
@@ -164,6 +165,12 @@ inline val Number.isNaN: Boolean get() = isNativeFraction && fractionValue.isNaN
 
 /** Returns `true` iff this is a native fraction and [isInfinite()][Double.isInfinite()] */
 inline val Number.isInfinite: Boolean get() = isNativeFraction && fractionValue.isInfinite()
+
+/** Returns `true` iff this float [isInfinite()] */
+inline val Float32.isInfinite: Boolean get() = isInfinite()
+
+/** Returns `true` iff this double [isInfinite()] */
+inline val Float64.isInfinite: Boolean get() = isInfinite()
 
 /** Returns `true` iff [isInfinite] and is less than `0.0` */
 inline val Number.isNegativeInfinity: Boolean get() = isInfinite && fractionValue < 0.0

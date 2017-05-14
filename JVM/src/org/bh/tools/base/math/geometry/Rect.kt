@@ -414,9 +414,8 @@ class FractionRect(origin: ComputablePoint<Fraction>, size: ComputableSize<Fract
     }
 
 
-    override fun offset(xOffset: Fraction, yOffset: Fraction): FractionRect {
-        return FractionRect(x = x + xOffset, y = y + yOffset, width = width, height = height)
-    }
+    override fun offset(xOffset: Fraction, yOffset: Fraction): FractionRect
+            = FractionRect(x = x + xOffset, y = y + yOffset, width = width, height = height)
 
 
     override fun copy(newOrigin: ComputablePoint<Fraction>, newSize: ComputableSize<Fraction>): FractionRect

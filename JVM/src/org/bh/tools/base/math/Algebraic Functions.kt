@@ -7,6 +7,7 @@ import org.bh.tools.base.math.RoundingDirection.up
 import org.bh.tools.base.math.RoundingThreshold.integer
 import java.lang.Math.abs
 import java.lang.Math.log10
+import java.util.*
 
 /*
  * Assists in doing algebra
@@ -91,17 +92,52 @@ inline fun Integer.isCoprimeWith(other: Integer): Boolean = isCoprime(this, othe
 /**
  * Finds the number of digits in this integer, not including a `-` sign
  */
-fun Integer.numberOfDigits(): Int8 =
-        log10(this.fractionValue.absoluteValue).let { log10 ->
-            if (log10.hasFractionComponent) {
-                log10.rounded(direction = up, threshold = integer).int8Value
-            } else {
-                (log10 + 1).int8Value
-            }
-        }
+@JvmOverloads
+fun Int64.numberOfDigits(radix: Int = 10): Int8 = when (this) {
+    Int64.min -> 19
+    else -> absoluteValue.toString(radix).length.int8Value
+}
 
 
 /**
  * Finds the number of digits in this integer, not including a `-` sign
  */
-fun Int32.numberOfDigits(): Int8 = integerValue.numberOfDigits()
+@JvmOverloads
+fun Int32.numberOfDigits(radix: Int = 10): Int8 = when (this) {
+    Int32.min -> 10
+    else -> absoluteValue.toString(radix).length.int8Value
+}
+
+
+/**
+ * Finds the number of digits in this integer, not including a `-` sign
+ */
+@JvmOverloads
+fun Int16.numberOfDigits(radix: Int = 10): Int8 = when (this) {
+    Int16.min -> 5
+    else -> absoluteValue.toString(radix).length.int8Value
+}
+
+
+/**
+ * Finds the number of digits in this integer, not including a `-` sign
+ */
+@JvmOverloads
+fun Int8.numberOfDigits(radix: Int = 10): Int8 = when (this) {
+    Int8.min -> 3
+    else -> absoluteValue.toString(radix).length.int8Value
+}
+
+
+/**
+ * Indicates whether this is a power of 10. That is, 1 one followed by 0 or more zeroes.
+ * This does not care about negatives.
+ */
+val Integer.isPowerOf10: Boolean get() =
+        when (abs(this)) {
+            1L, 10L, 100L, 1_000L, 10_000L, 100_000L, 1_000_000L, 10_000_000L, 100_000_000L, 1_000_000_000L,
+            10_000_000_000, 100_000_000_000, 1_000_000_000_000, 10_000_000_000_000, 100_000_000_000_000,
+            1_000_000_000_000_000, 10_000_000_000_000_000, 100_000_000_000_000_000, 1_000_000_000_000_000_000 -> true
+            else -> false
+        }
+

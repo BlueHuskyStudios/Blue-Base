@@ -57,22 +57,46 @@ inline val Long.Companion.max: Long get() = Long.MAX_VALUE
 
 
 /**
- * The smallest possible positive non-zero value of a 32-bit signed float
+ * The smallest possible **positive non-zero** value of a 32-bit signed float
  */
 inline val Float.Companion.leastNonzeroMagnitude: Float get() = Float.MIN_VALUE
 
 /**
- * The largest possible positive non-infinite value of a 32-bit signed float
+ * The smallest possible **positive non-zero** value of a 32-bit signed float
+ */
+@Deprecated("`min` is not accurately descriptive; use `leastNonzeroMagnitude` instead.", ReplaceWith("leastNonzeroMagnitude"), level = DeprecationLevel.ERROR)
+inline val Float.Companion.min: Float get() = leastNonzeroMagnitude
+
+/**
+ * The largest possible **positive non-infinite** value of a 32-bit signed float
  */
 inline val Float.Companion.greatestFiniteMagnitude: Float get() = Float.MAX_VALUE
 
+/**
+ * The largest possible **positive non-infinite** value of a 32-bit signed float
+ */
+@Deprecated("`max` is not accurately descriptive; use `greatestFiniteMagnitude` instead.", ReplaceWith("greatestFiniteMagnitude"), level = DeprecationLevel.ERROR)
+inline val Float.Companion.max: Float get() = greatestFiniteMagnitude
+
 
 /**
- * The smallest possible positive non-zero value of a 64-bit signed float
+ * The smallest possible **positive non-zero** value of a 64-bit signed float
  */
 inline val Double.Companion.leastNonzeroMagnitude: Double get() = Double.MIN_VALUE
 
 /**
- * The largest possible positive non-infinite value of a 64-bit signed float
+ * The smallest possible **positive non-zero** value of a 64-bit signed float
+ */
+@Deprecated("`min` is not accurately descriptive; use `leastNonzeroMagnitude` instead.", ReplaceWith("leastNonzeroMagnitude"), level = DeprecationLevel.ERROR)
+inline val Double.Companion.min: Double get() = leastNonzeroMagnitude
+
+/**
+ * The largest possible **positive non-infinite** value of a 64-bit signed float
  */
 inline val Double.Companion.greatestFiniteMagnitude: Double get() = Double.MAX_VALUE
+
+/**
+ * The largest possible **positive non-infinite** value of a 64-bit signed float
+ */
+@Deprecated("`max` is not accurately descriptive; use `greatestFiniteMagnitude` instead.", ReplaceWith("greatestFiniteMagnitude"), level = DeprecationLevel.ERROR)
+inline val Double.Companion.max: Double get() = greatestFiniteMagnitude
