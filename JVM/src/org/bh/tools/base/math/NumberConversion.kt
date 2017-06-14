@@ -27,15 +27,24 @@ interface NumberConvertible<out NumberType: Number> {
  */
 inline val Number.float32Value: Float32 get() = this.toFloat()
 
+@Deprecated("This does nothing", ReplaceWith(""), DeprecationLevel.WARNING)
+inline val Float32.float32Value: Float32 get() = this
+
 /**
  * The 64-bit floating-point value of this [Number]
  */
 inline val Number.float64Value: Float64 get() = this.toDouble()
 
+@Deprecated("This does nothing", ReplaceWith(""), DeprecationLevel.WARNING)
+inline val Float64.float64Value: Float64 get() = this
+
 /**
  * The ideal native floating-point value of this [Number]
  */
 inline val Number.fractionValue: Fraction get() = this.float64Value
+
+@Deprecated("This does nothing", ReplaceWith(""), DeprecationLevel.WARNING)
+inline val Fraction.fractionValue: Fraction get() = this
 
 
 /**
@@ -110,25 +119,40 @@ typealias UnexpectedInfinityException = ArithmeticException
  */
 inline val Number.int8Value: Int8 get() = this.toByteChecked()
 
+@Deprecated("This does nothing", ReplaceWith(""), DeprecationLevel.WARNING)
+inline val Int8.int8Value: Int8 get() = this
+
 /**
  * The 16-bit integer value of this [Number]
  */
 inline val Number.int16Value: Int16 get() = this.toShortChecked()
+
+@Deprecated("This does nothing", ReplaceWith(""), DeprecationLevel.WARNING)
+inline val Int16.int16Value: Int16 get() = this
 
 /**
  * The 32-bit integer value of this [Number]
  */
 inline val Number.int32Value: Int32 get() = this.toIntChecked()
 
+@Deprecated("This does nothing", ReplaceWith(""), DeprecationLevel.WARNING)
+inline val Int32.int32Value: Int32 get() = this
+
 /**
  * The 64-bit integer value of this [Number]
  */
 inline val Number.int64Value: Int64 get() = this.toLongChecked()
 
+@Deprecated("This does nothing", ReplaceWith(""), DeprecationLevel.WARNING)
+inline val Int64.int64Value: Int64 get() = this
+
 /**
  * The ideal integer value of this [Number]
  */
 inline val Number.integerValue: Integer get() = this.int64Value
+
+@Deprecated("This does nothing", ReplaceWith(""), DeprecationLevel.WARNING)
+inline val Integer.integerValue: Integer get() = this
 
 fun Number.integerValue(rounded: RoundingDirection): Integer = when {
     this.isNativeInteger -> this.integerValue
