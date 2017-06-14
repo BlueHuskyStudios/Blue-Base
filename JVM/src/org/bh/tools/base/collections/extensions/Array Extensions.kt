@@ -7,7 +7,10 @@ import org.bh.tools.base.struct.ClosedRange
 import org.bh.tools.base.struct.IndexRange
 import java.util.*
 
-/* Array Extensions, made for Blue Base, is copyright Blue Husky Software ©2016 BH-1-PS.
+/*
+ * Array Extensions, made for Blue Base, is copyright Blue Husky Software ©2016 BH-1-PS.
+ *
+ * This replaces `BHArray` (previously `ArrayPP`), which was used in BHToolbox and Blue Base from 2011 to 2017
  *
  * For when the standard arrays aren't good enough.
  * Created by Kyli Rouge on 2016-10-24.
