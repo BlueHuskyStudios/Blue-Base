@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package org.bh.tools.base.math.geometry
 
 import org.bh.tools.base.abstraction.*
@@ -154,6 +156,10 @@ class IntegerSize(width: Integer, height: Integer) : ComputableSize<Integer>(wid
     override val maxXminY: IntegerPoint by lazy { IntegerPoint(maxX, minY) }
     override val maxXmidY: IntegerPoint by lazy { IntegerPoint(maxX, midY) }
     override val maxXmaxY: IntegerPoint by lazy { IntegerPoint(maxX, maxY) }
+
+
+    constructor(width: Int32, height: Int32) : this(width = width.integerValue, height = height.integerValue)
+    constructor(squareSide: Integer) : this(width = squareSide, height = squareSide)
 
 
     override infix operator fun <OtherType : Number> plus(rhs: Size<OtherType>): IntegerSize = plus(Pair(rhs.width, rhs.height))
