@@ -1,6 +1,8 @@
 package org.bh.tools.base.collections.extensions
 
 import org.bh.tools.base.collections.Index
+import org.bh.tools.base.math.int32Value
+import org.bh.tools.base.struct.IntegerRange
 
 /*
  * To help you work with lists
@@ -57,3 +59,8 @@ operator fun <Element> List<Element>.get(index: Index, backup: Element) = get(in
 @Suppress("NOTHING_TO_INLINE")
 inline fun <ElementType, IterableType: List<ElementType>> IterableType.nonEmpty(): IterableType? = if (isEmpty()) null else this
 inline val <ElementType, IterableType: List<ElementType>> IterableType.nonEmpty get() = nonEmpty()
+
+
+
+fun <Element> List<Element>.subList(range: IntegerRange): List<Element>
+        = subList(fromIndex = range.first.int32Value, toIndex = range.last.int32Value)
