@@ -196,7 +196,7 @@ private typealias IntegerRectBaseType = ComputableRect<Integer, ComputablePoint<
 /**
  * A default implementation of [ComputableRect] using [Integer]s
  */
-class IntegerRect(origin: ComputablePoint<Integer>, size: ComputableSize<Integer>)
+open class IntegerRect(origin: ComputablePoint<Integer>, size: ComputableSize<Integer>)
     : IntegerRectBaseType(origin, size) {
 
     companion object {
@@ -323,7 +323,7 @@ private typealias FractionRectBaseType = ComputableRect<Fraction, ComputablePoin
 /**
  * A default implementation of [ComputableRect] using [Fraction]s
  */
-class FractionRect(origin: ComputablePoint<Fraction>, size: ComputableSize<Fraction>)
+open class FractionRect(origin: ComputablePoint<Fraction>, size: ComputableSize<Fraction>)
     : FractionRectBaseType(origin, size) {
 
     companion object {
