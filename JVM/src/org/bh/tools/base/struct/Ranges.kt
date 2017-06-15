@@ -657,3 +657,7 @@ val <T> ClosedRange<T>.int32Value: IntRange
 val <T> ClosedRange<T>.integerValue: LongRange
     where T: Number, T: Comparable<T>
     get() = if (this is LongRange) this else LongRange(start = start.integerValue, endInclusive = endInclusive.integerValue)
+
+
+
+typealias IntegerRange = LongRange

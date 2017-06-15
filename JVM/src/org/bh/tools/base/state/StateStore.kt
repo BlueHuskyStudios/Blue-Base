@@ -50,10 +50,13 @@ interface StateStore<StateType: ChangeableState<StateType, StateChangeType>, Sta
 /**
  * A basic implementation of [StateStore], with every function implemented and no fanciness.
  */
-open class BasicStateStore<StateType: ChangeableState<StateType, StateChangeType>, StateChangeType: StateChange<StateChangeType,
-        StateType>>(baseState: StateType): StateStore<StateType, StateChangeType> {
+open class BasicStateStore<StateType, StateChangeType>
+    (baseState: StateType)
+    : StateStore<StateType, StateChangeType>
+    where StateType: ChangeableState<StateType, StateChangeType>,
+        StateChangeType: StateChange<StateChangeType, StateType> {
 
-    private val _stateStack = DeltaStack(baseState = baseState)
+    internal val _stateStack = DeltaStack(_originalState = baseState)
 
     override fun pushState(newState: StateChangeType) = _stateStack.pushState(newState)
 
@@ -62,4 +65,35 @@ open class BasicStateStore<StateType: ChangeableState<StateType, StateChangeType
     override fun currentState(): StateType = _stateStack.currentState()
 
     override fun flattenState(): StateType = _stateStack.flattenState()
+}
+
+
+interface ResettableStateStore<StateType, StateChangeType>
+    : StateStore<StateType, StateChangeType>
+    where StateType: ChangeableState<StateType, StateChangeType>,
+        StateChangeType: StateChange<StateChangeType, StateType> {
+
+    /**
+     * Resets this state store back to a basic state. This doesn't have to be precisely the same as its actual initial
+     * state, but must be some clean slate. From this point on, [popState] will be able to navigate back to this state,
+     * but no further.
+     *
+     * If you want to reset this to some unspecified base state but don't care exactly what, pass `null` or omit the parameter.
+     *
+     * @param newState The state to reset back to, or `null` if the reset-state should be the default state.
+     */
+    fun reset(newState: StateType? = null)
+}
+
+
+open class BasicResettableStateStore<StateType, StateChangeType>
+    (baseState: StateType)
+    : BasicStateStore<StateType, StateChangeType>(baseState),
+    ResettableStateStore<StateType, StateChangeType>
+    where StateType: ChangeableState<StateType, StateChangeType>,
+        StateChangeType: StateChange<StateChangeType, StateType> {
+
+    override fun reset(newState: StateType?) {
+        _stateStack.reset(newState)
+    }
 }

@@ -6,6 +6,7 @@ import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.math.RoundingDirection.*
 import org.bh.tools.base.math.RoundingThreshold.halfway
 import org.bh.tools.base.math.RoundingThreshold.integer
+import java.lang.Math.floor
 import java.math.*
 import java.math.RoundingMode.*
 
@@ -22,7 +23,7 @@ import java.math.RoundingMode.*
 
 /** Determines whether this [Fraction] has any values after the radix point */
 val Fraction.hasFractionComponent: Boolean get() {
-    return this != this.clampedIntegerValue.fractionValue
+    return this != floor(this)
 }
 
 
@@ -75,10 +76,15 @@ inline val Fraction.roundedIntegerValue: Integer get() = roundedInt64Value
  * Finds the [java.math.RoundingMode] appropriate the given [Fraction], [RoundingDirection], and [RoundingThreshold]
  *
  * @param fraction The fraction for which the rounding mode will be used
- * @param direction The direction in which rounding will occur
- * @param threshold The part of the number that will trigger a different result
+ * @param direction _optional_ - The direction in which rounding will occur.
+ *                  Defaults to [default][RoundingDirection.default]
+ * @param threshold _optional_ - The part of the number that will trigger a different result.
+ *                  Defaults to [default][RoundingThreshold.default]
  */
-fun RoundingMode(fraction: Fraction, direction: RoundingDirection, threshold: RoundingThreshold): RoundingMode = when (threshold) {
+fun RoundingMode(fraction: Fraction,
+                 direction: RoundingDirection = RoundingDirection.default,
+                 threshold: RoundingThreshold = RoundingThreshold.default
+): RoundingMode = when (threshold) {
     halfway -> when (direction) {
         up -> if (fraction > 0) HALF_UP else HALF_DOWN
         down -> if (fraction > 0) HALF_DOWN else HALF_UP
@@ -100,7 +106,8 @@ fun RoundingMode(fraction: Fraction, direction: RoundingDirection, threshold: Ro
  */
 enum class RoundingThreshold {
     /**
-     * Rounding is triggered at the halfway mark. `x.0 - x.4999...` is treated differently than `x.5000...1 - x.999...`. To specify the behavior of `x.5`, see [RoundingDirection].
+     * Rounding is triggered at the halfway mark. `x.0 - x.4999...` is treated differently than `x.5000...1 - x.999...`.
+     * To specify the behavior of `x.5`, see [RoundingDirection].
      */
     halfway,
 
@@ -110,6 +117,9 @@ enum class RoundingThreshold {
     integer;
 
     companion object {
+        /**
+         * The default rounding threshold: [halfway]
+         */
         val default = halfway
     }
 }
@@ -118,30 +128,49 @@ enum class RoundingThreshold {
 
 /** Represents the direction to round a fraction if it is not already an integer */
 enum class RoundingDirection {
-    /** If the number is not already an integer, increase its value to the next-highest integer */
+    /**
+     * If the number is not already an integer, increase its value to the next-highest integer
+     */
     up,
 
-    /** If the number is not already an integer, decrease its value to the next-lowest integer */
+    /**
+     * If the number is not already an integer, decrease its value to the next-lowest integer
+     */
     down,
 
-    /** If the number is not already an integer, increase its value to the next-highest integer if it is positive, else decrease its value to the next-lowest integer if it is negative */
+    /**
+     * If the number is not already an integer, increase its value to the next-highest integer if it is positive, else
+     * decrease its value to the next-lowest integer if it is negative
+     */
     awayFromZero,
 
-    /** If the number is not already an integer, decrease its value to the next-lowest integer if it is positive, else increase its value to the next-highest integer if it is negative */
+    /**
+     * If the number is not already an integer, decrease its value to the next-lowest integer if it is positive, else
+     * increase its value to the next-highest integer if it is negative
+     */
     towardZero;
 
     companion object {
+        /**
+         * The default rounding direction: [away from zero][awayFromZero]
+         */
         val default = awayFromZero
     }
 }
 
 
 
-/** Returns `true` iff this is a native fraction and [isNaN()][Double.isNaN()] */
+/** Returns `true` iff this is a native fraction and [isNaN()][java.lang.Double.isNaN] */
 inline val Number.isNaN: Boolean get() = isNativeFraction && fractionValue.isNaN()
 
 /** Returns `true` iff this is a native fraction and [isInfinite()][Double.isInfinite()] */
 inline val Number.isInfinite: Boolean get() = isNativeFraction && fractionValue.isInfinite()
+
+/** Returns `true` iff this float [isInfinite()] */
+inline val Float32.isInfinite: Boolean get() = isInfinite()
+
+/** Returns `true` iff this double [isInfinite()] */
+inline val Float64.isInfinite: Boolean get() = isInfinite()
 
 /** Returns `true` iff [isInfinite] and is less than `0.0` */
 inline val Number.isNegativeInfinity: Boolean get() = isInfinite && fractionValue < 0.0
@@ -149,14 +178,30 @@ inline val Number.isNegativeInfinity: Boolean get() = isInfinite && fractionValu
 /** Returns `true` iff [isInfinite] and is greater than `0.0` */
 inline val Number.isPositiveInfinity: Boolean get() = isInfinite && fractionValue > 0.0
 
-/** ∞ as an IEEE 32-bit float */
+/**
+ * ∞ as an IEEE 32-bit float
+ *
+ * @see Float.POSITIVE_INFINITY
+ */
 inline val Float.Companion.infinity get() = POSITIVE_INFINITY
 
-/** ∞ as an IEEE 64-bit float */
+/**
+ * ∞ as an IEEE 64-bit float
+ *
+ * @see Double.POSITIVE_INFINITY
+ */
 inline val Double.Companion.infinity get() = POSITIVE_INFINITY
 
-/** Not-A-Number as an IEEE 32-bit float */
+/**
+ * Not-A-Number as an IEEE 32-bit float
+ *
+ * @see Float.NaN
+ */
 inline val Float.Companion.nan get() = NaN
 
-/** Not-A-Number as an IEEE 64-bit float */
+/**
+ * Not-A-Number as an IEEE 64-bit float
+ *
+ * @see Double.NaN
+ */
 inline val Double.Companion.nan get() = NaN

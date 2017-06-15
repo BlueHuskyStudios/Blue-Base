@@ -1,8 +1,13 @@
+@file:JvmName("TestUtils")
+
 package org.bh.tools.base.util
 
 import org.bh.tools.base.abstraction.Integer
+import org.bh.tools.base.collections.extensions.length
+import org.bh.tools.base.func.StringSupplier
 import org.bh.tools.base.math.Averager
 import org.bh.tools.base.util.TimeConversion.nanosecondsToTimeInterval
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import kotlin.system.measureNanoTime
 
@@ -27,6 +32,7 @@ val defaultMeasurementTrialCount = 10L
  * @param mode   The mode by which the measurement is taken, which affects the returned value
  * @param block  The block to measure
  */
+@JvmOverloads
 inline fun measureTimeInterval(trials: Integer = defaultMeasurementTrialCount, mode: TimeTrialMeasurementMode = TimeTrialMeasurementMode.average, block: TestMeasurementBlock): TimeInterval {
     return when (mode) {
         TimeTrialMeasurementMode.average -> averageTimeInterval(trials = trials, block = block)
@@ -42,6 +48,7 @@ inline fun measureTimeInterval(trials: Integer = defaultMeasurementTrialCount, m
  * @param trials The number of times to measure the given block
  * @param block  The block to measure
  */
+@JvmOverloads
 inline fun averageTimeInterval(trials: Integer = defaultMeasurementTrialCount, block: TestMeasurementBlock): TimeInterval {
     if (trials <= 0) {
         return TimeInterval.NaN
@@ -56,7 +63,7 @@ inline fun averageTimeInterval(trials: Integer = defaultMeasurementTrialCount, b
         averager.average(nanosecondsToTimeInterval(measureNanoTime(block)))
     }
 
-    return averager.current
+    return averager.currentAverage
 }
 
 
@@ -67,6 +74,7 @@ inline fun averageTimeInterval(trials: Integer = defaultMeasurementTrialCount, b
  * @param trials The number of times to measure the given block
  * @param block  The block to measure
  */
+@JvmOverloads
 inline fun totalTimeInterval(trials: Integer = defaultMeasurementTrialCount, block: TestMeasurementBlock): TimeInterval {
     if (trials <= 0) {
         return TimeInterval.NaN
@@ -97,5 +105,85 @@ enum class TimeTrialMeasurementMode {
 
 
 
+// MARK: - Assertions
+
 @Suppress("NOTHING_TO_INLINE")
-inline fun assertionFailure(message: String = "") = assertTrue(message, false)
+@JvmOverloads
+inline fun assertionFailure(message: String? = null) = assertTrue(message, false)
+
+inline fun assertionFailure(message: StringSupplier) = assertTrue(message(), false)
+
+
+@JvmOverloads
+inline fun assertThrows(message: String? = null, possibleThrow: () -> Unit) {
+    try {
+        possibleThrow()
+    } catch (_: Throwable) {
+        return
+    }
+    assertionFailure(message)
+}
+
+
+/**
+ * Asserts that each element in the given lists are equal, shallowly
+ *
+ * @param message _optional_ - The message sent on failure
+ * @param listA   The first list to compare
+ * @param listB   The second list to compare
+ */
+@JvmOverloads
+fun <Element,
+        ElementA: Element,
+        ElementB: Element,
+        ListA: List<ElementA>,
+        ListB: List<ElementB>>
+        assertListEquals(message: String? = null, listA: ListA, listB: ListB) {
+    if (listA.length == listB.length) {
+        listA.zip(listB).forEach { (aElement, bElement) ->
+            assertEquals(message, aElement, bElement)
+        }
+    } else {
+        assertionFailure(message)
+    }
+}
+
+
+/**
+ * Asserts that each element in the given lists are equal, deeply; if any element is a list and the corresponding
+ * element in the other list is also a list, this function is recursively called on those.
+ *
+ * @param message _optional_ - The message sent on failure
+ * @param listA   The first list to compare
+ * @param listB   The second list to compare
+ */
+@JvmOverloads
+fun <Element,
+        ElementA: Element,
+        ElementB: Element,
+        ListA: List<ElementA>,
+        ListB: List<ElementB>>
+        assertListDeeplyEquals(message: String? = null, listA: ListA, listB: ListB) {
+    if (listA.length == listB.length) {
+        listA.zip(listB).forEach { (aElement, bElement) ->
+            if (aElement is List<*>) {
+                if (bElement is List<*>) {
+                    assertListDeeplyEquals(message, aElement, bElement)
+                } else {
+                    assertionFailure(message)
+                }
+            } else {
+                assertEquals(message, aElement, bElement)
+            }
+        }
+    } else {
+        assertionFailure(message)
+    }
+}
+
+
+inline fun assertTrue(message: StringSupplier, condition: Boolean) {
+    if (!condition) {
+        assertionFailure(message)
+    }
+}

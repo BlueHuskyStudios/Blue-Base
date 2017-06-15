@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+@file:Suppress("unused", "KDocMissingDocumentation")
 
 package org.bh.tools.base.math.geometry
 
@@ -16,7 +16,7 @@ import java.awt.geom.Rectangle2D
  * @author Kyli Rouge
  * @since 2016-12-11
  */
-open class Rect<out NumberType : Number, out PointType: Point<NumberType>, out SizeType: Size<NumberType>>(val origin: PointType, val size: SizeType) {
+abstract class Rect<NumberType : Number, PointType: Point<NumberType>, SizeType: Size<NumberType>>(val origin: PointType, val size: SizeType) {
 
     val x get() = this.origin.x
     val y get() = this.origin.y
@@ -28,6 +28,12 @@ open class Rect<out NumberType : Number, out PointType: Point<NumberType>, out S
     }
 
     val stringValue get() = toString()
+
+
+    abstract fun copy(newOrigin: PointType = this.origin, newSize: SizeType = this.size): Rect<NumberType, PointType, SizeType>
+
+
+    abstract fun copy(newX: NumberType = this.x, newY: NumberType = this.y, newWidth: NumberType = this.width, newHeight: NumberType = this.height): Rect<NumberType, PointType, SizeType>
 }
 
 
@@ -165,19 +171,33 @@ abstract class ComputableRect<NumberType : Number, PointType: ComputablePoint<Nu
      * Finds and returns the rectangle that contains both this and the given [other] one
      */
     abstract fun union(other: ComputableRect<NumberType, PointType, SizeType>): ComputableRect<NumberType, PointType, SizeType>
+
+
+    /**
+     * Returns a rectangle that is the same size as this one, but whose position is this one given an offset to its
+     * origin. Note that the given point is **not a _new_ point**, but an `(x, y)` offset, whose components will be
+     * added to this rectangle's origin's components
+     */
+    fun offset(offset: PointType): ComputableRect<NumberType, PointType, SizeType> = offset(xOffset = offset.x, yOffset =  offset.y)
+
+
+    /**
+     * Returns a rectangle that is the same size as this one, but whose position is this one given an offset to its origin
+     */
+    abstract fun offset(xOffset: NumberType, yOffset: NumberType): ComputableRect<NumberType, PointType, SizeType>
 }
 
 
 
-private typealias Int64RectBaseType = ComputableRect<Int64, ComputablePoint<Int64>, ComputableSize<Int64>>
+private typealias IntegerRectBaseType = ComputableRect<Integer, ComputablePoint<Integer>, ComputableSize<Integer>>
 
 
 
 /**
  * A default implementation of [ComputableRect] using [Integer]s
  */
-class IntegerRect(origin: ComputablePoint<Int64>, size: ComputableSize<Int64>)
-    : Int64RectBaseType(origin, size) {
+open class IntegerRect(origin: ComputablePoint<Integer>, size: ComputableSize<Integer>)
+    : IntegerRectBaseType(origin, size) {
 
     companion object {
         val zero by lazy { IntegerRect(IntegerPoint.zero, IntegerSize.zero) }
@@ -209,24 +229,24 @@ class IntegerRect(origin: ComputablePoint<Int64>, size: ComputableSize<Int64>)
 
     val awtValue: Rectangle by lazy { Rectangle(x.int32Value, y.int32Value, width.int32Value, height.int32Value) }
 
-    override fun contains(other: Int64RectBaseType): Boolean
+    override fun contains(other: IntegerRectBaseType): Boolean
             = contains(other, defaultIntegerCalculationTolerance)
 
-    override fun contains(other: Int64RectBaseType, tolerance: Integer): Boolean
+    override fun contains(other: IntegerRectBaseType, tolerance: Integer): Boolean
             = this.minX.isLessThanOrEqualTo(x, tolerance = tolerance)
             && this.minY.isLessThanOrEqualTo(y, tolerance = tolerance)
             && this.maxX.isGreaterThanOrEqualTo(x, tolerance = tolerance)
             && this.maxY.isGreaterThanOrEqualTo(y, tolerance = tolerance)
 
 
-    override fun intersects(other: Int64RectBaseType): Boolean
+    override fun intersects(other: IntegerRectBaseType): Boolean
             = intersection(other) != null
 
-    override fun intersects(other: Int64RectBaseType, tolerance: Integer): Boolean
+    override fun intersects(other: IntegerRectBaseType, tolerance: Integer): Boolean
             = intersection(other, tolerance = tolerance) != null
 
 
-    override fun union(other: Int64RectBaseType): Int64RectBaseType {
+    override fun union(other: IntegerRectBaseType): IntegerRectBaseType {
         // Adapted from https://github.com/apple/swift-corelibs-foundation/blob/87815eab0cff7d971f1fbdbfbe98729ec92dbe3d/Foundation/NSGeometry.swift#L587
 
         val isEmptyFirstRect = this.isEmpty
@@ -246,11 +266,11 @@ class IntegerRect(origin: ComputablePoint<Int64>, size: ComputableSize<Int64>)
     }
 
 
-    override fun intersection(other: Int64RectBaseType): Int64RectBaseType?
+    override fun intersection(other: IntegerRectBaseType): IntegerRect?
             = intersection(other, tolerance = -defaultIntegerCalculationTolerance)
 
 
-    override fun intersection(other: Int64RectBaseType, tolerance: Integer): Int64RectBaseType? {
+    override fun intersection(other: IntegerRectBaseType, tolerance: Integer): IntegerRect? {
         // Adapted from https://github.com/apple/swift-corelibs-foundation/blob/87815eab0cff7d971f1fbdbfbe98729ec92dbe3d/Foundation/NSGeometry.swift#L604
 
         if (this.maxX.isLessThanOrEqualTo(other.minX, tolerance = tolerance)
@@ -265,6 +285,19 @@ class IntegerRect(origin: ComputablePoint<Int64>, size: ComputableSize<Int64>)
         val height = min(this.maxY, other.maxY) - y
         return IntegerRect(x, y, width, height)
     }
+
+
+    override fun offset(xOffset: Integer, yOffset: Integer): IntegerRect {
+        return IntegerRect(x = x + xOffset, y = y + yOffset, width = width, height = height)
+    }
+
+
+    override fun copy(newOrigin: ComputablePoint<Integer>, newSize: ComputableSize<Integer>): IntegerRect
+            = IntegerRect(newOrigin, newSize)
+
+
+    override fun copy(newX: Integer, newY: Integer, newWidth: Integer, newHeight: Integer): IntegerRect
+            = IntegerRect(newX, newY, newWidth, newHeight)
 
 
     inline val integerValue: IntegerRect get() = this
@@ -290,7 +323,7 @@ private typealias FractionRectBaseType = ComputableRect<Fraction, ComputablePoin
 /**
  * A default implementation of [ComputableRect] using [Fraction]s
  */
-class FractionRect(origin: ComputablePoint<Fraction>, size: ComputableSize<Fraction>)
+open class FractionRect(origin: ComputablePoint<Fraction>, size: ComputableSize<Fraction>)
     : FractionRectBaseType(origin, size) {
 
     companion object {
@@ -354,7 +387,7 @@ class FractionRect(origin: ComputablePoint<Fraction>, size: ComputableSize<Fract
         } else if (isEmptySecondRect) {
             return this
         }
-        val x = org.bh.tools.base.math.min(this.minX, other.minX)
+        val x = min(this.minX, other.minX)
         val y = min(this.minY, other.minY)
         val width = max(this.maxX, other.maxX) - x
         val height = max(this.maxY, other.maxY) - y
@@ -379,6 +412,18 @@ class FractionRect(origin: ComputablePoint<Fraction>, size: ComputableSize<Fract
         val height = min(this.maxY, other.maxY) - y
         return FractionRect(x, y, width, height)
     }
+
+
+    override fun offset(xOffset: Fraction, yOffset: Fraction): FractionRect
+            = FractionRect(x = x + xOffset, y = y + yOffset, width = width, height = height)
+
+
+    override fun copy(newOrigin: ComputablePoint<Fraction>, newSize: ComputableSize<Fraction>): FractionRect
+            = FractionRect(newOrigin, newSize)
+
+
+    override fun copy(newX: Fraction, newY: Fraction, newWidth: Fraction, newHeight: Fraction): FractionRect
+            = FractionRect(newX, newY, newWidth, newHeight)
 
 
     inline val fractionValue: FractionRect get() = this
