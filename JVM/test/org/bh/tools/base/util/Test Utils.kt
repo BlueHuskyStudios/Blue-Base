@@ -6,6 +6,7 @@ import org.bh.tools.base.abstraction.Integer
 import org.bh.tools.base.collections.extensions.length
 import org.bh.tools.base.func.StringSupplier
 import org.bh.tools.base.math.Averager
+import org.bh.tools.base.math.clampToPositive
 import org.bh.tools.base.util.TimeConversion.nanosecondsToTimeInterval
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -24,19 +25,24 @@ typealias TestMeasurementBlock = () -> Unit
 
 
 val defaultMeasurementTrialCount = 10L
+val defaultWarmupTrialCount = 5L
 
 /**
  * Measures the given block the given number of times and returns the average or total, depending on `mode`
  *
- * @param trials The number of times to measure the given block
- * @param mode   The mode by which the measurement is taken, which affects the returned value
- * @param block  The block to measure
+ * @param trials       The number of times to measure the given block
+ * @param warmupTrials The number of times to execute the block before taking measurements, to decrease warmup bias
+ * @param mode         The mode by which the measurement is taken, which affects the returned value
+ * @param block        The block to measure
  */
 @JvmOverloads
-inline fun measureTimeInterval(trials: Integer = defaultMeasurementTrialCount, mode: TimeTrialMeasurementMode = TimeTrialMeasurementMode.average, block: TestMeasurementBlock): TimeInterval {
+inline fun measureTimeInterval(trials: Integer = defaultMeasurementTrialCount,
+                               warmupTrials: Integer = defaultWarmupTrialCount,
+                               mode: TimeTrialMeasurementMode = TimeTrialMeasurementMode.average,
+                               block: TestMeasurementBlock): TimeInterval {
     return when (mode) {
-        TimeTrialMeasurementMode.average -> averageTimeInterval(trials = trials, block = block)
-        TimeTrialMeasurementMode.total -> totalTimeInterval(trials = trials, block = block)
+        TimeTrialMeasurementMode.average -> averageTimeInterval(trials = trials, warmupTrials = warmupTrials, block = block)
+        TimeTrialMeasurementMode.total -> totalTimeInterval(trials = trials, warmupTrials = warmupTrials, block = block)
     }
 }
 
@@ -45,17 +51,22 @@ inline fun measureTimeInterval(trials: Integer = defaultMeasurementTrialCount, m
 /**
  * Measures the given block the given number of times and returns the average
  *
- * @param trials The number of times to measure the given block
- * @param block  The block to measure
+ * @param trials       The number of times to measure the given block
+ * @param warmupTrials The number of times to execute the block before taking measurements, to decrease warmup bias
+ * @param block        The block to measure
  */
 @JvmOverloads
-inline fun averageTimeInterval(trials: Integer = defaultMeasurementTrialCount, block: TestMeasurementBlock): TimeInterval {
+inline fun averageTimeInterval(trials: Integer = defaultMeasurementTrialCount,
+                               warmupTrials: Integer = defaultWarmupTrialCount,
+                               block: TestMeasurementBlock): TimeInterval {
     if (trials <= 0) {
         return TimeInterval.NaN
     }
 
-    // Throw away the first test to spin up caching
-    block()
+    // Throw away the first few tests to spin up caching
+    for (i in 0..warmupTrials.clampToPositive) {
+        block()
+    }
 
     val averager = Averager()
 
@@ -71,17 +82,22 @@ inline fun averageTimeInterval(trials: Integer = defaultMeasurementTrialCount, b
 /**
  * Measures the given block the given number of times and returns the total
  *
- * @param trials The number of times to measure the given block
- * @param block  The block to measure
+ * @param trials       The number of times to measure the given block
+ * @param warmupTrials The number of times to execute the block before taking measurements, to decrease warmup bias
+ * @param block        The block to measure
  */
 @JvmOverloads
-inline fun totalTimeInterval(trials: Integer = defaultMeasurementTrialCount, block: TestMeasurementBlock): TimeInterval {
+inline fun totalTimeInterval(trials: Integer = defaultMeasurementTrialCount,
+                             warmupTrials: Integer = defaultWarmupTrialCount,
+                             block: TestMeasurementBlock): TimeInterval {
     if (trials <= 0) {
         return TimeInterval.NaN
     }
 
-    // Throw away the first test to spin up caching
-    block()
+    // Throw away the first few tests to spin up caching
+    for (i in 0..warmupTrials.clampToPositive) {
+        block()
+    }
 
     var total: TimeInterval = 0.0
 
