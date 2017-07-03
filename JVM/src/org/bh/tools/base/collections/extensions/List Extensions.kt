@@ -25,14 +25,6 @@ fun <ElementType> List<ElementType>.adding(index: Index, newElement: ElementType
 }
 
 
-fun <Element> List(): List<Element> = listOf()
-fun <Element> List(vararg initialElements: Element): List<Element> = listOf(*initialElements)
-
-
-fun <Element> MutableList(): MutableList<Element> = mutableListOf()
-fun <Element> MutableList(vararg initialElements: Element): MutableList<Element> = mutableListOf(*initialElements)
-
-
 /**
  * If this list is large enough to contain an item at the given [index], that item is returned. Else, [backup] is returned
  *

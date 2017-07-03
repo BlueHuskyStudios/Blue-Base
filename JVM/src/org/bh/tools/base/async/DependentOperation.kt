@@ -9,7 +9,8 @@ private var dependentOperationCount = 0
  * @author Kyli Rouge
  * @since 2017-01-20
  */
-class DependentOperation(block: OperationBlock,
+@Deprecated("Not yet implemented", level = DeprecationLevel.HIDDEN)
+private class DependentOperation(block: OperationBlock,
                          name: String = "Blue Base Dependent Operation #$dependentOperationCount",
                          var dependencies: List<Operation>) : Operation(block = block, name = name) {
     init {
@@ -17,13 +18,13 @@ class DependentOperation(block: OperationBlock,
 
         dependencies.forEach {
             it.then {
-
+                TODO()
             }
         }
     }
 }
 
 
-internal open class DependentOperationState: OperationState() {
+private sealed class DependentOperationState: OperationState() {
     class awaitingOtherOperation(val otherOperation: Operation) : DependentOperationState()
 }

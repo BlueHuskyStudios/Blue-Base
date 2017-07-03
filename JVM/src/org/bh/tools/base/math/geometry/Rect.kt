@@ -90,6 +90,8 @@ abstract class ComputableRect<NumberType : Number, PointType: ComputablePoint<Nu
      */
     inline val isEmpty: Boolean get() = size.isEmpty
 
+    val area: NumberType get() = size.area
+
 
     /**
      * Indicates whether this rectangle completely contains the given [other] one, within the given tolerance.

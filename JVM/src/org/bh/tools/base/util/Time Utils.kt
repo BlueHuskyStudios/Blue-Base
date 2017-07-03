@@ -83,6 +83,8 @@ object TimeConversion {
 
     /** The number of milliseconds in an SI second */
     const val millisecondsPerSecond: TimeInterval = 1_000.0
+    /** The number of milliseconds in a [TimeInterval] */
+    const val millisecondsPerTimeInterval: TimeInterval = 1_000.0
     /** The number of milliseconds in a minute */
     const val millisecondsPerMinute: TimeInterval = millisecondsPerSecond * secondsPerMinute
     /** The number of milliseconds in an hour */

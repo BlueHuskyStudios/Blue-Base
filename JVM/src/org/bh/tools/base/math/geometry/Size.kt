@@ -83,6 +83,9 @@ where NumberType: Number {
     abstract val maxXmaxY: Point<NumberType>
 
 
+    abstract val area: NumberType
+
+
     abstract infix operator fun <OtherType : Number> plus(rhs: Size<OtherType>): Size<NumberType>
     abstract infix operator fun <OtherType : Number> minus(rhs: Size<OtherType>): Size<NumberType>
     abstract infix operator fun <OtherType : Number> times(rhs: Size<OtherType>): Size<NumberType>
@@ -156,6 +159,9 @@ class IntegerSize(width: Integer, height: Integer) : ComputableSize<Integer>(wid
     override val maxXminY: IntegerPoint by lazy { IntegerPoint(maxX, minY) }
     override val maxXmidY: IntegerPoint by lazy { IntegerPoint(maxX, midY) }
     override val maxXmaxY: IntegerPoint by lazy { IntegerPoint(maxX, maxY) }
+
+
+    override val area = width * height
 
 
     constructor(width: Int32, height: Int32) : this(width = width.integerValue, height = height.integerValue)
@@ -277,6 +283,9 @@ class FractionSize(width: Fraction, height: Fraction) : ComputableSize<Fraction>
     override val maxXminY: FractionPoint by lazy { FractionPoint(maxX, minY) }
     override val maxXmidY: FractionPoint by lazy { FractionPoint(maxX, midY) }
     override val maxXmaxY: FractionPoint by lazy { FractionPoint(maxX, maxY) }
+
+
+    override val area = width * height
 
 
     override infix operator fun <OtherType : Number> plus(rhs: Size<OtherType>): FractionSize = plus(Pair(rhs.width, rhs.height))
