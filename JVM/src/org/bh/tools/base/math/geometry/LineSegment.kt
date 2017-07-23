@@ -435,9 +435,9 @@ class IntegerLineSegment
     override fun contains(point: Point<Integer>): Boolean = contains(point, tolerance = defaultIntegerCalculationTolerance)
 
     override fun contains(point: Point<Integer>, tolerance: Integer): Boolean {
-        point.integerValue.let { point ->
-            if (start.equals(point, tolerance = tolerance)
-                    || end.equals(point, tolerance = tolerance)) {
+        point.integerValue.let { integerPoint ->
+            if (start.equals(integerPoint, tolerance = tolerance)
+                    || end.equals(integerPoint, tolerance = tolerance)) {
                 return true
             }
         }
@@ -564,9 +564,9 @@ open class FractionLineSegment(start: FractionPoint, end: FractionPoint) : Compu
     }
 
     override fun contains(point: Point<Fraction>, tolerance: Fraction): Boolean {
-        point.fractionValue.let { point ->
-            if (start.equals(point, tolerance = tolerance)
-                    || end.equals(point, tolerance = tolerance)) {
+        point.fractionValue.let { fractionPoint ->
+            if (start.equals(fractionPoint, tolerance = tolerance)
+                    || end.equals(fractionPoint, tolerance = tolerance)) {
                 return true
             }
         }
