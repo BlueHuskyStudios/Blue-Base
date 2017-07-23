@@ -130,7 +130,7 @@ class MathBasicsTest {
         assertEquals("Anything to the 0 power is 1, so 1^0 should be 1", 1.0, 1.0.toThePowerOf(0.0), defaultFractionCalculationTolerance)
         assertEquals("Anything to the 0 power is 1, so 5^0 should be 1", 1.0, 5.0.toThePowerOf(0.0), defaultFractionCalculationTolerance)
         assertEquals("Anything to the 0 power is 1, so Integer.max^0 should be 1", 1.0, Integer.max.fractionValue.toThePowerOf(0.0), defaultFractionCalculationTolerance)
-        assertEquals("Anything to the 0 power is 1, so infinity^0 should be 1", 1.0, Fraction.infinity.fractionValue.toThePowerOf(0.0), defaultFractionCalculationTolerance)
+        assertEquals("Anything to the 0 power is 1, so infinity^0 should be 1", 1.0, Fraction.infinity.toThePowerOf(0.0), defaultFractionCalculationTolerance)
 
         assertEquals("10^3 should be 1,000", 1_000.0, 10.0.toThePowerOf(3.0), defaultFractionCalculationTolerance)
         assertEquals("10^8 should be 100,000,000", 100_000_000.0, 10.0.toThePowerOf(8.0), defaultFractionCalculationTolerance)

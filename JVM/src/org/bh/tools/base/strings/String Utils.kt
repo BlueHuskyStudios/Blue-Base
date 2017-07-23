@@ -68,11 +68,9 @@ infix operator fun Any.plus(rhs: CharSequence): CharSequence = concat(this, rhs)
  */
 fun concat(lhs: Any, rhs: CharSequence): CharSequence {
     if (lhs is String) {
-        val casted: String = lhs as String
-        return casted.plus(rhs)
+        return lhs + rhs
     } else if (lhs is StringBuilder) {
-        val casted: StringBuilder = lhs as StringBuilder
-        return casted.append(rhs)
+        return lhs.append(rhs)
     } else {
         return StringBuilder().append(lhs).append(rhs)
     }
