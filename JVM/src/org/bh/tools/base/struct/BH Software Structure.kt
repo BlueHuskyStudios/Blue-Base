@@ -10,7 +10,7 @@ package org.bh.tools.base.struct
 /**
  * Represents a UI View in the Blue Husky Software Structure.
  *
- * See also: https://drive.google.com/file/d/0B9plORbvSu2rQlVBUTQteldSams/view?usp=sharing
+ * See also: https://github.com/BlueHuskyStudios/Blue-Husky-Software-Structure
  *
  * @param RepresentedType The type of object that this view can represent. This is required because all views should
  * contain no data, but instead directly represent them. For examples, an image view represents its image, a text view
@@ -24,22 +24,84 @@ interface UIView<RepresentedType> {
     var representedObject: RepresentedType // TODO: Reconsider whether this belongs in the view
 }
 
+
+
 /**
  * Represents a UI View Controller in the Blue Husky Software Structure.
  *
- * See also: https://drive.google.com/file/d/0B9plORbvSu2rQlVBUTQteldSams/view?usp=sharing
+ * See also: https://github.com/BlueHuskyStudios/Blue-Husky-Software-Structure
  */
 interface UIViewController<out UIViewType : UIView<*>> {
     /**
-     * The UI View that this UI View Controller controls
+     * The UI View that this UI View Controller controls. This may be `null` before [loadView] is called
      */
-    val view: UIViewType
+    val view: UIViewType?
+
+    /**
+     * Populates the [view] field
+     */
+    fun loadView()
+    fun viewWillLoad()
+    fun viewDidLoad()
 }
+
+
+
+/**
+ * Represents a UI Window in the Blue Husky Software Structure.
+ *
+ * See also: https://github.com/BlueHuskyStudios/Blue-Husky-Software-Structure
+ *
+ * @param RepresentedType The type of object that this view can represent. This is required because all views should
+ * contain no data, but instead directly represent them. For examples, an image view represents its image, a text view
+ * represents its text, a menu might represent the array it presents, a slider would represent the value it
+ * manipulates, an "OK" button represents the function that is called when it is pressed, etc.
+ */
+interface UIWindow<out UIViewControllerType: UIViewController<*>>: Presentable {
+    /**
+     * The object that this view represents
+     */
+    val contentViewController: UIViewControllerType
+}
+
+
+
+/**
+ * Represents a UI View Controller in the Blue Husky Software Structure.
+ *
+ * See also: https://github.com/BlueHuskyStudios/Blue-Husky-Software-Structure
+ */
+interface UIWindowController<out UIWindowType : UIWindow<*>> {
+    /**
+     * The UI View that this UI View Controller controls. This may be `null` before [loadWindow] is called
+     */
+    val window: UIWindowType?
+
+
+    /**
+     * Called immediately before [loadWindow]
+     */
+    fun windowWillLoad()
+
+
+    /**
+     * Populates the [window] field
+     */
+    fun loadWindow()
+
+
+    /**
+     * Called immediately after [loadWindow]
+     */
+    fun windowDidLoad()
+}
+
+
 
 /**
  * Represents a Data View Controller in the Blue Husky Software Structure.
  *
- * See also: https://drive.google.com/file/d/0B9plORbvSu2rQlVBUTQteldSams/view?usp=sharing
+ * See also: https://github.com/BlueHuskyStudios/Blue-Husky-Software-Structure
  */
 interface DataViewController<out DataType : Data, out DataViewType : DataView<DataType>> {
     /**
@@ -48,10 +110,12 @@ interface DataViewController<out DataType : Data, out DataViewType : DataView<Da
     val dataView: DataViewType
 }
 
+
+
 /**
  * Represents a Data View in the Blue Husky Software Structure.
  *
- * See also: https://drive.google.com/file/d/0B9plORbvSu2rQlVBUTQteldSams/view?usp=sharing
+ * See also: https://github.com/BlueHuskyStudios/Blue-Husky-Software-Structure
  */
 interface DataView<out DataType : Data> {
     /**
@@ -60,17 +124,21 @@ interface DataView<out DataType : Data> {
     val data: DataType
 }
 
+
+
 /**
  * Represents Data in the Blue Husky Software Structure.
  *
- * See also: https://drive.google.com/file/d/0B9plORbvSu2rQlVBUTQteldSams/view?usp=sharing
+ * See also: https://github.com/BlueHuskyStudios/Blue-Husky-Software-Structure
  */
 interface Data
+
+
 
 /**
  * Represents a Data Accessor in the Blue Husky Software Structure.
  *
- * See also: https://drive.google.com/file/d/0B9plORbvSu2rQlVBUTQteldSams/view?usp=sharing
+ * See also: https://github.com/BlueHuskyStudios/Blue-Husky-Software-Structure
  */
 interface DataAccessor<out DataType : Data, in AccessDetailType, out AccessStatusType> {
     /**
@@ -83,3 +151,11 @@ interface DataAccessor<out DataType : Data, in AccessDetailType, out AccessStatu
      */
     fun accessData(details: AccessDetailType, didAccessData: (accessedData: DataType?, status: AccessStatusType) -> Unit)
 }
+
+
+
+interface Presentable {
+    fun present()
+}
+
+fun Presentable.show() = present()
