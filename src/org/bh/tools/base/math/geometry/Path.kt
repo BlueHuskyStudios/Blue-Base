@@ -6,7 +6,7 @@ import org.bh.tools.base.abstraction.Fraction
 import org.bh.tools.base.abstraction.Integer
 import org.bh.tools.base.collections.Index
 import org.bh.tools.base.collections.extensions.*
-import org.bh.tools.base.math.Comparator
+import org.bh.tools.base.math.ComparatorBlock
 import org.bh.tools.base.math.ComparisonResult
 import org.bh.tools.base.math.geometry.IntegerPath.Companion.pathFromGenericSegments
 import org.bh.tools.base.math.geometry.IntersectionDescription.*
@@ -469,7 +469,7 @@ typealias FloatPath = FractionPath
 //    }
 //}
 
-private fun <ContentType> List<ContentType>.sortedQueueValue(sorter: Comparator<ContentType>): Queue<ContentType> {
+private fun <ContentType> List<ContentType>.sortedQueueValue(sorter: ComparatorBlock<ContentType>): Queue<ContentType> {
     val x = PriorityQueue<ContentType>({ lhs, rhs ->
         (
                 if (lhs == null) ComparisonResult.right
@@ -481,7 +481,7 @@ private fun <ContentType> List<ContentType>.sortedQueueValue(sorter: Comparator<
     return x
 }
 
-inline fun <ContentType> List<ContentType>.sorted(crossinline sorter: Comparator<ContentType>): List<ContentType> =
+inline fun <ContentType> List<ContentType>.sorted(crossinline sorter: ComparatorBlock<ContentType>): List<ContentType> =
         this.sortedWith(kotlin.Comparator<ContentType> { lhs, rhs ->
             (
                     if (lhs == null) ComparisonResult.right

@@ -73,15 +73,16 @@ fun clamp(low: Fraction, value: Fraction, high: Fraction): Fraction =
 
 
 
-open class ComparableComparator<T: Comparable<T>>: kotlin.Comparator<T> {
-    override fun compare(lhs: T, rhs: T): Int {
-        return lhs.compareTo(rhs)
+open class ComparableComparator<T: Comparable<T>>: Comparator<T> {
+    override fun compare(lhs: T, rhs: T): ComparisonResult {
+        return ComparisonResult(lhs.compareTo(rhs))
     }
 }
 
 
 
-typealias Comparator<ComparedType> = (lhs: ComparedType, rhs: ComparedType) -> ComparisonResult
+typealias ComparatorBlock<ComparedType> = (lhs: ComparedType, rhs: ComparedType) -> ComparisonResult
+interface Comparator<in ComparedType> { fun compare(lhs: ComparedType, rhs: ComparedType): ComparisonResult }
 
 
 
@@ -116,6 +117,9 @@ enum class ComparisonResult(
 
     companion object {
 
+        operator fun invoke(raw: Number): ComparisonResult = from(raw)
+
+
         fun from(raw: Number): ComparisonResult {
             return from(object : Comparable<Number> {
                 override fun compareTo(other: Number): Int {
@@ -145,7 +149,7 @@ enum class ComparisonResult(
                     } else {
                         backupResult = (other.fractionValue - raw.fractionValue).clampedInt32Value
                     }
-                    print("Sorry; I hadn't thought about subtracting a ${other::class.java} from a ${raw::class.java}...")
+                    print("Sorry; I hadn't thought about subtracting a ${other::class.simpleName} from a ${raw::class.simpleName}...")
                     print("I'll attempt to convert them to floats and do the math from there!")
                     return backupResult
                 }
@@ -222,7 +226,7 @@ inline val defaultIntegerCalculationTolerance: Integer get() = 0
  */
 fun Fraction.equals(rhs: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean
         = if (tolerance == 0.0) this == rhs
-        else abs(rhs - this) <= tolerance
+        else (rhs - this).absoluteValue <= tolerance
 
 
 /**
@@ -242,7 +246,7 @@ fun Float32.equals(rhs: Float32, tolerance: Float32 = defaultFloat32CalculationT
     } else if (this < -Float32.greatestFiniteMagnitude && rhs < 0 && rhs.isInfinite) {
         return true
     } else {
-        return abs(rhs - this) <= tolerance
+        return (rhs - this).absoluteValue <= tolerance
     }
 }
 

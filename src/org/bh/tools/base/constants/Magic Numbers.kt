@@ -7,12 +7,12 @@
 */
 
 /**
- * Indicates that something could not be found. If this needs to be communicated without optionals, use [NotFoundNumber]
+ * Indicates that something could not be found. If this needs to be communicated without optionals, use [notFoundNumber]
  */
-val NotFound: Int? = null
+val notFound: Int? = null
 
 /**
  * Indicates that something could not be found, when a number must represent this.
- * Use of this is discouraged. If at all possible, use [NotFound].
+ * Use of this is discouraged. If at all possible, use [notFound].
  */
-val NotFoundNumber = -1
+val notFoundNumber = -1

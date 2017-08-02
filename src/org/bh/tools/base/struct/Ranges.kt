@@ -642,7 +642,7 @@ val <NumberType> ClosedRange<NumberType>.fractionValue
 
 // This must be done because ClosedRange has a compareTo method but isn't Comparable. Because you can't do extensions conformity. |I
 class SortClosedRanges<NumberType>
-    : kotlin.Comparator<ClosedRange<NumberType>>
+    : java.util.Comparator<ClosedRange<NumberType>>
     where NumberType: Comparable<NumberType> {
     override fun compare(lhs: ClosedRange<NumberType>, rhs: ClosedRange<NumberType>): Int
         = lhs.compareTo(rhs)
