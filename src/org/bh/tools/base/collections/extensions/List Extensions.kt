@@ -64,3 +64,9 @@ inline val <ElementType, IterableType: List<ElementType>> IterableType.nonEmpty 
 
 fun <Element> List<Element>.subList(range: IntegerRange): List<Element>
         = subList(fromIndex = range.first.int32Value, toIndex = range.last.int32Value)
+
+
+//inline fun <reified Element> MutableList<Element>.copy(): MutableList<Element> = MutableList(*toTypedArray())
+
+
+//inline fun <reified Element> List<Element>.copy(): List<Element> = List(*toTypedArray())

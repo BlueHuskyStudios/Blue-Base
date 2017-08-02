@@ -7,7 +7,6 @@ import org.bh.tools.base.math.integerValue
 import org.bh.tools.base.strings.times
 import org.junit.Assert.*
 import org.junit.Test
-import java.util.logging.Logger
 import kotlin.reflect.KClass
 
 
@@ -595,7 +594,7 @@ class OSTest {
     fun current() {
         val currentOS = OS.current
 
-        Logger.getGlobal().info {
+        println({
             val osString = currentOS.toString()
             val maxWidth = osString.length * 2.0
 
@@ -608,7 +607,7 @@ class OSTest {
             val paddedOSString = (" " * paddingLength.integerValue) + osString
 
             /* return */ "\r\n\r\n\r\n$topSeparator\r\n\r\n$paddedOSString\r\n\r\n$bottomSeparator\r\n\r\n\r\n"
-        }
+        }())
 
         assertNotEquals("Current OS's architecture should be known", OSArchitecture.unknown::class, currentOS.architecture::class)
 
