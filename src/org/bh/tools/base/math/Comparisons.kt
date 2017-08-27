@@ -1,7 +1,8 @@
+@file:Suppress("MemberVisibilityCanPrivate", "unused")
+
 package org.bh.tools.base.math
 
 import org.bh.tools.base.abstraction.*
-import java.lang.StrictMath.abs
 
 /* Comparisons, made for Blue Base, is copyright Blue Husky Software ©2016 BH-1-PS.
  *
@@ -9,45 +10,58 @@ import java.lang.StrictMath.abs
  * Created by Kyli Rouge on 2016-10-28.
  */
 
+
+/**
+ * Finds the smallest of these two
+ */
 fun <T : Comparable<T>> min(lhs: T, rhs: T): T = if (lhs < rhs) lhs else rhs
 
 
-fun <T : Comparable<T>> min(a: T, b: T, vararg n: T): T {
-    if (n.isEmpty()) {
-        return min(lhs = a, rhs = b)
-    }
-
-    val lowestN: T
-    if (n.size == 1) {
-        lowestN = n[0]
-    } else if (n.size == 2) {
-        lowestN = min(lhs = n[0], rhs = n[1])
-    } else {
-        lowestN = n.reduce { x, y -> min(lhs = x, rhs = y) }
-    }
-
-    return min(lhs = a, rhs = min(lhs = b, rhs = lowestN))
+/**
+ * Finds the smallest of any number of values
+ *
+ * If only 2 are given, [min] is called.
+ */
+fun <T : Comparable<T>> min(a: T, b: T, vararg n: T): T = when {
+    n.isEmpty() -> min(lhs = a, rhs = b)
+    else -> min(lhs = a, rhs = min(lhs = b, rhs = n.min()))
 }
 
 
+/**
+ * Finds the smallest element in this array
+ */
+fun <T: Comparable<T>> Array<T>.min(): T = when (size) {
+    1 -> this[0]
+    2 -> min(lhs = this[0], rhs = this[1])
+    else -> reduce { x, y -> min(lhs = x, rhs = y) }
+}
+
+
+/**
+ * Finds the largest of these two
+ */
 fun <T : Comparable<T>> max(lhs: T, rhs: T): T = if (rhs < lhs) lhs else rhs
 
 
-fun <T : Comparable<T>> max(a: T, b: T, vararg n: T): T {
-    if (n.isEmpty()) {
-        return max(lhs = a, rhs = b)
-    }
+/**
+ * Finds the largest of any number of values
+ *
+ * If only 2 are given, [max] is called.
+ */
+fun <T : Comparable<T>> max(a: T, b: T, vararg n: T): T = when {
+    n.isEmpty() -> max(lhs = a, rhs = b)
+    else -> max(lhs = a, rhs = max(lhs = b, rhs = n.max()))
+}
 
-    val highestN: T
-    if (n.size == 1) {
-        highestN = n[0]
-    } else if (n.size == 2) {
-        highestN = max(lhs = n[0], rhs = n[1])
-    } else {
-        highestN = n.reduce { x, y -> max(lhs = x, rhs = y) }
-    }
 
-    return max(lhs = a, rhs = max(lhs = b, rhs = highestN))
+/**
+ * Finds the largest element in this array
+ */
+fun <T: Comparable<T>> Array<T>.max(): T = when (size) {
+    1 -> this[0]
+    2 -> max(lhs = this[0], rhs = this[1])
+    else -> reduce { x, y -> max(lhs = x, rhs = y) }
 }
 
 
@@ -73,7 +87,7 @@ fun clamp(low: Fraction, value: Fraction, high: Fraction): Fraction =
 
 
 
-open class ComparableComparator<T: Comparable<T>>: Comparator<T> {
+open class ComparableComparator<in T: Comparable<T>>: Comparator<T> {
     override fun compare(lhs: T, rhs: T): ComparisonResult {
         return ComparisonResult(lhs.compareTo(rhs))
     }
@@ -124,33 +138,39 @@ enum class ComparisonResult(
             return from(object : Comparable<Number> {
                 override fun compareTo(other: Number): Int {
                     val backupResult: Int
-                    if (raw.isNativeInteger) {
-                        val rawInt = raw.integerValue
-                        if (other.isNativeInteger) {
-                            val otherInt = other.integerValue
-                            return (otherInt - rawInt).clampedInt32Value
-                        } else if (other.isNativeFraction) {
-                            val otherFloat = other.fractionValue
-                            return (otherFloat - rawInt).clampedInt32Value
-                        } else {
-                            backupResult = (other.fractionValue - rawInt).clampedInt32Value
+                    when {
+                        raw.isNativeInteger -> {
+                            val rawInt = raw.integerValue
+                            when {
+                                other.isNativeInteger -> {
+                                    val otherInt = other.integerValue
+                                    return (otherInt - rawInt).clampedInt32Value
+                                }
+                                other.isNativeFraction -> {
+                                    val otherFloat = other.fractionValue
+                                    return (otherFloat - rawInt).clampedInt32Value
+                                }
+                                else -> backupResult = (other.fractionValue - rawInt).clampedInt32Value
+                            }
                         }
-                    } else if (raw.isNativeFraction) {
-                        val rawFloat = raw.fractionValue
-                        if (other.isNativeInteger) {
-                            val otherInt = other.integerValue
-                            return (otherInt - rawFloat).clampedInt32Value
-                        } else if (other.isNativeFraction) {
-                            val otherFloat = other.fractionValue
-                            return (otherFloat - rawFloat).clampedInt32Value
-                        } else {
-                            backupResult = (other.fractionValue - rawFloat).clampedInt32Value
+                        raw.isNativeFraction -> {
+                            val rawFloat = raw.fractionValue
+                            when {
+                                other.isNativeInteger -> {
+                                    val otherInt = other.integerValue
+                                    return (otherInt - rawFloat).clampedInt32Value
+                                }
+                                other.isNativeFraction -> {
+                                    val otherFloat = other.fractionValue
+                                    return (otherFloat - rawFloat).clampedInt32Value
+                                }
+                                else -> backupResult = (other.fractionValue - rawFloat).clampedInt32Value
+                            }
                         }
-                    } else {
-                        backupResult = (other.fractionValue - raw.fractionValue).clampedInt32Value
+                        else -> backupResult = (other.fractionValue - raw.fractionValue).clampedInt32Value
                     }
                     print("Sorry; I hadn't thought about subtracting a ${other::class.simpleName} from a ${raw::class.simpleName}...")
-                    print("I'll attempt to convert them to floats and do the math from there!")
+                    print("I'll attempt to convert them to fractions and do the math from there!")
                     return backupResult
                 }
             })
@@ -194,7 +214,6 @@ enum class ComparisonResult(
 
 
 
-
 /**
  * The default amount by which 32-bit floating-point calculations and comparisons can be off
  */
@@ -216,6 +235,7 @@ inline val defaultFractionCalculationTolerance: Fraction get() = 0.0001
 inline val defaultIntegerCalculationTolerance: Integer get() = 0
 
 
+
 /**
  * Determines whether this fraction is equal to the other, within a given tolerance.
  *
@@ -224,9 +244,10 @@ inline val defaultIntegerCalculationTolerance: Integer get() = 0
  *                  Defaults to [defaultFractionCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
-fun Fraction.equals(rhs: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean
-        = if (tolerance == 0.0) this == rhs
-        else (rhs - this).absoluteValue <= tolerance
+fun Fraction.equals(rhs: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance) = when (tolerance) {
+    0.0 -> this == rhs
+    else -> (rhs - this).absoluteValue <= tolerance
+}
 
 
 /**
@@ -237,17 +258,11 @@ fun Fraction.equals(rhs: Fraction, tolerance: Fraction = defaultFractionCalculat
  *                  Defaults to [defaultFractionCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
-fun Float32.equals(rhs: Float32, tolerance: Float32 = defaultFloat32CalculationTolerance): Boolean {
-    if (tolerance == 0.0f) {
-        return this == rhs
-    }
-    if (this > Float32.greatestFiniteMagnitude && rhs > Float32.greatestFiniteMagnitude) {
-        return true
-    } else if (this < -Float32.greatestFiniteMagnitude && rhs < 0 && rhs.isInfinite) {
-        return true
-    } else {
-        return (rhs - this).absoluteValue <= tolerance
-    }
+fun Float32.equals(rhs: Float32, tolerance: Float32 = defaultFloat32CalculationTolerance): Boolean = when {
+    tolerance == 0.0f -> this == rhs
+    this > Float32.greatestFiniteMagnitude && rhs > Float32.greatestFiniteMagnitude -> true
+    this < -Float32.greatestFiniteMagnitude && rhs < 0 && rhs.isInfinite -> true
+    else -> (rhs - this).absoluteValue <= tolerance
 }
 
 
@@ -259,17 +274,11 @@ fun Float32.equals(rhs: Float32, tolerance: Float32 = defaultFloat32CalculationT
  *                  Defaults to [defaultFractionCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
-fun Float64.equals(rhs: Float32, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean {
-    if (tolerance == 0.0) {
-        return this.toFloat() == rhs
-    }
-    if (this > Float32.greatestFiniteMagnitude && rhs > 0 && rhs.isInfinite) {
-        return true
-    } else if (this < -Float32.greatestFiniteMagnitude && rhs < 0 && rhs.isInfinite) {
-        return true
-    } else {
-        return abs(rhs - this) <= tolerance
-    }
+fun Float64.equals(rhs: Float32, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean = when {
+    tolerance == 0.0 -> this.toFloat() == rhs
+    this > Float32.greatestFiniteMagnitude && rhs > 0 && rhs.isInfinite -> true
+    this < -Float32.greatestFiniteMagnitude && rhs < 0 && rhs.isInfinite -> true
+    else -> abs(rhs - this) <= tolerance
 }
 
 

@@ -5,7 +5,6 @@ import org.bh.tools.base.math.max
 import org.bh.tools.base.math.min
 import org.bh.tools.base.struct.ClosedRange
 import org.bh.tools.base.struct.IndexRange
-import java.util.*
 
 /*
  * Array Extensions, made for Blue Base, is copyright Blue Husky Software ©2016 BH-1-PS.
@@ -41,11 +40,6 @@ inline val Collection<*>.count: Int get() = this.size
 inline val Collection<*>.length: Int get() = this.size
 
 
-fun <T> Array<T>.deepEquals(other: Array<T>): Boolean {
-    return Arrays.deepEquals(this, other)
-}
-
-
 fun <ElementType> Array<ElementType>.inserting(elements: ElementType, index: Index): Array<ElementType> {
     val left = this.sliceArray(IntRange(start = 0, endInclusive = index - 1))
     val right = this.sliceArray(kotlin.ranges.IntRange(start = index - 1, endInclusive = length - 1))
@@ -65,7 +59,7 @@ fun <ElementType> Array<ElementType>.removing(range: IndexRange): Array<ElementT
 }
 
 fun <ElementType> Array<ElementType>.removing(indices: IndexSet): Array<ElementType> {
-    var ret = clone()
+    var ret = this.copyOf()
     indices.ranges.forEach { ret = ret.removing(it) }
     return ret
 }

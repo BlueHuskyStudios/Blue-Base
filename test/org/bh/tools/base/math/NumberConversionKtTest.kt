@@ -8,8 +8,6 @@ import org.bh.tools.base.strings.differingCharacters
 import org.bh.tools.base.strings.toString
 import org.bh.tools.base.util.assertTrue
 import org.junit.Test
-import java.math.BigDecimal
-import java.math.BigInteger
 
 
 /**
@@ -26,13 +24,13 @@ class NumberConversionKtTest {
     val sampleFloat32s: List<Float32> = sampleInt64s.map(Int64::toFloat) + listOf<Float32>(Float32.leastNonzeroMagnitude, Float32.greatestFiniteMagnitude, -Float32.leastNonzeroMagnitude, -Float32.greatestFiniteMagnitude)
     val sampleFloat64s: List<Float64> = sampleFloat32s.map(Float32::toDouble) + listOf(Float64.leastNonzeroMagnitude, Float64.greatestFiniteMagnitude, -Float64.leastNonzeroMagnitude, -Float64.greatestFiniteMagnitude)
 
-    val sampleBigDecimals: List<BigDecimal> = sampleFloat64s.map { BigDecimal(it.toString()) }
-    val sampleBigIntegers: List<BigInteger> = sampleBigDecimals.map { it.toBigInteger() }
+//    val sampleBigDecimals: List<BigDecimal> = sampleFloat64s.map { BigDecimal(it.toString()) }
+//    val sampleBigIntegers: List<BigInteger> = sampleBigDecimals.map { it.toBigInteger() }
 
     val allSamples: List<Number> = listOf<Number>() +
             sampleInt8s + sampleInt16s + sampleInt32s + sampleInt64s +
-            sampleFloat32s + sampleFloat64s +
-            sampleBigIntegers + sampleBigDecimals
+            sampleFloat32s + sampleFloat64s// +
+//            sampleBigIntegers + sampleBigDecimals
 
     init {
         println("Evaluating ${allSamples.length.toString(separator = ",")} sample numbers...")
@@ -42,7 +40,7 @@ class NumberConversionKtTest {
     @Test
     fun Number_float32Value() {
         allSamples
-                .stream()
+//                .stream()
                 .map { tuple(it, it.float32Value) }
                 .forEach { (original, float32Value) ->
                     assertNumbersClose("Original number should equal float 32 value",

@@ -66,7 +66,8 @@ class Averager
      *
      * @return `this`, so calls can be chained. For example: `averager.average(myNumber).average(123);`
      */
-    @Strictfp fun average(newValue: Fraction): Averager {
+//    @Strictfp
+    fun average(newValue: Fraction): Averager {
         _currentAverage = (_currentAverage * timesAveraged + newValue) / ++timesAveraged
         return this
     }

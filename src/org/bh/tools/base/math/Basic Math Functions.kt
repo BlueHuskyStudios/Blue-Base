@@ -1,4 +1,3 @@
-@file:JvmName("MathBasics")
 @file:Suppress("unused")
 
 package org.bh.tools.base.math

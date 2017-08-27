@@ -2,7 +2,6 @@ package org.bh.tools.base.strings
 
 import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.math.*
-import java.math.BigDecimal
 
 /*
  * Makes numbers more stringy
@@ -19,11 +18,36 @@ import java.math.BigDecimal
  *
  * @return A string representation of this fraction with the exact given number of digits after the radix.
  */
-fun Fraction.toString(fractionDigits: Int32): String
-        = BigDecimal.valueOf(this).setScale(fractionDigits, RoundingMode(this)).toString()
+fun Fraction.toString(fractionDigits: Int32,
+                      roundingDirection: RoundingDirection = RoundingDirection.default,
+                      roundingThreshold: RoundingThreshold = RoundingThreshold.default
+): String {
+//    return BigDecimal.valueOf(this).setScale(fractionDigits, RoundingMode(this)).toString()
+
+    // /* PRETEND: */ 123.456.toString(fractionDigits = 2) | 123.4.toString(fractionDigits = 3) | 123.4.toString(fractionDigits = 0)
+
+    //                                                                 // 123.456  | 123.4     | 123.4
+    val multiplier = 10 toThePowerOf fractionDigits                    // 100      | 1000      | 1
+    val shifted = this * multiplier                                    // 12345.6  | 123400.0  | 123.4
+    val rounded = shifted.rounded(
+            direction = roundingDirection,
+            threshold = roundingThreshold)                             // 12346.0  | 123400.0  | 123.0
+    val reshifted = rounded / multiplier                               // 123.46   | 123.4     | 123.0
+    val rawString = reshifted.toString()                               // "123.46" | "123.4"   | "123.0"
+    val digitsBeforeRadix = rawString.substringBefore(delimiter = '.') // "123"    | "123"     | "123"
+    if (0 == fractionDigits) {                                         // false    | false     | true
+        return digitsBeforeRadix                                       //          |           | "123"
+    }
+    var digitsAfterRadix = rawString.substringAfter(delimiter = '.')   // "46"     | "4"       |
+    val missingDigits = fractionDigits - digitsAfterRadix.length       // 0        | 2         |
+    if (missingDigits > 0) {                                           // false    | true      |
+        digitsAfterRadix += "0" * missingDigits                        //          | "400"     |
+    }
+    return digitsBeforeRadix + "." + digitsAfterRadix                  // "123.46" | "123.400" |
+}
 
 
-fun decimalSeparatorRegex(groupSize: Int8) = Regex("^(\\d{1,$groupSize}?)(\\d{$groupSize})*\$")
+private fun decimalSeparatorRegex(groupSize: Int8) = Regex("^(\\d{1,$groupSize}?)(\\d{$groupSize})*\$")
 
 
 /**

@@ -593,6 +593,11 @@ private class _EmptyOpenRange<NumberType: Comparable<NumberType>> : OpenRange<Nu
 }
 
 
+typealias Int32Range = IntRange
+typealias Int64Range = LongRange
+typealias IntegerRange = Int64Range
+
+
 
 // MARK: - ClosedRange extensions
 
@@ -642,22 +647,18 @@ val <NumberType> ClosedRange<NumberType>.fractionValue
 
 // This must be done because ClosedRange has a compareTo method but isn't Comparable. Because you can't do extensions conformity. |I
 class SortClosedRanges<NumberType>
-    : java.util.Comparator<ClosedRange<NumberType>>
+    : Comparator<ClosedRange<NumberType>>
     where NumberType: Comparable<NumberType> {
-    override fun compare(lhs: ClosedRange<NumberType>, rhs: ClosedRange<NumberType>): Int
-        = lhs.compareTo(rhs)
+    override fun compare(lhs: ClosedRange<NumberType>, rhs: ClosedRange<NumberType>): ComparisonResult
+        = ComparisonResult(lhs.compareTo(rhs))
 }
 
 
 
-val <T> ClosedRange<T>.int32Value: IntRange
+val <T> ClosedRange<T>.int32Value: Int32Range
     where T: Number, T: Comparable<T>
-    get() = if (this is IntRange) this else IntRange(start = start.int32Value, endInclusive = endInclusive.int32Value)
+    get() = if (this is Int32Range) this else Int32Range(start = start.int32Value, endInclusive = endInclusive.int32Value)
 
 val <T> ClosedRange<T>.integerValue: LongRange
     where T: Number, T: Comparable<T>
     get() = if (this is LongRange) this else LongRange(start = start.integerValue, endInclusive = endInclusive.integerValue)
-
-
-
-typealias IntegerRange = LongRange

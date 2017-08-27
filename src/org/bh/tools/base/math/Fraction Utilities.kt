@@ -6,9 +6,6 @@ import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.math.RoundingDirection.*
 import org.bh.tools.base.math.RoundingThreshold.halfway
 import org.bh.tools.base.math.RoundingThreshold.integer
-import java.lang.Math.floor
-import java.math.*
-import java.math.RoundingMode.*
 
 /*
  * For using fractions easier
@@ -21,9 +18,68 @@ import java.math.RoundingMode.*
 // TODO: val Fraction.numeratorAndDenominator: FractionNumeratorAndDenominator by lazy { ... }
 
 
+
+// MARK: - Floor / Ceil
+
+/** Removes the fractional part of this number. If this is infinite or not a number, it's returned unchanged. */
+fun Fraction.floor_truncating(): Fraction {
+    return when {
+        isInfinite
+            || isNaN -> this
+        else -> integerValue.fractionValue
+    }
+}
+
+
+/**
+ * Shifts the bits in this number to determine its floored value.
+ * If this is infinite or not a number, it's returned unchanged.
+ *
+ * This is based on https://www.codeproject.com/Tips/700780/Fast-floor-ceiling-functions
+ */
+fun Float64.floor_shifting(): Float64 {
+    return when {
+        isInfinite
+                || isNaN -> this
+        else -> (this + Int64.max) - Int64.max
+    }
+}
+
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun Float64.floor() = floor_shifting()
+
+
+/**
+ * Shifts the bits in this number to determine its ceiling value.
+ * If this is infinite or not a number, it's returned unchanged.
+ *
+ * This is based on https://www.codeproject.com/Tips/700780/Fast-floor-ceiling-functions
+ */
+fun Float64.ceil_shifting() = when {
+    isInfinite
+            || isNaN -> this
+    else -> Int64.max - (Int64.max.fractionValue - this)
+}
+
+fun Float64.ceil_truncating(): Float64 =
+        this.int64Value.let { inum ->
+            inum.float64Value.let { fnum ->
+                when (fnum) {
+                    this -> fnum
+                    else -> (inum + 1).float64Value
+                }
+            }
+        }
+
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun Float64.ceil() = ceil_truncating()
+
+
 /** Determines whether this [Fraction] has any values after the radix point */
 val Fraction.hasFractionComponent: Boolean get() {
-    return this != floor(this)
+    return this != this.floor()
 }
 
 
@@ -62,7 +118,20 @@ data class RadixNumberParts(
 fun Fraction.rounded(direction: RoundingDirection = RoundingDirection.default,
                      threshold: RoundingThreshold = RoundingThreshold.default): Fraction =
         if (isNaN() || isInfinite() || !hasFractionComponent) this
-        else BigDecimal(this, MathContext.DECIMAL64).setScale(0, RoundingMode(this, direction, threshold)).fractionValue
+        else when (threshold) {
+            halfway -> when (direction) {
+                up -> (this + 0.5).floor()
+                down -> (this - 0.5).ceil()
+                awayFromZero -> if (this > 0) (this + 0.5).floor() else (this - 0.5).floor()
+                towardZero -> if (this > 0) (this - 0.5).ceil() else (this + 0.5).ceil()
+            }
+            integer -> when (direction) {
+                up -> ceil()
+                down -> floor()
+                awayFromZero -> if (this > 0) ceil() else floor()
+                towardZero -> if (this > 0) floor() else ceil()
+            }
+        }
 
 
 inline val Fraction.roundedInt8Value: Int8 get() = rounded().int8Value
@@ -70,34 +139,6 @@ inline val Fraction.roundedInt16Value: Int16 get() = rounded().int16Value
 inline val Fraction.roundedInt32Value: Int32 get() = rounded().int32Value
 inline val Fraction.roundedInt64Value: Int64 get() = rounded().int64Value
 inline val Fraction.roundedIntegerValue: Integer get() = roundedInt64Value
-
-
-/**
- * Finds the [java.math.RoundingMode] appropriate the given [Fraction], [RoundingDirection], and [RoundingThreshold]
- *
- * @param fraction The fraction for which the rounding mode will be used
- * @param direction _optional_ - The direction in which rounding will occur.
- *                  Defaults to [default][RoundingDirection.default]
- * @param threshold _optional_ - The part of the number that will trigger a different result.
- *                  Defaults to [default][RoundingThreshold.default]
- */
-fun RoundingMode(fraction: Fraction,
-                 direction: RoundingDirection = RoundingDirection.default,
-                 threshold: RoundingThreshold = RoundingThreshold.default
-): RoundingMode = when (threshold) {
-    halfway -> when (direction) {
-        up -> if (fraction > 0) HALF_UP else HALF_DOWN
-        down -> if (fraction > 0) HALF_DOWN else HALF_UP
-        awayFromZero -> HALF_UP
-        towardZero -> HALF_DOWN
-    }
-    integer -> when (direction) {
-        up -> CEILING
-        down -> FLOOR
-        awayFromZero -> if (fraction > 0) CEILING else FLOOR
-        towardZero -> if (fraction > 0) FLOOR else CEILING
-    }
-}
 
 
 

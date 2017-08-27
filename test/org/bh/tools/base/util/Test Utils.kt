@@ -1,4 +1,4 @@
-@file:JvmName("TestUtils")
+//@file:JvmName("TestUtils")
 
 package org.bh.tools.base.util
 
@@ -8,6 +8,7 @@ import org.bh.tools.base.func.StringSupplier
 import org.bh.tools.base.math.Averager
 import org.bh.tools.base.math.clampToPositive
 import org.bh.tools.base.util.TimeConversion.nanosecondsToTimeInterval
+import org.bh.tools.base.util.Assertion.*
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import kotlin.system.measureNanoTime
@@ -35,7 +36,7 @@ val defaultWarmupTrialCount = 5L
  * @param mode         The mode by which the measurement is taken, which affects the returned value
  * @param block        The block to measure
  */
-@JvmOverloads
+//@JvmOverloads
 inline fun measureTimeInterval(trials: Integer = defaultMeasurementTrialCount,
                                warmupTrials: Integer = defaultWarmupTrialCount,
                                mode: TimeTrialMeasurementMode = TimeTrialMeasurementMode.average,
@@ -55,7 +56,7 @@ inline fun measureTimeInterval(trials: Integer = defaultMeasurementTrialCount,
  * @param warmupTrials The number of times to execute the block before taking measurements, to decrease warmup bias
  * @param block        The block to measure
  */
-@JvmOverloads
+//@JvmOverloads
 inline fun averageTimeInterval(trials: Integer = defaultMeasurementTrialCount,
                                warmupTrials: Integer = defaultWarmupTrialCount,
                                block: TestMeasurementBlock): TimeInterval {
@@ -86,7 +87,7 @@ inline fun averageTimeInterval(trials: Integer = defaultMeasurementTrialCount,
  * @param warmupTrials The number of times to execute the block before taking measurements, to decrease warmup bias
  * @param block        The block to measure
  */
-@JvmOverloads
+//@JvmOverloads
 inline fun totalTimeInterval(trials: Integer = defaultMeasurementTrialCount,
                              warmupTrials: Integer = defaultWarmupTrialCount,
                              block: TestMeasurementBlock): TimeInterval {
@@ -124,13 +125,13 @@ enum class TimeTrialMeasurementMode {
 // MARK: - Assertions
 
 @Suppress("NOTHING_TO_INLINE")
-@JvmOverloads
+//@JvmOverloads
 inline fun assertionFailure(message: String? = null) = assertTrue(message, false)
 
 inline fun assertionFailure(message: StringSupplier) = assertTrue(message(), false)
 
 
-@JvmOverloads
+//@JvmOverloads
 inline fun assertThrows(message: String? = null, possibleThrow: () -> Unit) {
     try {
         possibleThrow()
@@ -148,7 +149,7 @@ inline fun assertThrows(message: String? = null, possibleThrow: () -> Unit) {
  * @param listA   The first list to compare
  * @param listB   The second list to compare
  */
-@JvmOverloads
+//@JvmOverloads
 fun <Element,
         ElementA: Element,
         ElementB: Element,
@@ -173,7 +174,7 @@ fun <Element,
  * @param listA   The first list to compare
  * @param listB   The second list to compare
  */
-@JvmOverloads
+//@JvmOverloads
 fun <Element,
         ElementA: Element,
         ElementB: Element,
@@ -198,8 +199,85 @@ fun <Element,
 }
 
 
+/**
+ * Asserts that the given `condition` must be `true`, else `assertionFailure` is passed `message`.
+ */
 inline fun assertTrue(message: StringSupplier, condition: Boolean) {
     if (!condition) {
         assertionFailure(message)
     }
+}
+
+
+/**
+ * Allows you to expect the result of multiple assertions in a compact API call, and get back any failure that occurs
+ * with a descriptive message, or a success if no failure occurs.
+ *
+ * @param kind       The kind of thing we're testing against. Will be used in the English message output like "this
+ *                   should be a valid `kind`"
+ * @param processor  The function that will be called on each assertion, until the first failure. `null` return
+ *                   indicates that the given value was invalid, which could be expected depending on the current
+ *                   assertion.
+ * @param assertions All assertions you want to be checked
+ *
+ * @return A descriptive result of the assertion processing. Contains an English message and a boolean indicating
+ *         whether all assertions were successful.
+ *
+ * @see Assertion
+ * @see ExpectationResult
+ */
+fun <Raw, Processed> expect(kind: String, processor: (Raw) -> Processed?, assertions: List<Assertion<Raw, Processed>>): ExpectationResult {
+    for (assertion in assertions) {
+        when (assertion) {
+            is valid -> {
+                val processed = processor(assertion.raw)
+                if (null == processed) {
+                    return ExpectationResult("null - Expected ${assertion.raw} to be a valid $kind", success = false)
+                }
+                else if (processed != assertion.expectation) {
+                    return ExpectationResult("$processed - Expected ${assertion.raw} to be ${assertion.expectation}", success = false)
+                }
+            }
+            is invalid -> {
+                val processed = processor(assertion.raw)
+                if (null != processed) {
+                    return ExpectationResult("$processed - Expected ${assertion.raw} to be an invalid $kind", success = false)
+                }
+            }
+        }
+    }
+
+    return ExpectationResult("All good", success = true)
+}
+
+
+/**
+ * A message/success pair returned from [expect]
+ *
+ * @param message A descriptive English message about the result of one or more assertions
+ * @param success `true` iff all assertions passed
+ */
+data class ExpectationResult(
+        /** A descriptive English message about the result of one or more assertions */
+        val message: String,
+
+        /** `true` iff all assertions passed */
+        val success: Boolean
+)
+
+
+/** Defines an expectation about the success state of an assertion */
+sealed class Assertion<Raw, Processed> {
+    /** A raw value is expected to be validly processed into a specific non-`null` result */
+    data class valid<Raw, Processed>(
+            /** The value before processing */
+            val raw: Raw,
+
+            /** The expected value after processing */
+            val expectation: Processed
+
+    ): Assertion<Raw, Processed>()
+
+    /** A raw value is expected to be invalid, so that after it's processed, the result should be `null` */
+    data class invalid<Raw>(val raw: Raw): Assertion<Raw, Unit>()
 }

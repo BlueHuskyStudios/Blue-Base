@@ -1,18 +1,15 @@
-@file:JvmName("TestUtils")
-@file:Suppress("unused")
+@file:Suppress("unused", "MemberVisibilityCanPrivate")
 
 package org.bh.tools.base.strings
 
 import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.collections.Index
 import org.bh.tools.base.collections.extensions.reduceTo
-import org.bh.tools.base.func.Tuple2
-import org.bh.tools.base.func.tuple
 import org.bh.tools.base.math.*
 import org.bh.tools.base.struct.int32Value
 
 /*
- * Copyright BHStudios ©2016 BH-1-PS. Made for BH Tic Tac Toe IntelliJ Project.
+ * Copyright BHStudios ©2016 BH-1-PS. Made for BH Tic Tac Toe IDEA Project.
  *
  * Helps you with strings
  *
@@ -30,25 +27,19 @@ import org.bh.tools.base.struct.int32Value
  * @return A [CharSequence] representing this one, but abbreviated
  */
 fun CharSequence.toAbbreviation(delimiter: CharSequence = ""): CharSequence {
-    val ret = StringBuilder()
+    var ret = ""
     var shouldAdd = false
-    chars().forEach { c ->
-        if (Character.isWhitespace(c)) {
+    this.asIterable().forEach { c ->
+        if (c.isWhitespace()) {
             shouldAdd = true
-        } else if (shouldAdd || Character.isUpperCase(c)) {
-            ret += Character.toUpperCase(c) + delimiter
+        } else if (shouldAdd || c.isUpperCase()) {
+            ret += c.toUpperCase() + delimiter
             shouldAdd = false
         }
     }
     return ret
 }
 
-/**
- * Allows `+=` to be used as shorthand for [StringBuilder.append]
- */
-infix operator fun StringBuilder.plusAssign(rhs: Any): Unit {
-    this.append(rhs)
-}
 
 /**
  * Allows the `+` operator to convert any left-hand-side value to a character sequence prepended onto the
@@ -56,24 +47,21 @@ infix operator fun StringBuilder.plusAssign(rhs: Any): Unit {
  */
 infix operator fun Any.plus(rhs: String): String = this.toString().plus(rhs)
 
+
 /**
  * Allows the `+` operator to convert any left-hand-side value to a character sequence prepended onto the
  * right-hand-side. The exact type of the returned value is not guaranteed.
  */
 infix operator fun Any.plus(rhs: CharSequence): CharSequence = concat(this, rhs)
 
+
 /**
  * Concatenates the [CharSequence] value of `lhs` before `rhs` and returns the result. The exact type of the returned
  * value is not guaranteed.
  */
-fun concat(lhs: Any, rhs: CharSequence): CharSequence {
-    if (lhs is String) {
-        return lhs + rhs
-    } else if (lhs is StringBuilder) {
-        return lhs.append(rhs)
-    } else {
-        return StringBuilder().append(lhs).append(rhs)
-    }
+fun concat(lhs: Any, rhs: CharSequence): CharSequence = when (lhs) {
+    is String -> lhs + rhs
+    else -> "$lhs$rhs"
 }
 
 /**
@@ -94,7 +82,7 @@ inline infix operator fun String.times(rhs: Integer): String = repeat(rhs.int32V
  * Repeats the given string [rhs] times.
  */
 @Suppress("NOTHING_TO_INLINE")
-inline operator fun String.times(rhs: Int32): String = times(rhs.integerValue.clampToPositive)
+inline infix operator fun String.times(rhs: Int32): String = times(rhs.integerValue.clampToPositive)
 
 
 operator fun String.times(rhs: Fraction): String {
@@ -110,11 +98,12 @@ operator fun String.times(rhs: Fraction): String {
 
     val remainingCharacterCount = (rhs.components.fractionPart * length).rounded().integerValue
 
-    if (remainingCharacterCount <= 0L || remainingCharacterCount >= length) {
-        return partialRepeatingString + this
-    } else {
-        return partialRepeatingString + substring((0..remainingCharacterCount).int32Value)
-    }
+    return partialRepeatingString +
+            if (remainingCharacterCount <= 0L || remainingCharacterCount >= length) {
+                this
+            } else {
+                substring((0..remainingCharacterCount).int32Value)
+            }
 }
 
 
@@ -173,7 +162,7 @@ data class DifferingCharacter(
         val right: Char?
 ) {
     override fun toString(): String {
-        val sb = StringBuilder("{index: $index")
+        var sb = "{index: $index"
         if (left != null) sb += ", left: '$left'"
         if (right != null) sb += ", right: '$right'"
         return sb + "}"

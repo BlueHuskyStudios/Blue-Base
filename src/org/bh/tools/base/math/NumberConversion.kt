@@ -3,6 +3,7 @@
 package org.bh.tools.base.math
 
 import org.bh.tools.base.abstraction.*
+import org.bh.tools.base.math.UnexpectedNaNException
 
 /*
  * NumberConversion, made for BHToolbox, is copyright Blue Husky Software ©2016 BH-1-PS
@@ -50,7 +51,7 @@ inline val Fraction.fractionValue: Fraction get() = this
 /**
  * Converts this number to a [Byte], but first checks if that's a sane move; throws exceptions when this is infinite or NaN
  */
-@Throws(ArithmeticException::class)
+//@Throws(ArithmeticException::class)
 fun Number.toByteChecked(): Byte {
     _checkBeforeConversionToNativeInteger()
     return this.toByte()
@@ -60,7 +61,7 @@ fun Number.toByteChecked(): Byte {
 /**
  * Converts this number to a [Short], but first checks if that's a sane move; throws exceptions when this is infinite or NaN
  */
-@Throws(ArithmeticException::class)
+//@Throws(ArithmeticException::class)
 fun Number.toShortChecked(): Short {
     _checkBeforeConversionToNativeInteger()
     return this.toShort()
@@ -70,7 +71,7 @@ fun Number.toShortChecked(): Short {
 /**
  * Converts this number to a [Int], but first checks if that's a sane move; throws exceptions when this is infinite or NaN
  */
-@Throws(ArithmeticException::class)
+//@Throws(ArithmeticException::class)
 fun Number.toIntChecked(): Int {
     _checkBeforeConversionToNativeInteger()
     return this.toInt()
@@ -80,23 +81,23 @@ fun Number.toIntChecked(): Int {
 /**
  * Converts this number to a [Long], but first checks if that's a sane move; throws exceptions when this is infinite or NaN
  */
-@Throws(ArithmeticException::class)
+//@Throws(ArithmeticException::class)
 fun Number.toLongChecked(): Long {
     _checkBeforeConversionToNativeInteger()
     return this.toLong()
 }
 
 
-@Throws(UnexpectedNaNException::class)
+//@Throws(UnexpectedNaNException::class)
 private fun Number._checkBeforeConversionToNativeInteger() {
     _checkNaN()
 }
 
 
-@Throws(UnexpectedNaNException::class)
+//@Throws(UnexpectedNaNException::class)
 private fun Number._checkNaN() {
     if (this.isNaN) {
-        throw UnexpectedNaNException("NaN cannot be converted to an integer")
+        throw org.bh.tools.base.math.UnexpectedNaNException("NaN cannot be converted to an integer")
     }
 }
 
@@ -109,6 +110,7 @@ private fun Number._checkInfinite() {
 
 
 
+class ArithmeticException(message: String?, cause: Throwable? = null): Throwable(message = message, cause = cause)
 typealias UnexpectedNaNException = ArithmeticException
 typealias UnexpectedInfinityException = ArithmeticException
 
@@ -287,6 +289,10 @@ inline val Int64.clampToPositive  : Int64   get() = if (this < 0)    0    else t
 inline val Float32.clampToPositive: Float32 get() = if (this < 0.0f) 0.0f else this
 /** Returns this fraction if it is positive, else `0`. */
 inline val Float64.clampToPositive: Float64 get() = if (this < 0.0)  0.0  else this
+
+
+
+inline fun Integer(from: String, radix: Int = 10) = from.toInt(radix = radix)
 
 
 

@@ -41,7 +41,7 @@ open class Queue<Element>(protected var backingList: MutableList<Element> = muta
     }
 
 
-//    fun listValue() = backingList.copy()
+    fun listValue(): List<Element> = backingList.toList()
 }
 
 
