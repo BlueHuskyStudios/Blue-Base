@@ -2,11 +2,11 @@
 
 package org.bh.tools.base.util
 
+import org.bh.tools.base.abstraction.Fraction
 import org.bh.tools.base.abstraction.Integer
 import org.bh.tools.base.collections.extensions.length
 import org.bh.tools.base.func.StringSupplier
-import org.bh.tools.base.math.Averager
-import org.bh.tools.base.math.clampToPositive
+import org.bh.tools.base.math.*
 import org.bh.tools.base.util.TimeConversion.nanosecondsToTimeInterval
 import org.bh.tools.base.util.Assertion.*
 import org.junit.Assert.assertEquals
@@ -280,4 +280,13 @@ sealed class Assertion<Raw, Processed> {
 
     /** A raw value is expected to be invalid, so that after it's processed, the result should be `null` */
     data class invalid<Raw>(val raw: Raw): Assertion<Raw, Unit>()
+}
+
+
+/**
+ * Asserts that the given two items of tolerable equality are equal within a given tolerance
+ */
+@Suppress("NOTHING_TO_INLINE")
+inline fun <TE: TolerableEquality<TE>> assertEquals(expected: TE, actual: TE, toleration: Fraction) {
+    assertTrue(expected.equals(actual, tolerance = toleration))
 }

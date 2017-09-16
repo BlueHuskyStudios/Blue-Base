@@ -235,6 +235,11 @@ inline val defaultFractionCalculationTolerance: Fraction get() = 0.0001
 inline val defaultIntegerCalculationTolerance: Integer get() = 0
 
 
+interface TolerableEquality<Self: TolerableEquality<Self>> {
+    fun equals(other: Self, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean
+}
+
+
 
 /**
  * Determines whether this fraction is equal to the other, within a given tolerance.
@@ -337,7 +342,7 @@ fun Fraction.isGreaterThanOrEqualTo(rhs: Fraction, tolerance: Fraction = default
  *                  [defaultFractionCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
-fun Fraction.isLessThan(rhs: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean = (this - tolerance) < rhs
+fun Fraction.isLessThan(rhs: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean = !equals(rhs, tolerance) && (this - tolerance) < rhs
 
 
 /**
@@ -348,7 +353,7 @@ fun Fraction.isLessThan(rhs: Fraction, tolerance: Fraction = defaultFractionCalc
  *                  Defaults to [defaultFractionCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
-fun Fraction.isGreaterThan(rhs: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean = (this + tolerance) > rhs
+fun Fraction.isGreaterThan(rhs: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean = !equals(rhs, tolerance) && (this + tolerance) > rhs
 
 
 /**

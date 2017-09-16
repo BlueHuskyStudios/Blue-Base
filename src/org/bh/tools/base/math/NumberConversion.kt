@@ -292,6 +292,7 @@ inline val Float64.clampToPositive: Float64 get() = if (this < 0.0)  0.0  else t
 
 
 
+@Suppress("NOTHING_TO_INLINE")
 inline fun Integer(from: String, radix: Int = 10) = from.toInt(radix = radix)
 
 

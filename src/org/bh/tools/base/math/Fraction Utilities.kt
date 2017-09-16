@@ -22,7 +22,7 @@ import org.bh.tools.base.math.RoundingThreshold.integer
 // MARK: - Floor / Ceil
 
 /** Removes the fractional part of this number. If this is infinite or not a number, it's returned unchanged. */
-fun Fraction.floor_truncating(): Fraction {
+fun Fraction.integerComponent(): Fraction {
     return when {
         isInfinite
             || isNaN -> this
@@ -31,55 +31,58 @@ fun Fraction.floor_truncating(): Fraction {
 }
 
 
-/**
- * Shifts the bits in this number to determine its floored value.
- * If this is infinite or not a number, it's returned unchanged.
- *
- * This is based on https://www.codeproject.com/Tips/700780/Fast-floor-ceiling-functions
- */
-fun Float64.floor_shifting(): Float64 {
-    return when {
-        isInfinite
-                || isNaN -> this
-        else -> (this + Int64.max) - Int64.max
-    }
-}
+///**
+// * Shifts the bits in this number to determine its floored value.
+// * If this is infinite or not a number, it's returned unchanged.
+// *
+// * This is based on https://www.codeproject.com/Tips/700780/Fast-floor-ceiling-functions
+// */
+//fun Float64.floor_shifting(): Float64 {
+//    return when {
+//        isInfinite
+//                || isNaN -> this
+//        else -> (this + Int64.max) - Int64.max
+//    }
+//}
 
 
+/** Removes the fractional part of this number. If this is infinite or not a number, it's returned unchanged. */
 @Suppress("NOTHING_TO_INLINE")
-inline fun Float64.floor() = floor_shifting()
+inline fun Float64.floor() = if (this < 0) ceil_truncating2() else integerComponent()
 
 
-/**
- * Shifts the bits in this number to determine its ceiling value.
- * If this is infinite or not a number, it's returned unchanged.
- *
- * This is based on https://www.codeproject.com/Tips/700780/Fast-floor-ceiling-functions
- */
-fun Float64.ceil_shifting() = when {
-    isInfinite
-            || isNaN -> this
-    else -> Int64.max - (Int64.max.fractionValue - this)
-}
+///**
+// * Shifts the bits in this number to determine its ceiling value.
+// * If this is infinite or not a number, it's returned unchanged.
+// *
+// * This is based on https://www.codeproject.com/Tips/700780/Fast-floor-ceiling-functions
+// */
+//fun Float64.ceil_shifting() = when {
+//    isInfinite
+//            || isNaN -> this
+//    else -> Int64.max - (Int64.max.fractionValue - this)
+//}
 
-fun Float64.ceil_truncating(): Float64 =
+fun Float64.roundUp_truncating(): Float64 =
         this.int64Value.let { inum ->
             inum.float64Value.let { fnum ->
                 when (fnum) {
                     this -> fnum
-                    else -> (inum + 1).float64Value
+                    else -> (inum + if (this < 0) -1 else 1).float64Value
                 }
             }
         }
 
+fun Float64.ceil_truncating2(): Float64 = if (hasFractionComponent) integerComponent() + (if (this > 0) 1 else -1) else this
+
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun Float64.ceil() = ceil_truncating()
+inline fun Float64.ceil() = if (this < 0) integerComponent() else ceil_truncating2()
 
 
 /** Determines whether this [Fraction] has any values after the radix point */
 val Fraction.hasFractionComponent: Boolean get() {
-    return this != this.floor()
+    return this != this.integerValue.fractionValue
 }
 
 
@@ -103,12 +106,35 @@ data class RadixNumberParts(
         /** The part of a number before the radix point */
         val integerPart: Integer,
         /** The part of a number after the radix point */
-        val fractionPart: Fraction)
+        val fractionPart: Fraction): TolerableEquality<RadixNumberParts> {
+    override fun equals(other: RadixNumberParts, tolerance: Fraction): Boolean {
+        return integerPart.equals(other.integerPart, tolerance = tolerance.integerValue)
+                && fractionPart.equals(other.fractionPart, tolerance = tolerance)
+    }
+}
 
 
 /**
  * Returns the rounded version of this fraction.
  * If `this` `isNaN()` or `isInfinity()`, it's returned immediately without changing the value.
+ *
+ * Behavior is as follows, where `x` is a value and `o` is not
+ *
+ * ```
+ *   Half Up     Half Down    Half Away   Half Toward
+ *      |  x-o       |  o-x       |  x-o       |  o-x
+ *      |x-o         |o-x         |x-o         |o-x
+ * ----x+o----  ----o+x----  ----o+o----  ----x+x----
+ *   x-o|         o-x|         o-x|         x-o|
+ * x-o  |       o-x  |       o-x  |       x-o  |
+ *
+ *   Int Up      Int Down     Int Away    Int Toward
+ *      |   x-o      |   o-x      |   x-o      |   o-x
+ *      | x-o        | o-x        | x-o        | o-x
+ * -----x-o---  -----o-x---  -----o-o---  -----x-x---
+ *    x-o          o-x          o-x          x-o
+ *  x-o |        o-x |        o-x |        x-o |
+ * ```
  *
  * @param direction The direction to round
  * @param threshold      Describes at what part of the number the rounding should occur
@@ -117,13 +143,13 @@ data class RadixNumberParts(
  */
 fun Fraction.rounded(direction: RoundingDirection = RoundingDirection.default,
                      threshold: RoundingThreshold = RoundingThreshold.default): Fraction =
-        if (isNaN() || isInfinite() || !hasFractionComponent) this
+        if (!hasFractionComponent || isNaN() || isInfinite()) this
         else when (threshold) {
             halfway -> when (direction) {
                 up -> (this + 0.5).floor()
                 down -> (this - 0.5).ceil()
-                awayFromZero -> if (this > 0) (this + 0.5).floor() else (this - 0.5).floor()
-                towardZero -> if (this > 0) (this - 0.5).ceil() else (this + 0.5).ceil()
+                towardZero -> if (this > 0) (this - 0.5).ceil() else (this + 0.5).floor()
+                awayFromZero -> if (this > 0) (this + 0.5).floor() else (this - 0.5).ceil()
             }
             integer -> when (direction) {
                 up -> ceil()
@@ -132,6 +158,11 @@ fun Fraction.rounded(direction: RoundingDirection = RoundingDirection.default,
                 towardZero -> if (this > 0) floor() else ceil()
             }
         }
+
+@Suppress("NOTHING_TO_INLINE")
+private inline fun Fraction.ceilForRoundingUp(): Fraction = if (this.hasFractionComponent) ceil() else ceil() + 1
+@Suppress("NOTHING_TO_INLINE")
+private inline fun Fraction.floorForRoundingUp(): Fraction = if (this.hasFractionComponent) floor() else floor() + 1
 
 
 inline val Fraction.roundedInt8Value: Int8 get() = rounded().int8Value
@@ -204,6 +235,12 @@ enum class RoundingDirection {
 /** Returns `true` iff this is a native fraction and [isNaN()][java.lang.Double.isNaN] */
 inline val Number.isNaN: Boolean get() = isNativeFraction && fractionValue.isNaN()
 
+/** Returns `true` iff this float [isInfinite()] */
+inline val Float32.isNaN: Boolean get() = isNaN()
+
+/** Returns `true` iff this double [isInfinite()] */
+inline val Float64.isNaN: Boolean get() = isNaN()
+
 /** Returns `true` iff this is a native fraction and [isInfinite()][Double.isInfinite()] */
 inline val Number.isInfinite: Boolean get() = isNativeFraction && fractionValue.isInfinite()
 
@@ -216,8 +253,20 @@ inline val Float64.isInfinite: Boolean get() = isInfinite()
 /** Returns `true` iff [isInfinite] and is less than `0.0` */
 inline val Number.isNegativeInfinity: Boolean get() = isInfinite && fractionValue < 0.0
 
+/** Returns `true` iff [isInfinite] and is less than `0.0` */
+inline val Float32.isNegativeInfinity: Boolean get() = isInfinite && this < 0.0
+
+/** Returns `true` iff [isInfinite] and is less than `0.0` */
+inline val Float64.isNegativeInfinity: Boolean get() = isInfinite && this < 0.0
+
 /** Returns `true` iff [isInfinite] and is greater than `0.0` */
 inline val Number.isPositiveInfinity: Boolean get() = isInfinite && fractionValue > 0.0
+
+/** Returns `true` iff [isInfinite] and is less than `0.0` */
+inline val Float32.isPositiveInfinity: Boolean get() = isInfinite && this > 0.0
+
+/** Returns `true` iff [isInfinite] and is less than `0.0` */
+inline val Float64.isPositiveInfinity: Boolean get() = isInfinite && this > 0.0
 
 /**
  * ∞ as an IEEE 32-bit float

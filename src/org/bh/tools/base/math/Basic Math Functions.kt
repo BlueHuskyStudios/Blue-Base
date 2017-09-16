@@ -65,17 +65,59 @@ inline val Int8.isOdd get() = !this.isEven
  *
  * See also: [_Exponentiation_ on Wikipedia](https://en.wikipedia.org/wiki/Exponentiation)
  */
-fun pow(base: Fraction, exponent: Fraction): Fraction =
-        if (base == 0.0 && exponent <= 0.0)
-            /* return */ Fraction.nan
-        else if (exponent == 0.0)
-            /* return */ 1.0
-        else if ((exponent % 2) == 1.0)
-            /* return */ base * pow(base, exponent - 1)
-        else {
-            val p = pow(base, exponent / 2)
-            /* return */ p * p
+fun pow(base: Fraction, exponent: Fraction): Fraction = pow_wikipedia_exponentiationBySquaring_basicMethod(base, exponent)
+
+//private fun pow_iForgotWhereIGotThis(base: Fraction, exponent: Fraction) =
+//        when {
+//            base == 0.0 && exponent <= 0.0 -> /* return */ Fraction.nan
+//            exponent == 0.0 -> /* return */ 1.0
+//            (exponent % 2.0) == 1.0 -> /* return */ base * pow(base, exponent - 1.0)
+//            else -> {
+//                val p = pow(base, exponent / 2.0)
+//                /* return */ p * p
+//            }
+//        }
+
+fun pow_wikipedia_exponentiationBySquaring_basicMethod(base: Fraction, exponent: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Fraction =
+        when {
+            exponent.isInfinite -> if (exponent < 0.0) 0.0 else Fraction.infinity
+
+            exponent.isLessThan(0.0, tolerance = tolerance) ->
+                if (base.equals(0.0, tolerance = tolerance)) Fraction.nan
+                else pow_wikipedia_exponentiationBySquaring_basicMethod(base = 1.0 / base, exponent = -exponent, tolerance = tolerance)
+            exponent.equals(0.0, tolerance = tolerance) ->
+                if (base.equals(0.0, tolerance = tolerance)) Fraction.nan
+                else 1.0
+            exponent.equals(1.0, tolerance = tolerance) -> base
+            exponent.integerValue.isEven -> pow_wikipedia_exponentiationBySquaring_basicMethod(base = base * base, exponent = exponent / 2.0, tolerance = tolerance)
+            /* exponent.isOdd, */ else -> base * pow_wikipedia_exponentiationBySquaring_basicMethod(base = base * base, exponent = (exponent - 1.0) / 2.0, tolerance = tolerance)
         }
+
+fun pow_wikipedia_exponentiationBySquaring_basicMethodIterative(base: Fraction, exponent: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Fraction {
+    var x = base
+    var n = exponent
+    if (n.isLessThan(0.0, tolerance = tolerance)) {
+        x = 1.0 / x
+        n = -n
+    }
+    if (n.equals(0.0, tolerance = tolerance)) {
+        return 1.0
+    }
+    var y = 1.0
+    while (n.isGreaterThan(1.0, tolerance = tolerance)) {
+        if (n.integerValue.isEven) {
+            x = x * x
+            n = n / 2.0
+        }
+        else {
+            y = x * y
+            x = x * x
+            n = (n - 1) / 2.0
+        }
+    }
+    return x * y
+}
+
 
 
 

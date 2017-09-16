@@ -3,6 +3,7 @@ package org.bh.tools.base.math
 import org.bh.tools.base.abstraction.Fraction
 import org.bh.tools.base.math.RoundingDirection.*
 import org.bh.tools.base.math.RoundingThreshold.*
+import org.bh.tools.base.util.assertEquals
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -15,12 +16,21 @@ import org.junit.Assert.*
 class FractionUtilitiesTest {
     @Test
     fun getHasFractionComponent() {
+        assertTrue("Expected -9999999999999.9 to have a fraction component", (-9999999999999.9).hasFractionComponent)
+        assertTrue("Expected -1.1 to have a fraction component", (-1.1).hasFractionComponent)
+        assertTrue("Expected 1.1 to have a fraction component", 1.1.hasFractionComponent)
+        assertTrue("Expected 9999999999999.9 to have a fraction component", 9999999999999.9.hasFractionComponent)
 
+        assertFalse("Expected -9999999999999.0 to not have a fraction component", (-9999999999999.0).hasFractionComponent)
+        assertFalse("Expected -1.0 to not have a fraction component", (-1.0).hasFractionComponent)
+        assertFalse("Expected 1.0 to not have a fraction component", 1.0.hasFractionComponent)
+        assertFalse("Expected 9999999999999.0 to not have a fraction component", 9999999999999.0.hasFractionComponent)
     }
 
     @Test
     fun getComponents() {
-
+        assertEquals(RadixNumberParts(5, 0.6), 5.6.components, defaultFractionCalculationTolerance)
+        assertEquals(RadixNumberParts(1234, 0.5678), 1234.5678.components, defaultFractionCalculationTolerance)
     }
 
     @Test
@@ -145,20 +155,20 @@ class FractionUtilitiesTest {
     }
 
 
-    @Test
-    fun ceil_shifting() {
-        assertCeil_shifting(expected = 5.0, beforeRounding = 4.9)
-        assertCeil_shifting(expected = 5.0, beforeRounding = 5.0)
-        assertCeil_shifting(expected = 6.0, beforeRounding = 5.4)
-        assertCeil_shifting(expected = 6.0, beforeRounding = 5.5)
-        assertCeil_shifting(expected = 6.0, beforeRounding = 5.6)
-
-        assertCeil_shifting(expected = -5.0, beforeRounding = -4.9)
-        assertCeil_shifting(expected = -5.0, beforeRounding = -5.0)
-        assertCeil_shifting(expected = -6.0, beforeRounding = -5.4)
-        assertCeil_shifting(expected = -6.0, beforeRounding = -5.5)
-        assertCeil_shifting(expected = -6.0, beforeRounding = -5.6)
-    }
+//    @Test
+//    fun ceil_shifting() {
+//        assertCeil_shifting(expected = 5.0, beforeRounding = 4.9)
+//        assertCeil_shifting(expected = 5.0, beforeRounding = 5.0)
+//        assertCeil_shifting(expected = 6.0, beforeRounding = 5.4)
+//        assertCeil_shifting(expected = 6.0, beforeRounding = 5.5)
+//        assertCeil_shifting(expected = 6.0, beforeRounding = 5.6)
+//
+//        assertCeil_shifting(expected = -5.0, beforeRounding = -4.9)
+//        assertCeil_shifting(expected = -5.0, beforeRounding = -5.0)
+//        assertCeil_shifting(expected = -6.0, beforeRounding = -5.4)
+//        assertCeil_shifting(expected = -6.0, beforeRounding = -5.5)
+//        assertCeil_shifting(expected = -6.0, beforeRounding = -5.6)
+//    }
 
 
     @Test
@@ -169,43 +179,43 @@ class FractionUtilitiesTest {
         assertCeil(expected = 6.0, beforeRounding = 5.5)
         assertCeil(expected = 6.0, beforeRounding = 5.6)
 
-        assertCeil(expected = -5.0, beforeRounding = -4.9)
+        assertCeil(expected = -4.0, beforeRounding = -4.9)
         assertCeil(expected = -5.0, beforeRounding = -5.0)
-        assertCeil(expected = -6.0, beforeRounding = -5.4)
-        assertCeil(expected = -6.0, beforeRounding = -5.5)
-        assertCeil(expected = -6.0, beforeRounding = -5.6)
+        assertCeil(expected = -5.0, beforeRounding = -5.4)
+        assertCeil(expected = -5.0, beforeRounding = -5.5)
+        assertCeil(expected = -5.0, beforeRounding = -5.6)
     }
 
 
+//    @Test
+//    fun floor_shifting() {
+//        assertFloor_shifting(expected = 4.0, beforeRounding = 4.9)
+//        assertFloor_shifting(expected = 5.0, beforeRounding = 5.0)
+//        assertFloor_shifting(expected = 5.0, beforeRounding = 5.4)
+//        assertFloor_shifting(expected = 5.0, beforeRounding = 5.5)
+//        assertFloor_shifting(expected = 5.0, beforeRounding = 5.6)
+//
+//        assertFloor_shifting(expected = -4.0, beforeRounding = -4.9)
+//        assertFloor_shifting(expected = -5.0, beforeRounding = -5.0)
+//        assertFloor_shifting(expected = -5.0, beforeRounding = -5.4)
+//        assertFloor_shifting(expected = -5.0, beforeRounding = -5.5)
+//        assertFloor_shifting(expected = -5.0, beforeRounding = -5.6)
+//    }
+
+
     @Test
-    fun floor_shifting() {
-        assertFloor_shifting(expected = 4.0, beforeRounding = 4.9)
-        assertFloor_shifting(expected = 5.0, beforeRounding = 5.0)
-        assertFloor_shifting(expected = 5.0, beforeRounding = 5.4)
-        assertFloor_shifting(expected = 5.0, beforeRounding = 5.5)
-        assertFloor_shifting(expected = 5.0, beforeRounding = 5.6)
+    fun integerComponent() {
+        assertIntegerComponent(expected = 4.0, beforeRounding = 4.9)
+        assertIntegerComponent(expected = 5.0, beforeRounding = 5.0)
+        assertIntegerComponent(expected = 5.0, beforeRounding = 5.4)
+        assertIntegerComponent(expected = 5.0, beforeRounding = 5.5)
+        assertIntegerComponent(expected = 5.0, beforeRounding = 5.6)
 
-        assertFloor_shifting(expected = -4.0, beforeRounding = -4.9)
-        assertFloor_shifting(expected = -5.0, beforeRounding = -5.0)
-        assertFloor_shifting(expected = -5.0, beforeRounding = -5.4)
-        assertFloor_shifting(expected = -5.0, beforeRounding = -5.5)
-        assertFloor_shifting(expected = -5.0, beforeRounding = -5.6)
-    }
-
-
-    @Test
-    fun floor_truncating() {
-        assertFloor_truncating(expected = 4.0, beforeRounding = 4.9)
-        assertFloor_truncating(expected = 5.0, beforeRounding = 5.0)
-        assertFloor_truncating(expected = 5.0, beforeRounding = 5.4)
-        assertFloor_truncating(expected = 5.0, beforeRounding = 5.5)
-        assertFloor_truncating(expected = 5.0, beforeRounding = 5.6)
-
-        assertFloor_truncating(expected = -4.0, beforeRounding = -4.9)
-        assertFloor_truncating(expected = -5.0, beforeRounding = -5.0)
-        assertFloor_truncating(expected = -5.0, beforeRounding = -5.4)
-        assertFloor_truncating(expected = -5.0, beforeRounding = -5.5)
-        assertFloor_truncating(expected = -5.0, beforeRounding = -5.6)
+        assertIntegerComponent(expected = -4.0, beforeRounding = -4.9)
+        assertIntegerComponent(expected = -5.0, beforeRounding = -5.0)
+        assertIntegerComponent(expected = -5.0, beforeRounding = -5.4)
+        assertIntegerComponent(expected = -5.0, beforeRounding = -5.5)
+        assertIntegerComponent(expected = -5.0, beforeRounding = -5.6)
     }
 
 
@@ -217,11 +227,11 @@ class FractionUtilitiesTest {
         assertFloor(expected = 5.0, beforeRounding = 5.5)
         assertFloor(expected = 5.0, beforeRounding = 5.6)
 
-        assertFloor(expected = -4.0, beforeRounding = -4.9)
+        assertFloor(expected = -5.0, beforeRounding = -4.9)
         assertFloor(expected = -5.0, beforeRounding = -5.0)
-        assertFloor(expected = -5.0, beforeRounding = -5.4)
-        assertFloor(expected = -5.0, beforeRounding = -5.5)
-        assertFloor(expected = -5.0, beforeRounding = -5.6)
+        assertFloor(expected = -6.0, beforeRounding = -5.4)
+        assertFloor(expected = -6.0, beforeRounding = -5.5)
+        assertFloor(expected = -6.0, beforeRounding = -5.6)
     }
 }
 
@@ -230,9 +240,9 @@ fun assertRounded(expected: Fraction, beforeRounding: Fraction, direction: Round
     assertEquals(message, expected, beforeRounding.rounded(direction, threshold), defaultFractionCalculationTolerance)
 }
 
-fun assertCeil_shifting(expected: Fraction, beforeRounding: Fraction) {
-    assertFracFunc(expected, beforeRounding, "ceil_shifting", Fraction::ceil_shifting)
-}
+//fun assertCeil_shifting(expected: Fraction, beforeRounding: Fraction) {
+//    assertFracFunc(expected, beforeRounding, "ceil_shifting", Fraction::ceil_shifting)
+//}
 
 fun assertCeil(expected: Fraction, beforeRounding: Fraction) {
     assertFracFunc(expected, beforeRounding, "ceil", Fraction::ceil)
@@ -243,13 +253,13 @@ fun assertFracFunc(expected: Fraction, beforeRounding: Fraction, funcName: Strin
     assertEquals("Expected $beforeRounding.$funcName() to be $expected, but was $actual", expected, actual, defaultFractionCalculationTolerance)
 }
 
-fun assertFloor_truncating(expected: Fraction, beforeRounding: Fraction) {
-    assertFracFunc(expected, beforeRounding, "floor_truncating", Fraction::floor_truncating)
+fun assertIntegerComponent(expected: Fraction, beforeRounding: Fraction) {
+    assertFracFunc(expected, beforeRounding, "integerComponent", Fraction::integerComponent)
 }
 
-fun assertFloor_shifting(expected: Fraction, beforeRounding: Fraction) {
-    assertFracFunc(expected, beforeRounding, "floor_shifting", Fraction::floor_shifting)
-}
+//fun assertFloor_shifting(expected: Fraction, beforeRounding: Fraction) {
+//    assertFracFunc(expected, beforeRounding, "floor_shifting", Fraction::floor_shifting)
+//}
 
 fun assertFloor(expected: Fraction, beforeRounding: Fraction) {
     assertFracFunc(expected, beforeRounding, "floor", Fraction::floor)
