@@ -1,9 +1,10 @@
-@file:Suppress("unused")
+@file:Suppress("unused", "MemberVisibilityCanPrivate")
 
 package org.bh.tools.base.collections
 
 import org.bh.tools.base.abstraction.Int32
 import org.bh.tools.base.abstraction.Int32Array
+import org.bh.tools.base.basics.Cloneable
 import org.bh.tools.base.collections.extensions.*
 import org.bh.tools.base.math.integerValue
 import org.bh.tools.base.struct.*
@@ -19,17 +20,19 @@ typealias IndexArray = Int32Array
  * @author Kyli
  * @since 2016-10-24
  */
-open class IndexSet : Cloneable {
+open class IndexSet : Cloneable<IndexSet> {
     /**
-     * All distinct ranges in this set
+     * All distinct ranges in this set.
+     *
+     * **Attention:** This is volatile and should be treated with care when multithreading
      */
-    @Volatile
     protected var _ranges: Array<IndexRange> = arrayOf()
 
     /**
      * The running number of indexes in this set
+     *
+     * **Attention:** This is volatile and should be treated with care when multithreading
      */
-    @Volatile
     protected var _count: Int = _ranges.map { it.size }.reduce(Int::plus)
 
     /**
