@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package org.bh.tools.base.collections.extensions
 
 import org.bh.tools.base.collections.*

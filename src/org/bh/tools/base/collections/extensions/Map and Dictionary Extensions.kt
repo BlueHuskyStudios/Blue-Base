@@ -23,5 +23,5 @@ fun <Key, Value> Map<Key, Value>.firstOrNull(evaluator: (Key, Value?) -> Boolean
 
 
 fun <Key, Value> Map<Key, Value>.firstOrCrash(evaluator: (Key, Value?) -> Boolean): Tuple2<Key, Value>? {
-    return this.firstOrNull(evaluator) ?: throw NoSuchElementException()
+    return this.firstOrNull(evaluator) ?: throw Throwable("No element pleases the evaluator")
 }
