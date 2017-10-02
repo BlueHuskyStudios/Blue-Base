@@ -74,19 +74,11 @@ fun <ElementType> Array<ElementType>.removing(indices: IntArray): Array<ElementT
  * Returns an array where those you decide to keep are kept, and then transformed as you decide to transform them.
  * Like `flatMap` but allows you to keep `null`s
  */
+@Suppress("ConvertLambdaToReference")
 fun <ElementType, OutputType>
         Array<ElementType>.filterMap(predicateTransform: (ElementType) -> Pair<Boolean, () -> OutputType?>)
         : List<OutputType?>
         = this
         .map { predicateTransform(it) }
-        .filter { it.first }
+        .filter(Pair<Boolean, *>::first)
         .map { it.second() }
-
-
-/**
- * Allows creation of arrays via the bracket syntax: `val x = a[1, 2, 3]`
- */
-object a {
-    /** Returns an array of the given elements */
-    inline operator fun <reified Element> get(vararg elements: Element): Array<Element> = arrayOf(*elements)
-}

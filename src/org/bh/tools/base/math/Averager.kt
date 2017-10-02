@@ -43,7 +43,19 @@ class Averager
      *
      * @return the current average, as a floating-point number
      */
-    val currentAverage get() = if (timesAveraged > 0) _currentAverage else Fraction.nan
+    val currentAverageOrNaN get() = if (timesAveraged > 0) _currentAverage else Fraction.nan
+
+    /**
+     * Returns the current average. If no number have yet been averaged, this is `null`
+     *
+     * @return the current average, as a floating-point number, or `null`
+     */
+    val currentAverageOrNull get() = if (timesAveraged > 0) _currentAverage else null
+
+    /**
+     * Alias for [currentAverageOrNaN]
+     */
+    inline val currentAverage get() = currentAverageOrNaN
 
 
     /**
@@ -54,6 +66,19 @@ class Averager
      * @return `this`, so calls can be chained. For example: `averager.average(arrayOfNumbers).average(123, 654);`
      */
     fun average(vararg newValues: Fraction): Averager {
+        newValues.forEach { average(it) }
+        return this
+    }
+
+
+    /**
+     * Adds the given numbers to the average. Any number of arguments can be given.
+     *
+     * @param newValues one or more numbers to average.
+     *
+     * @return `this`, so calls can be chained. For example: `averager.average(arrayOfNumbers).average(123, 654);`
+     */
+    fun average(newValues: List<Fraction>): Averager {
         newValues.forEach { average(it) }
         return this
     }
@@ -149,4 +174,9 @@ class Averager
      * @return the value of the current average, as a 64-bit floating-point number.
      */
     override fun toDouble(): Double = currentAverage
+}
+
+
+fun List<Fraction>.efficientAverage(): Fraction {
+    return Averager().average(this).currentAverage
 }

@@ -407,21 +407,20 @@ class OpenRangeTest {
         assertTrue("A range of Open to Open must intersect one of Open to Open completely", rangeOpenToOpen.intersection(rangeOpenToOpen).equals(rangeOpenToOpen))
 
 
-        var temporaryHoldingVariable: Any? = null
         val closedIntersectClosed = measureTimeInterval(trials = intersectionTrialCount, mode = total) {
-            temporaryHoldingVariable = range5To17.intersection(range10To23)
+            range5To17.intersection(range10To23)
         }
-        println("It took $closedIntersectClosed seconds to calculate $intersectionTrialCount times that $range5To17 ∩ $range10To23 = $temporaryHoldingVariable")
+        println("It took $closedIntersectClosed seconds to calculate $range5To17 ∩ $range10To23 $intersectionTrialCount times")
 
         val closedIntersectOpen = measureTimeInterval(trials = intersectionTrialCount, mode = total) {
-            temporaryHoldingVariable = range5To17.intersection(range10ToOpen)
+            range5To17.intersection(range10ToOpen)
         }
-        println("It took $closedIntersectOpen seconds to calculate $intersectionTrialCount times that $range5To17 ∩ $range10ToOpen = $temporaryHoldingVariable")
+        println("It took $closedIntersectOpen seconds to calculate $range5To17 ∩ $range10ToOpen $intersectionTrialCount times")
 
         val closedIntersectPoint = measureTimeInterval(trials = intersectionTrialCount, mode = total) {
-            temporaryHoldingVariable = range5To17.intersection(rangeOnly10)
+            range5To17.intersection(rangeOnly10)
         }
-        println("It took $closedIntersectPoint seconds to calculate $intersectionTrialCount times that $range5To17 ∩ $rangeOnly10 = $temporaryHoldingVariable")
+        println("It took $closedIntersectPoint seconds to calculate $range5To17 ∩ $rangeOnly10 $intersectionTrialCount times")
     }
 
     @Test
@@ -545,21 +544,20 @@ class OpenRangeTest {
         assertTrue("A range of Open to Open must completely contain one of Open to Open completely", rangeOpenToOpen.containsCompletely(rangeOpenToOpen))
 
 
-        var temporaryHoldingVariable: Any? = null
         val closedIntersectClosed = measureTimeInterval(trials = intersectionTrialCount, mode = total) {
-            temporaryHoldingVariable = range5To17.containsCompletely(range10To23)
+            range5To17.containsCompletely(range10To23)
         }
-        println("It took $closedIntersectClosed seconds to calculate $intersectionTrialCount times that $range5To17 ⊆ $range10To23 = $temporaryHoldingVariable")
+        println("It took $closedIntersectClosed seconds to calculate $range5To17 ⊆ $range10To23 $intersectionTrialCount times")
 
         val closedIntersectOpen = measureTimeInterval(trials = intersectionTrialCount, mode = total) {
-            temporaryHoldingVariable = range5To17.containsCompletely(range10ToOpen)
+            range5To17.containsCompletely(range10ToOpen)
         }
-        println("It took $closedIntersectOpen seconds to calculate $intersectionTrialCount times that $range5To17 ⊆ $range10ToOpen = $temporaryHoldingVariable")
+        println("It took $closedIntersectOpen seconds to calculate $range5To17 ⊆ $range10ToOpen $intersectionTrialCount times")
 
         val closedIntersectPoint = measureTimeInterval(trials = intersectionTrialCount, mode = total) {
-            temporaryHoldingVariable = range5To17.containsCompletely(rangeOnly10)
+            range5To17.containsCompletely(rangeOnly10)
         }
-        println("It took $closedIntersectPoint seconds to calculate $intersectionTrialCount times that $range5To17 ⊆ $rangeOnly10 = $temporaryHoldingVariable")
+        println("It took $closedIntersectPoint seconds to calculate $range5To17 ⊆ $rangeOnly10 $intersectionTrialCount times")
     }
 
 }

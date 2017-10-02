@@ -1,14 +1,15 @@
 package org.bh.tools.base.collections.extensions
 
-import org.bh.tools.base.abstraction.Int32
-import org.bh.tools.base.abstraction.Integer
-import org.bh.tools.base.math.int32Value
-
-/*
- * @author Kyli Rouge
- * @since 2017-06-11
+/**
+ * @author Ben Leggiero
+ * @since 2017-10-23
  */
 
-fun <E> HashSet(size: Int32, init: (Int32) -> E): HashSet<E> {
-    return HashSet(kotlin.collections.List(size = size, init = init))
-}
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun <Element> MutableSet<Element>.insert(newElement: Element) = this.add(newElement)
+
+// TODO: Test
+@Suppress("NOTHING_TO_INLINE")
+inline fun <reified Element> Set<Element>.inserting(newElement: Element): Set<Element> =
+        setOf(*this.toTypedArray(), newElement)

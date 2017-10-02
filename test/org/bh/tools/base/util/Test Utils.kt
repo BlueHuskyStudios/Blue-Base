@@ -1,4 +1,4 @@
-//@file:JvmName("TestUtils")
+@file:kotlin.jvm.JvmName("TestUtils")
 
 package org.bh.tools.base.util
 
@@ -7,11 +7,13 @@ import org.bh.tools.base.abstraction.Integer
 import org.bh.tools.base.collections.extensions.length
 import org.bh.tools.base.func.StringSupplier
 import org.bh.tools.base.math.*
+import org.bh.tools.base.util.Assertion.invalid
+import org.bh.tools.base.util.Assertion.valid
 import org.bh.tools.base.util.TimeConversion.nanosecondsToTimeInterval
-import org.bh.tools.base.util.Assertion.*
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import kotlin.system.measureNanoTime
+import kotlin.test.assertTrue
 
 /*
  * To aid in testing
@@ -21,7 +23,7 @@ import kotlin.system.measureNanoTime
  */
 
 
-typealias TestMeasurementBlock = () -> Unit
+typealias TestMeasurementBlock = () -> Any
 
 
 
@@ -40,12 +42,11 @@ val defaultWarmupTrialCount = 5L
 inline fun measureTimeInterval(trials: Integer = defaultMeasurementTrialCount,
                                warmupTrials: Integer = defaultWarmupTrialCount,
                                mode: TimeTrialMeasurementMode = TimeTrialMeasurementMode.average,
-                               block: TestMeasurementBlock): TimeInterval {
-    return when (mode) {
-        TimeTrialMeasurementMode.average -> averageTimeInterval(trials = trials, warmupTrials = warmupTrials, block = block)
-        TimeTrialMeasurementMode.total -> totalTimeInterval(trials = trials, warmupTrials = warmupTrials, block = block)
-    }
-}
+                               block: TestMeasurementBlock): TimeInterval =
+        when (mode) {
+            TimeTrialMeasurementMode.average -> averageTimeInterval(trials = trials, warmupTrials = warmupTrials, block = block)
+            TimeTrialMeasurementMode.total -> totalTimeInterval(trials = trials, warmupTrials = warmupTrials, block = block)
+        }
 
 
 
@@ -66,13 +67,13 @@ inline fun averageTimeInterval(trials: Integer = defaultMeasurementTrialCount,
 
     // Throw away the first few tests to spin up caching
     for (i in 0..warmupTrials.clampToPositive) {
-        block()
+        blackHole(block())
     }
 
     val averager = Averager()
 
     for (i in 0..trials) {
-        averager.average(nanosecondsToTimeInterval(measureNanoTime(block)))
+        averager.average(nanosecondsToTimeInterval(measureNanoTime({blackHole(block())})))
     }
 
     return averager.currentAverage
@@ -97,13 +98,13 @@ inline fun totalTimeInterval(trials: Integer = defaultMeasurementTrialCount,
 
     // Throw away the first few tests to spin up caching
     for (i in 0..warmupTrials.clampToPositive) {
-        block()
+        blackHole(block())
     }
 
     var total: TimeInterval = 0.0
 
     for (i in 0..trials) {
-        total += nanosecondsToTimeInterval(measureNanoTime(block))
+        total += nanosecondsToTimeInterval(measureNanoTime({blackHole(block())}))
     }
 
     return total
@@ -118,6 +119,19 @@ enum class TimeTrialMeasurementMode {
 
     /** Return the sum of all results */
     total
+}
+
+
+
+private var blackHoleValueHolder: Any? = null
+/**
+ * Takes in the value you give it and places it into a black hole, from which it will never be accessed.
+ *
+ * Useful when testing to ensure code isn't optimized away
+ */
+fun <T> blackHole(x: T) {
+    blackHoleValueHolder = x
+    blackHoleValueHolder = null
 }
 
 
@@ -287,6 +301,50 @@ sealed class Assertion<Raw, Processed> {
  * Asserts that the given two items of tolerable equality are equal within a given tolerance
  */
 @Suppress("NOTHING_TO_INLINE")
-inline fun <TE: TolerableEquality<TE>> assertEquals(expected: TE, actual: TE, toleration: Fraction) {
-    assertTrue(expected.equals(actual, tolerance = toleration))
+public inline fun <TE: TolerableEquality<TE>> assertEquals(expected: TE,
+                                                           actual: TE,
+                                                           tolerance: Fraction,
+                                                           message: String = "Expected ($expected), but got ($actual)")
+        = assertTrue(expected.equals(actual, tolerance = tolerance), message)
+
+
+
+// MARK: -
+
+interface TestCase
+interface TestResult
+
+@Suppress("unused", "MemberVisibilityCanPrivate")
+data class FractionFunctionTestCase(val input: Fraction,
+                                    val expectedOutput: Fraction,
+                                    val tolerance: Fraction = defaultFractionCalculationTolerance,
+                                    val message: String = "Input of $input should yield $expectedOutput (within a tolerance of $tolerance)"
+) : TestCase {
+
+    fun test(specialTolerance: Fraction = tolerance,
+             block: (Fraction) -> Fraction): FractionFunctionTestResult {
+        val actualOutput = block(input)
+        return FractionFunctionTestResult(testCase = this,
+                                          specialTolerance = specialTolerance,
+                                          actualOutput = actualOutput,
+                                          success = expectedOutput.equals(actualOutput, specialTolerance)
+        )
+    }
 }
+
+
+data class FractionFunctionTestResult(
+        val testCase: FractionFunctionTestCase,
+        val specialTolerance: Fraction,
+        val actualOutput: Fraction,
+        val success: Boolean,
+        val message: String = "Input of ${testCase.input} should yield ${testCase.expectedOutput} (within a tolerance of ${specialTolerance}), actually yielded $actualOutput"
+) : TestResult
+
+    fun FractionFunctionTestResult.humanReadableString(): String = "${if (success) "[OK]" else "[FAIL]"}: $message"
+
+
+
+
+fun Collection<FractionFunctionTestResult>.humanReadableString(): String =
+        "[\n\t${this.joinToString(separator = ",\n\t", prefix = "", postfix = "", transform = FractionFunctionTestResult::humanReadableString)}\n]"

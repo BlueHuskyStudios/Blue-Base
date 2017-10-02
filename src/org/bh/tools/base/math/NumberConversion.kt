@@ -23,36 +23,50 @@ interface NumberConvertible<out NumberType: Number> {
 
 
 
+// MARK: - .float32Value
+
 /**
  * The 32-bit floating-point value of this [Number]
  */
-inline val Number.float32Value: Float32 get() = this.toFloat()
+inline val <N: Number> N.float32Value: Float32 get() = this.toFloat()
 
 @Deprecated("This does nothing", ReplaceWith(""), DeprecationLevel.WARNING)
 inline val Float32.float32Value: Float32 get() = this
 
+
+
+// MARK: - .float64Value
+
 /**
  * The 64-bit floating-point value of this [Number]
  */
-inline val Number.float64Value: Float64 get() = this.toDouble()
+inline val <N: Number> N.float64Value: Float64 get() = this.toDouble()
 
 @Deprecated("This does nothing", ReplaceWith(""), DeprecationLevel.WARNING)
 inline val Float64.float64Value: Float64 get() = this
 
+
+
+// MARK: - .fractionValue
+
 /**
  * The ideal native floating-point value of this [Number]
  */
-inline val Number.fractionValue: Fraction get() = this.float64Value
+inline val <N: Number> N.fractionValue: Fraction get() = this.float64Value
 
 @Deprecated("This does nothing", ReplaceWith(""), DeprecationLevel.WARNING)
 inline val Fraction.fractionValue: Fraction get() = this
+
+
+
+// MARK: - .to___Checked
 
 
 /**
  * Converts this number to a [Byte], but first checks if that's a sane move; throws exceptions when this is infinite or NaN
  */
 //@Throws(ArithmeticException::class)
-fun Number.toByteChecked(): Byte {
+fun <N: Number> N.toByteChecked(): Byte {
     _checkBeforeConversionToNativeInteger()
     return this.toByte()
 }
@@ -62,7 +76,7 @@ fun Number.toByteChecked(): Byte {
  * Converts this number to a [Short], but first checks if that's a sane move; throws exceptions when this is infinite or NaN
  */
 //@Throws(ArithmeticException::class)
-fun Number.toShortChecked(): Short {
+fun <N: Number> N.toShortChecked(): Short {
     _checkBeforeConversionToNativeInteger()
     return this.toShort()
 }
@@ -72,7 +86,7 @@ fun Number.toShortChecked(): Short {
  * Converts this number to a [Int], but first checks if that's a sane move; throws exceptions when this is infinite or NaN
  */
 //@Throws(ArithmeticException::class)
-fun Number.toIntChecked(): Int {
+fun <N: Number> N.toIntChecked(): Int {
     _checkBeforeConversionToNativeInteger()
     return this.toInt()
 }
@@ -82,27 +96,27 @@ fun Number.toIntChecked(): Int {
  * Converts this number to a [Long], but first checks if that's a sane move; throws exceptions when this is infinite or NaN
  */
 //@Throws(ArithmeticException::class)
-fun Number.toLongChecked(): Long {
+fun <N: Number> N.toLongChecked(): Long {
     _checkBeforeConversionToNativeInteger()
     return this.toLong()
 }
 
 
 //@Throws(UnexpectedNaNException::class)
-private fun Number._checkBeforeConversionToNativeInteger() {
+private fun <N: Number> N._checkBeforeConversionToNativeInteger() {
     _checkNaN()
 }
 
 
 //@Throws(UnexpectedNaNException::class)
-private fun Number._checkNaN() {
+private fun <N: Number> N._checkNaN() {
     if (this.isNaN) {
         throw org.bh.tools.base.math.UnexpectedNaNException("NaN cannot be converted to an integer")
     }
 }
 
 
-private fun Number._checkInfinite() {
+private fun <N: Number> N._checkInfinite() {
     if (this.isInfinite) {
         throw UnexpectedInfinityException("Infinity cannot be converted to an integer")
     }
@@ -116,34 +130,78 @@ typealias UnexpectedInfinityException = ArithmeticException
 
 
 
+// MARK: - .int8Value
+
 /**
  * The 8-bit integer value of this [Number]. If this is not a number, an exception is thrown.
  */
-inline val Number.int8Value: Int8 get() = this.toByteChecked()
+inline val <N: Number> N.int8Value: Int8 get() = this.toByteChecked()
 
 @Deprecated("This does nothing", ReplaceWith(""), DeprecationLevel.WARNING)
 inline val Int8.int8Value: Int8 get() = this
 
+
+
+// MARK: - .int16Value
+
 /**
  * The 16-bit integer value of this [Number]
  */
-inline val Number.int16Value: Int16 get() = this.toShortChecked()
+inline val <N: Number> N.int16Value: Int16 get() = this.toShortChecked()
+
+/**
+ * The 16-bit integer value of this [Number]
+ */
+inline val Float32.int16Value: Int16 get() = this.toShortChecked()
 
 @Deprecated("This does nothing", ReplaceWith(""), DeprecationLevel.WARNING)
 inline val Int16.int16Value: Int16 get() = this
 
+
+
+// MARK: - .int32Value
+
 /**
  * The 32-bit integer value of this [Number]
  */
-inline val Number.int32Value: Int32 get() = this.toIntChecked()
+inline val <N: Number> N.int32Value: Int32 get() = this.toIntChecked()
+
+/**
+ * The 32-bit integer value of this [Float32]
+ */
+inline val Float32.int32Value: Int32 get() = this.toInt()
+
+/**
+ * The 32-bit integer value of this [Float64]
+ */
+inline val Float64.int32Value: Int32 get() = this.toInt()
+
+/**
+ * The 32-bit integer value of this [Int8]
+ */
+inline val Int8.int32Value: Int32 get() = this.toInt()
+
+/**
+ * The 32-bit integer value of this [Int16]
+ */
+inline val Int16.int32Value: Int32 get() = this.toInt()
 
 @Deprecated("This does nothing", ReplaceWith(""), DeprecationLevel.WARNING)
 inline val Int32.int32Value: Int32 get() = this
 
 /**
+ * The 32-bit integer value of this [Int64]
+ */
+inline val Int64.int32Value: Int32 get() = this.toInt()
+
+
+
+// MARK: - .int64Value
+
+/**
  * The 64-bit integer value of this [Number]
  */
-inline val Number.int64Value: Int64 get() = this.toLongChecked()
+inline val <N: Number> N.int64Value: Int64 get() = this.toLongChecked()
 
 @Deprecated("This does nothing", ReplaceWith(""), DeprecationLevel.WARNING)
 inline val Int64.int64Value: Int64 get() = this
@@ -151,12 +209,12 @@ inline val Int64.int64Value: Int64 get() = this
 /**
  * The ideal integer value of this [Number]
  */
-inline val Number.integerValue: Integer get() = this.int64Value
+inline val <N: Number> N.integerValue: Integer get() = this.int64Value
 
 @Deprecated("This does nothing", ReplaceWith(""), DeprecationLevel.WARNING)
 inline val Integer.integerValue: Integer get() = this
 
-fun Number.integerValue(rounded: RoundingDirection): Integer = when {
+fun <N: Number> N.integerValue(rounded: RoundingDirection): Integer = when {
     this.isNativeInteger -> this.integerValue
     //this.isNativeFraction ->
     else -> this.fractionValue.rounded(rounded).integerValue
@@ -165,14 +223,14 @@ fun Number.integerValue(rounded: RoundingDirection): Integer = when {
 
 
 /** Indicates whether this is an integer native to the platform */
-inline val Number.isNativeInteger: Boolean get()
+inline val <N: Number> N.isNativeInteger: Boolean get()
     = when (this) {
         is Int8, is Int16, is Int32, is Int64 -> true
         else -> false
     }
 
 /** Indicates whether this is a fraction native to the platform */
-inline val Number.isNativeFraction: Boolean get()
+inline val <N: Number> N.isNativeFraction: Boolean get()
     = when (this) {
         is Float32, is Float64 -> true
         else -> false

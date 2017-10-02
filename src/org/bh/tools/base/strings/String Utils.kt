@@ -71,18 +71,22 @@ fun CharSequence.containsIgnoreCase(cs: CharSequence): Boolean
         = this.toString().toLowerCase().contains(cs.toString().toLowerCase())
 
 
-/**
- * Repeats the given string [rhs] times.
- */
 @Suppress("NOTHING_TO_INLINE")
-inline infix operator fun String.times(rhs: Integer): String = repeat(rhs.int32Value.clampToPositive)
+inline fun String.repeat(rhs: Integer): String = repeat(rhs.int32Value)
 
 
 /**
  * Repeats the given string [rhs] times.
  */
 @Suppress("NOTHING_TO_INLINE")
-inline infix operator fun String.times(rhs: Int32): String = times(rhs.integerValue.clampToPositive)
+inline infix operator fun String.times(rhs: Integer): String = repeat(rhs.clampToPositive)
+
+
+/**
+ * Repeats the given string [rhs] times.
+ */
+@Suppress("NOTHING_TO_INLINE")
+inline infix operator fun String.times(rhs: Int32): String = repeat(rhs.clampToPositive)
 
 
 operator fun String.times(rhs: Fraction): String {

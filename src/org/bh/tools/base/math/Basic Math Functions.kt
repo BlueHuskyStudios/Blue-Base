@@ -147,7 +147,7 @@ infix fun Int32.toThePowerOf(exponent: Int32): Int32 = this.integerValue.toThePo
 /**
  * Finds the absolute value of the given fraction
  */
-fun abs(n: Fraction) = if (n < 0) -n else n
+fun abs(n: Float64) = if (n < 0) -n else n
 
 
 /**
@@ -159,7 +159,7 @@ fun abs(n: Float32) = if (n < 0) -n else n
 /**
  * Finds the absolute value of the given integer
  */
-fun abs(n: Integer) = if (n < 0) -n else n
+fun abs(n: Int64) = if (n < 0) -n else n
 
 
 /**
@@ -214,3 +214,122 @@ inline val Int16.absoluteValue get() = abs(this)
  * Finds the absolute value of this integer
  */
 inline val Int8.absoluteValue get() = abs(this)
+
+
+fun inverseSquareRoot(x: Float64): Float64 = inverseSquareRoot_functional_accuracy2(x)
+@Suppress("NOTHING_TO_INLINE", "FunctionName")
+private inline fun _inverseSquareRootUnrefined(x: Float64): Float64 {
+    var i = x.toRawBits()
+    i = 0x5fe6ec85e7de30daL - (i shr 1)
+    return Double.fromBits(i)
+}
+@Suppress("NOTHING_TO_INLINE", "FunctionName")
+private inline fun _inverseSquareRoot_accuracyRefiner(xHalf: Float64, unrefined: Float64): Float64 = unrefined * (1.5 - (xHalf * unrefined * unrefined))
+@Suppress("FunctionName")
+fun inverseSquareRoot_functional_accuracy1(x: Float64): Float64 =
+        _inverseSquareRoot_accuracyRefiner(xHalf = 0.5 * x, unrefined = _inverseSquareRootUnrefined(x))
+@Suppress("FunctionName")
+fun inverseSquareRoot_functional_accuracy2(x: Float64): Float64 {
+    val xHalf = 0.5 * x
+    return _inverseSquareRoot_accuracyRefiner(
+            xHalf = xHalf,
+            unrefined = _inverseSquareRoot_accuracyRefiner(
+                    xHalf = xHalf,
+                    unrefined = _inverseSquareRootUnrefined(x)
+            )
+    )
+}
+@Suppress("FunctionName")
+fun inverseSquareRoot_functional_accuracy3(x: Float64): Float64 {
+    val xHalf = 0.5 * x
+    return _inverseSquareRoot_accuracyRefiner(
+            xHalf = xHalf,
+            unrefined = _inverseSquareRoot_accuracyRefiner(
+                    xHalf = xHalf,
+                    unrefined = _inverseSquareRoot_accuracyRefiner(
+                            xHalf = xHalf,
+                            unrefined = _inverseSquareRootUnrefined(x)
+                    )
+            )
+    )
+}
+@Suppress("FunctionName")
+fun inverseSquareRoot_functional_accuracy4(x: Float64): Float64 {
+    val xHalf = 0.5 * x
+    return _inverseSquareRoot_accuracyRefiner(
+            xHalf = xHalf,
+            unrefined = _inverseSquareRoot_accuracyRefiner(
+                    xHalf = xHalf,
+                    unrefined = _inverseSquareRoot_accuracyRefiner(
+                            xHalf = xHalf,
+                            unrefined = _inverseSquareRoot_accuracyRefiner(
+                                    xHalf = xHalf,
+                                    unrefined = _inverseSquareRootUnrefined(x)
+                            )
+                    )
+            )
+    )
+}
+
+@Suppress("FunctionName")
+fun inverseSquareRoot_allInOne_accuracy1(x: Float64): Float64 {
+    @Suppress("NAME_SHADOWING")
+    var x = x
+    val xhalf = 0.5f * x
+    var i = x.toRawBits()
+    i = 0x5fe6ec85e7de30daL - (i shr 1)
+    x = Double.fromBits(i)
+    x *= 1.5f - xhalf * x * x
+    return x
+}
+
+fun inverseSquareRoot_allInOne_accuracy2(x: Float64): Float64 {
+    @Suppress("NAME_SHADOWING")
+    var x = x
+    val xhalf = 0.5f * x
+    var i = x.toRawBits()
+    i = 0x5fe6ec85e7de30daL - (i shr 1)
+    x = Double.fromBits(i)
+    x *= 1.5f - xhalf * x * x
+    x *= 1.5f - xhalf * x * x
+    return x
+}
+
+fun inverseSquareRoot_allInOne_accuracy3(x: Float64): Float64 {
+    @Suppress("NAME_SHADOWING")
+    var x = x
+    val xhalf = 0.5f * x
+    var i = x.toRawBits()
+    i = 0x5fe6ec85e7de30daL - (i shr 1)
+    x = Double.fromBits(i)
+    x *= 1.5f - xhalf * x * x
+    x *= 1.5f - xhalf * x * x
+    x *= 1.5f - xhalf * x * x
+    return x
+}
+
+fun inverseSquareRoot_allInOne_accuracy4(x: Float64): Float64 {
+    @Suppress("NAME_SHADOWING")
+    var x = x
+    val xhalf = 0.5f * x
+    var i = x.toRawBits()
+    i = 0x5fe6ec85e7de30daL - (i shr 1)
+    x = Double.fromBits(i)
+    x *= 1.5f - xhalf * x * x
+    x *= 1.5f - xhalf * x * x
+    x *= 1.5f - xhalf * x * x
+    x *= 1.5f - xhalf * x * x
+    return x
+}
+
+
+fun inverseSquareRoot(x: Float32): Float32 {
+    @Suppress("NAME_SHADOWING")
+    var x = x
+    val xhalf = 0.5f * x
+    var i = x.toRawBits()
+    i = 0x5f3759df - (i shr 1)
+    x = Float.fromBits(i)
+    x *= 1.5f - xhalf * x * x
+    return x
+}
