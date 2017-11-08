@@ -3,6 +3,7 @@
 package org.bh.tools.base.collections.extensions
 
 import org.bh.tools.base.collections.Index
+import org.bh.tools.base.collections.extensions.Conjunction.*
 import org.bh.tools.base.math.int32Value
 import org.bh.tools.base.struct.IntegerRange
 
@@ -72,3 +73,31 @@ fun <Element> List<Element>.subList(range: IntegerRange): List<Element>
 
 
 //inline fun <reified Element> List<Element>.copy(): List<Element> = List(*toTypedArray())
+
+
+
+fun List<*>.humanReadableList(conjunction: Conjunction): String {
+    return when (this.size) {
+        0 -> ""
+        1 -> "$firstOrNull"
+        2 -> "${this[0]} $conjunction ${this[1]}"
+        else -> "${this.subList(0, this.size - 1).joinToString(separator = ", ")}, $conjunction $lastOrNull"
+    }
+}
+
+
+
+enum class Conjunction {
+    and,
+    or,
+    andor,
+    ;
+
+    override fun toString(): String {
+        return when (this) {
+            and -> "and"
+            or -> "or"
+            andor -> "andor"
+        }
+    }
+}

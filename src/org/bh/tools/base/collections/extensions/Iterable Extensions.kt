@@ -28,14 +28,14 @@ inline val <ElementType> Iterable<ElementType>.firstOrNull: ElementType? get() =
 
 
 /**
- * @return the first element, or throws `NoSuchElementException` if there are no elements.
+ * @return the last element, or throws `NoSuchElementException` if there are no elements.
  */
 inline val <ElementType> Iterable<ElementType>.last: ElementType get() = last()
 
 
 
 /**
- * @return the first element, or `null` if there are no elements.
+ * @return the last element, or `null` if there are no elements.
  */
 inline val <ElementType> Iterable<ElementType>.lastOrNull: ElementType? get() = lastOrNull()
 
