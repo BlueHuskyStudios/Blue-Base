@@ -1,7 +1,8 @@
 package org.bh.tools.base.collections
 
 import org.bh.tools.base.state.*
-import java.util.*
+
+
 
 /**
  * Copyright BHStudios ©2016 BH-1-PS. Made for Snek.
@@ -24,7 +25,7 @@ open class DeltaStack<ContentType, DeltaType>
         where ContentType : ChangeableState<ContentType, DeltaType>,
             DeltaType : StateChange<DeltaType, ContentType> {
 
-    private val _stack = Stack<DeltaType>()
+    private val _stack = MutableStack<DeltaType>()
     private var _cachedCurrentState: ContentType? = _originalState
     private var _baseState = _originalState
 
@@ -65,11 +66,7 @@ open class DeltaStack<ContentType, DeltaType>
 
     override fun reset(newState: ContentType?) {
         synchronized(this) {
-            if (newState != null) {
-                _baseState = newState
-            } else {
-                _baseState = _originalState
-            }
+            _baseState = newState ?: _originalState
 
             _stack.clear()
             _resetCachedState(newState)

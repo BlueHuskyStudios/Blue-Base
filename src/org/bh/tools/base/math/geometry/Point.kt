@@ -5,7 +5,10 @@ package org.bh.tools.base.math.geometry
 import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.func.tuple
 import org.bh.tools.base.math.*
-import java.awt.geom.Point2D
+import org.bh.tools.base.basics.Cloneable
+import kotlin.jvm.*
+
+
 
 /**
  * Copyright BHStudios ©2016 BH-1-PS. Made for BH Tic Tac Toe IntelliJ Project.
@@ -15,7 +18,7 @@ import java.awt.geom.Point2D
  * @author Ben Leggiero
  * @since 2016-09-29
  */
-open class Point<out NumberType : Number>(val x: NumberType, val y: NumberType) : Cloneable {
+open class Point<out NumberType : Number>(val x: NumberType, val y: NumberType) : Cloneable<Point<NumberType>> {
     constructor(from: Point<NumberType>) : this(from.x, from.y)
 
     companion object {

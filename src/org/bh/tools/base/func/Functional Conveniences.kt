@@ -2,8 +2,6 @@
 
 package org.bh.tools.base.func
 
-import java.io.Serializable
-
 /*
  * To make functional programming easier
  *
@@ -26,7 +24,7 @@ import java.io.Serializable
 data class Single<out First>(
         /** The first (and only) value */
         val first: First
-) : Serializable {
+) {
 
     /**
      * Returns string representation of the [Single] including its [first] value.

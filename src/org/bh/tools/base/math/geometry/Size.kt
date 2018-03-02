@@ -4,7 +4,8 @@ package org.bh.tools.base.math.geometry
 
 import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.math.*
-import java.util.*
+import kotlin.jvm.*
+
 
 /**
  * Copyright BHStudios ©2016 BH-1-PS. Made for BH Tic Tac Toe IntelliJ Project.

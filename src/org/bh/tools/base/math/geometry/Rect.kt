@@ -4,8 +4,6 @@ package org.bh.tools.base.math.geometry
 
 import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.math.*
-import java.awt.Rectangle
-import java.awt.geom.Rectangle2D
 
 
 /**
@@ -226,9 +224,6 @@ open class IntegerRect(origin: ComputablePoint<Integer>, size: ComputableSize<In
     override val maxXmaxY by lazy { IntegerPoint(maxX, maxY) }
 
 
-
-    val awtValue: Rectangle by lazy { Rectangle(x.int32Value, y.int32Value, width.int32Value, height.int32Value) }
-
     override fun contains(other: IntegerRectBaseType): Boolean
             = contains(other, defaultIntegerCalculationTolerance)
 
@@ -309,10 +304,8 @@ typealias IntRect = IntegerRect
 
 /** Returns this rectangle as an [IntegerRect] */
 val AnyRect.integerValue: IntegerRect
-    get() = if (this is IntegerRect) this
-    else IntegerRect(x = x.integerValue, y = y.integerValue, width = width.integerValue, height = height.integerValue)
+    get() = this as? IntegerRect ?: IntegerRect(x = x.integerValue, y = y.integerValue, width = width.integerValue, height = height.integerValue)
 /** Creates a new [IntegerRect] from this AWT Rectangle */
-val java.awt.Rectangle.integerValue: IntegerRect get() = IntegerRect(x = x.integerValue, y = y.integerValue, width = width.integerValue, height = height.integerValue)
 
 
 
@@ -334,8 +327,6 @@ open class FractionRect(origin: ComputablePoint<Fraction>, size: ComputableSize<
     constructor(x: Integer, y: Integer, width: Integer, height: Integer) : this(FractionPoint(x, y), FractionSize(width, height))
     constructor(x: Int32, y: Int32, width: Int32, height: Int32)  : this(FractionPoint(x, y), FractionSize(width, height))
 
-    constructor(awtValue: Rectangle2D) : this(awtValue.x, awtValue.y, awtValue.width, awtValue.height)
-
     override val minX by lazy { if (width < 0) x + width else x }
     override val midX by lazy { (minX + maxX) / 2 }
     override val maxX by lazy { if (width < 0) x else x + width }
@@ -356,7 +347,6 @@ open class FractionRect(origin: ComputablePoint<Fraction>, size: ComputableSize<
     override val maxXmidY by lazy { FractionPoint(maxX, midY) }
     override val maxXmaxY by lazy { FractionPoint(maxX, maxY) }
 
-    val awtValue: Rectangle2D get() = Rectangle2D.Double(x, y, width, height)
 
     override fun contains(other: FractionRectBaseType): Boolean
             = contains(other, defaultFractionCalculationTolerance)
@@ -439,7 +429,6 @@ val AnyRect.fractionValue: FractionRect
     get() = if (this is FractionRect) this
     else FractionRect(x = x.fractionValue, y = y.fractionValue, width = width.fractionValue, height = height.fractionValue)
 /** Creates a new [FractionRect] from this AWT Rectangle */
-val java.awt.Rectangle.fractionValue: FractionRect get() = FractionRect(x = x, y = y, width = width, height = height)
 
 
 infix operator fun FractionRect.times(size: FractionSize): FractionRect {

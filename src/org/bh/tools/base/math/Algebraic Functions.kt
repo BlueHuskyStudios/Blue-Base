@@ -5,9 +5,7 @@ package org.bh.tools.base.math
 import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.math.RoundingDirection.up
 import org.bh.tools.base.math.RoundingThreshold.integer
-import java.lang.Math.abs
-import java.lang.Math.log10
-import java.util.*
+import kotlin.jvm.*
 
 /*
  * Assists in doing algebra

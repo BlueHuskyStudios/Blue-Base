@@ -6,9 +6,10 @@ import org.bh.tools.base.abstraction.Fraction
 import org.bh.tools.base.abstraction.Integer
 import org.bh.tools.base.func.*
 import org.bh.tools.base.math.*
-import java.awt.geom.AffineTransform
-import java.lang.Math.abs
-import java.lang.Math.atan2
+import org.bh.tools.base.math.abs
+import org.bh.tools.base.basics.Cloneable
+import kotlin.jvm.*
+import kotlin.math.*
 
 
 /**
@@ -24,7 +25,7 @@ open class LineSegment<NumberType : Number, out PointType : Point<NumberType>>(
         open val start: PointType,
         /** The point at the end of the line segment */
         open val end: PointType)
-    : Cloneable, TupleConvertible<Tuple2<PointType, PointType>> {
+    : Cloneable<LineSegment<NumberType, Point<NumberType>>>, TupleConvertible<Tuple2<PointType, PointType>> {
 
     /** The first point's X coordinate */
     inline val x1 get() = start.x
@@ -291,7 +292,7 @@ sealed class IntersectionDescription {
 
 
         override fun toString(): String {
-            return "{ ${javaClass.simpleName}: { verticesLocation: $verticesLocation, isLeftStartVertex: $isLeftStartVertex, isRightStartVertex: $isRightStartVertex } }"
+            return "{ leftVertexTouchesRightVertex: { verticesLocation: $verticesLocation, isLeftStartVertex: $isLeftStartVertex, isRightStartVertex: $isRightStartVertex } }"
         }
     }
 
@@ -315,7 +316,7 @@ sealed class IntersectionDescription {
 
 
         override fun toString(): String {
-            return "{ ${javaClass.simpleName}: { leftVertexLocation: $leftVertexLocation, isLeftStartVertex: $isLeftStartVertex } }"
+            return "{ leftVertexTouchesRightEdge: { leftVertexLocation: $leftVertexLocation, isLeftStartVertex: $isLeftStartVertex } }"
         }
     }
 
@@ -339,7 +340,7 @@ sealed class IntersectionDescription {
 
 
         override fun toString(): String {
-            return "{ ${javaClass.simpleName}: { rightVertexLocation: $rightVertexLocation isRightStartVertex: $isRightStartVertex } }"
+            return "{ rightVertexTouchesLeftEdge: { rightVertexLocation: $rightVertexLocation isRightStartVertex: $isRightStartVertex } }"
         }
     }
 
@@ -362,7 +363,7 @@ sealed class IntersectionDescription {
 
 
         override fun toString(): String {
-            return "{ ${javaClass.simpleName}: { crossingLocation: $crossingLocation } }"
+            return "{ edgesCross: { crossingLocation: $crossingLocation } }"
         }
     }
 
@@ -387,7 +388,7 @@ sealed class IntersectionDescription {
 
 
         override fun toString(): String {
-            return "{ ${javaClass.simpleName}: { isStartAndEndFlipped: $isStartAndEndFlipped } }"
+            return "{ completeOverlap: { isStartAndEndFlipped: $isStartAndEndFlipped } }"
         }
     }
 }
@@ -455,32 +456,32 @@ class IntegerLineSegment
     }
 
 
-    /**
-     * Not yet supported. That said, if the given `transform` is `null` or the identity, [fractionValue] is returned.
-     */
-    @Deprecated("Not yet supported")
-    fun transformed(transform: AffineTransform?): FractionLineSegment {
-        if (transform == null || transform.isIdentity) {
-            return fractionValue
-        }
-
-        TODO("Transformations are not yet supported")
-
-//        var x1 = this.x1
-//        var x2 = this.x2
-//        var y1 = this.y1
-//        var y2 = this.y2
+//    /**
+//     * Not yet supported. That said, if the given `transform` is `null` or the identity, [fractionValue] is returned.
+//     */
+//    @Deprecated("Not yet supported")
+//    fun transformed(transform: AffineTransform?): FractionLineSegment {
+//        if (transform == null || transform.isIdentity) {
+//            return fractionValue
+//        }
 //
-//        x1 *= transform.scaleX
-//        x2 *= transform.scaleX
-//        y1 *= transform.scaleY
-//        y2 *= transform.scaleY
+//        TODO("Transformations are not yet supported")
 //
-//        x1 += transform.translateX
-//        x2 += transform.translateX
-//        y1 += transform.translateY
-//        y2 += transform.translateY
-    }
+////        var x1 = this.x1
+////        var x2 = this.x2
+////        var y1 = this.y1
+////        var y2 = this.y2
+////
+////        x1 *= transform.scaleX
+////        x2 *= transform.scaleX
+////        y1 *= transform.scaleY
+////        y2 *= transform.scaleY
+////
+////        x1 += transform.translateX
+////        x2 += transform.translateX
+////        y1 += transform.translateY
+////        y2 += transform.translateY
+//    }
 
 
     // BEGIN: Code translated from http://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
@@ -588,31 +589,31 @@ open class FractionLineSegment(start: FractionPoint, end: FractionPoint) : Compu
      */
     override val bounds: FractionRect by lazy { FractionRect(FractionPoint(x1, y1), FractionSize(x2 - x1, y2 - y1)) }
 
-    /**
-     * Not yet supported. That said, if the given `transform` is `null` or the identity, [fractionValue] is returned.
-     */
-    fun transformed(transform: AffineTransform?): FractionLineSegment {
-        if (transform == null || transform.isIdentity) {
-            return fractionValue
-        }
-
-        TODO("Transformations are not yet supported")
-
-//        var x1 = this.x1
-//        var x2 = this.x2
-//        var y1 = this.y1
-//        var y2 = this.y2
+//    /**
+//     * Not yet supported. That said, if the given `transform` is `null` or the identity, [fractionValue] is returned.
+//     */
+//    fun transformed(transform: AffineTransform?): FractionLineSegment {
+//        if (transform == null || transform.isIdentity) {
+//            return fractionValue
+//        }
 //
-//        x1 *= transform.scaleX
-//        x2 *= transform.scaleX
-//        y1 *= transform.scaleY
-//        y2 *= transform.scaleY
+//        TODO("Transformations are not yet supported")
 //
-//        x1 += transform.translateX
-//        x2 += transform.translateX
-//        y1 += transform.translateY
-//        y2 += transform.translateY
-    }
+////        var x1 = this.x1
+////        var x2 = this.x2
+////        var y1 = this.y1
+////        var y2 = this.y2
+////
+////        x1 *= transform.scaleX
+////        x2 *= transform.scaleX
+////        y1 *= transform.scaleY
+////        y2 *= transform.scaleY
+////
+////        x1 += transform.translateX
+////        x2 += transform.translateX
+////        y1 += transform.translateY
+////        y2 += transform.translateY
+//    }
 
 
     // BEGIN: Code translated from http://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
@@ -666,7 +667,7 @@ open class FractionLineSegment(start: FractionPoint, end: FractionPoint) : Compu
          * http://stackoverflow.com/a/1968345/3939277 which was derived from the comment-linked F# translation here:
          * http://pastebin.com/nf56MHP7
          *
-         * The intersection is currently preceded by a rudamentary check for collinear segments' vertices touching,
+         * The intersection is currently preceded by a rudimentary check for collinear segments' vertices touching,
          * which may or may not have a general solution. If it does, that will hopefully be documented here:
          * http://math.stackexchange.com/q/2177005/317419
          * If such a general solution is found, this will be updated to use that.

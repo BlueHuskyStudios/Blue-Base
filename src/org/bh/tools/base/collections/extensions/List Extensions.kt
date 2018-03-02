@@ -6,6 +6,7 @@ import org.bh.tools.base.collections.Index
 import org.bh.tools.base.collections.extensions.Conjunction.*
 import org.bh.tools.base.math.int32Value
 import org.bh.tools.base.struct.IntegerRange
+import org.bh.tools.base.util.*
 
 /*
  * To help you work with lists
@@ -16,14 +17,26 @@ import org.bh.tools.base.struct.IntegerRange
 
 
 /**
- * @param newElement The element to add
- * @param index      The index
+ * @param newElement The element to add to the resulting list
+ * @param index      The index at which to add the element
  *
  * @return a new list with the given element added at the given index
  */
 fun <ElementType> List<ElementType>.adding(index: Index, newElement: ElementType): List<ElementType> {
     val newList = this.toMutableList()
     newList.add(index, newElement)
+    return newList
+}
+
+
+/**
+ * @param index The index of the element to exclude from the resulting list
+ *
+ * @return a new list with the given element added at the given index
+ */
+fun <ElementType> List<ElementType>.removingAt(index: Index): List<ElementType> {
+    val newList = this.toMutableList()
+    safeTry { newList.removeAt(index) }
     return newList
 }
 
