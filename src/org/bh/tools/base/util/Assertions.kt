@@ -24,7 +24,7 @@ var isDebugBuild = false
  */
 fun assert(condition: Boolean, message: String = "") {
     if (isDebugBuild && condition) {
-        throw AssertionError(message)
+        assert(false) { message }
     }
 }
 

@@ -5,6 +5,7 @@ package org.bh.tools.base.math.geometry
 import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.math.*
 import kotlin.jvm.*
+import kotlin.reflect.*
 
 
 /**
@@ -105,25 +106,25 @@ where NumberType: Number {
 
 private class SizeOperatorUnavailableApology(
         operator: String,
-        widthType: Class<*>,
-        heightType: Class<*>,
-        otherMainType: Class<*> = Size::class.java,
-        otherTypeA: Class<*> = widthType,
+        widthType: KClass<*>,
+        heightType: KClass<*>,
+        otherMainType: KClass<*> = Size::class,
+        otherTypeA: KClass<*> = widthType,
         otherTypeAType: String = "width",
-        otherTypeB: Class<*> = heightType,
+        otherTypeB: KClass<*> = heightType,
         otherTypeBType: String = "height")
-    : UnsupportedOperationException("Sorry, but because of JVM signature nonsense, $operator extensions " +
+    : /*UnsupportedOperationException*/Throwable("Sorry, but because of JVM signature nonsense, $operator extensions " +
         "operators have to be done very explicitly, and I didn't think of sizes with ${widthType.simpleName} width " +
         "and ${heightType.simpleName} height combined with ${otherMainType.simpleName} having " +
         "${otherTypeA.simpleName} $otherTypeAType and ${otherTypeB.simpleName} $otherTypeBType when I wrote it.")
 
 private fun Size<*>.apology(type: String,
-                            otherMainType: Class<*> = Size::class.java,
-                            otherTypeA: Class<*> = width::class.java,
+                            otherMainType: KClass<*> = Size::class,
+                            otherTypeA: KClass<*> = width::class,
                             otherTypeAType: String = "width",
-                            otherTypeB: Class<*> = height::class.java,
+                            otherTypeB: KClass<*> = height::class,
                             otherTypeBType: String = "height"): SizeOperatorUnavailableApology
-        = SizeOperatorUnavailableApology(type, width::class.java, height::class.java,
+        = SizeOperatorUnavailableApology(type, width::class, height::class,
         otherMainType, otherTypeA, otherTypeAType, otherTypeB, otherTypeBType)
 
 
@@ -183,9 +184,9 @@ class IntegerSize(width: Integer, height: Integer) : ComputableSize<Integer>(wid
                         (height + (rhs.second.fractionValue)).clampedIntegerValue)
             } else {
                 throw apology("addition",
-                        otherMainType = Pair::class.java,
-                        otherTypeA = rhs.first::class.java,
-                        otherTypeB = rhs.second::class.java)
+                        otherMainType = Pair::class,
+                        otherTypeA = rhs.first::class,
+                        otherTypeB = rhs.second::class)
             })
 
 
@@ -197,9 +198,9 @@ class IntegerSize(width: Integer, height: Integer) : ComputableSize<Integer>(wid
                         (height - (rhs.second.fractionValue)).clampedIntegerValue)
             } else {
                 throw apology("subtraction",
-                        otherMainType = Pair::class.java,
-                        otherTypeA = rhs.first::class.java,
-                        otherTypeB = rhs.second::class.java)
+                        otherMainType = Pair::class,
+                        otherTypeA = rhs.first::class,
+                        otherTypeB = rhs.second::class)
             })
 
 
@@ -211,9 +212,9 @@ class IntegerSize(width: Integer, height: Integer) : ComputableSize<Integer>(wid
                         (height * (rhs.second.fractionValue)).clampedIntegerValue)
             } else {
                 throw apology("multiplication",
-                        otherMainType = Pair::class.java,
-                        otherTypeA = rhs.first::class.java,
-                        otherTypeB = rhs.second::class.java)
+                        otherMainType = Pair::class,
+                        otherTypeA = rhs.first::class,
+                        otherTypeB = rhs.second::class)
             })
 
 
@@ -225,9 +226,9 @@ class IntegerSize(width: Integer, height: Integer) : ComputableSize<Integer>(wid
                         (height / (rhs.second.fractionValue)).clampedIntegerValue)
             } else {
                 throw apology("division",
-                        otherMainType = Pair::class.java,
-                        otherTypeA = rhs.first::class.java,
-                        otherTypeB = rhs.second::class.java)
+                        otherMainType = Pair::class,
+                        otherTypeA = rhs.first::class,
+                        otherTypeB = rhs.second::class)
             })
 
 
@@ -236,9 +237,6 @@ class IntegerSize(width: Integer, height: Integer) : ComputableSize<Integer>(wid
 }
 typealias Int64Size = IntegerSize
 typealias IntSize = IntegerSize
-
-val java.awt.Dimension.sizeValue: IntegerSize get() = IntegerSize(width = width.integerValue, height = height.integerValue)
-val IntegerSize.awtValue: java.awt.Dimension get() = java.awt.Dimension(width.int32Value, height.int32Value)
 
 
 
@@ -300,9 +298,9 @@ class FractionSize(width: Fraction, height: Fraction) : ComputableSize<Fraction>
                         (height + rhs.second.fractionValue))
             } else {
                 throw apology("addition",
-                        otherMainType = Pair::class.java,
-                        otherTypeA = rhs.first::class.java,
-                        otherTypeB = rhs.second::class.java)
+                        otherMainType = Pair::class,
+                        otherTypeA = rhs.first::class,
+                        otherTypeB = rhs.second::class)
             }
 
     override infix operator fun <OtherType : Number> minus(rhs: Pair<OtherType, OtherType>): FractionSize =
@@ -313,9 +311,9 @@ class FractionSize(width: Fraction, height: Fraction) : ComputableSize<Fraction>
                         (height - rhs.second.fractionValue))
             } else {
                 throw apology("subtraction",
-                        otherMainType = Pair::class.java,
-                        otherTypeA = rhs.first::class.java,
-                        otherTypeB = rhs.second::class.java)
+                        otherMainType = Pair::class,
+                        otherTypeA = rhs.first::class,
+                        otherTypeB = rhs.second::class)
             }
 
     override infix operator fun <OtherType : Number> times(rhs: Pair<OtherType, OtherType>): FractionSize =
@@ -326,9 +324,9 @@ class FractionSize(width: Fraction, height: Fraction) : ComputableSize<Fraction>
                         (height * rhs.second.fractionValue))
             } else {
                 throw apology("multiplication",
-                        otherMainType = Pair::class.java,
-                        otherTypeA = rhs.first::class.java,
-                        otherTypeB = rhs.second::class.java)
+                        otherMainType = Pair::class,
+                        otherTypeA = rhs.first::class,
+                        otherTypeB = rhs.second::class)
             }
 
     override infix operator fun <OtherType : Number> div(rhs: Pair<OtherType, OtherType>): FractionSize =
@@ -339,9 +337,9 @@ class FractionSize(width: Fraction, height: Fraction) : ComputableSize<Fraction>
                         height = (height / rhs.second.fractionValue))
             } else {
                 throw apology("division",
-                        otherMainType = Pair::class.java,
-                        otherTypeA = rhs.first::class.java,
-                        otherTypeB = rhs.second::class.java)
+                        otherMainType = Pair::class,
+                        otherTypeA = rhs.first::class,
+                        otherTypeB = rhs.second::class)
             }
 
 
@@ -357,37 +355,3 @@ val FractionSize.integerValue: IntegerSize get() = IntegerSize(width.integerValu
 
 inline val <NumberType : Number> Size<NumberType>.fractionValue: FractionSize
     get() = if (this is FractionSize) this else FractionSize(width.fractionValue, height.fractionValue)
-
-
-// MARK: - Silliness
-
-/**
- * Generates some random point (x, y) where 0 <= x <= width and 0 <= y <= height.
- */
-@Suppress("UNCHECKED_CAST") // checked transitively
-fun <NumberType : Number> ComputableSize<NumberType>.randomPoint(): Point<NumberType> {
-    val random = Random()
-
-    return if (width.isNativeInteger && height.isNativeInteger) {
-        Point(
-            x = random.nextInteger(
-                    minimumValue = minX.integerValue,
-                    maximumValue = maxX.integerValue + 1
-            ) as NumberType,
-            y = random.nextInteger(
-                    minimumValue = minY.integerValue,
-                    maximumValue = maxY.integerValue + 1) as NumberType
-        )
-    } else if (width.isNativeFraction && height.isNativeFraction) {
-        Point(
-            x = (random.nextFraction() * (width.fractionValue + 1)) as NumberType,
-            y = (random.nextFraction() * (height.fractionValue + 1)) as NumberType
-        )
-    } else {
-        print("Type not supported: ${width::class} x ${width::class}")
-        Point(
-            x = width,
-            y = height
-        )
-    }
-}

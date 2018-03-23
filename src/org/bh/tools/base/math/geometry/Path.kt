@@ -11,7 +11,6 @@ import org.bh.tools.base.math.ComparisonResult
 import org.bh.tools.base.math.geometry.IntegerPath.Companion.pathFromGenericSegments
 import org.bh.tools.base.math.geometry.IntersectionDescription.*
 import org.bh.tools.base.math.geometry.OtherSegmentRelationshipToCurrent.*
-import java.util.*
 
 /**
  * A path comprised of a set of points
@@ -71,7 +70,6 @@ enum class OtherSegmentRelationshipToCurrent {
     otherDoesNotTouchCurrent;
 
     companion object {
-        @JvmStatic
         fun from(currentSegmentIndex: Index, otherSegmentIndex: Index): OtherSegmentRelationshipToCurrent {
             return when (currentSegmentIndex - otherSegmentIndex) {
                 -1 -> otherIsLeftNeighborOfCurrent
@@ -468,24 +466,3 @@ typealias FloatPath = FractionPath
 //        previous = p
 //    }
 //}
-
-private fun <ContentType> List<ContentType>.sortedQueueValue(sorter: ComparatorBlock<ContentType>): Queue<ContentType> {
-    val x = PriorityQueue<ContentType>({ lhs, rhs ->
-        (
-                if (lhs == null) ComparisonResult.right
-                else if (rhs == null) ComparisonResult.left
-                else sorter(lhs, rhs)
-            ).nativeValue
-    })
-    x.addAll(this)
-    return x
-}
-
-inline fun <ContentType> List<ContentType>.sorted(crossinline sorter: ComparatorBlock<ContentType>): List<ContentType> =
-        this.sortedWith(kotlin.Comparator<ContentType> { lhs, rhs ->
-            (
-                    if (lhs == null) ComparisonResult.right
-                    else if (rhs == null) ComparisonResult.left
-                    else sorter(lhs, rhs)
-                    ).nativeValue
-        })

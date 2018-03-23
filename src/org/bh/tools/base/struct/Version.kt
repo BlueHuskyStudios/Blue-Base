@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+@file:Suppress("unused", "EnumEntryName", "MemberVisibilityCanBePrivate")
 
 package org.bh.tools.base.struct
 
@@ -37,7 +37,7 @@ data class Version
         val channel: VersionChannel = stable
 ) : Comparable64<Version> {
 
-    private val cachedStringValue by lazy { stages.toString(glue = ".") + Character.toString(channel.unicode) }
+    private val cachedStringValue by lazy { stages.toString(glue = ".") + channel.unicode.toString() }
 
     /**
      * Creates a version with the given channel and stages. For instance, if it's version 1.2.3 β, you would call
@@ -69,12 +69,12 @@ data class Version
     override fun compareTo(other: Version): Int32 = compareTo64(other).int32Value
 
     override fun compareTo64(otherComparable: Version): Int64 {
-        when {
-            equals(otherComparable) -> return 0
-            channel != otherComparable.channel -> return (channel.ordinal - otherComparable.channel.ordinal).toLong()
+        return when {
+            equals(otherComparable) -> 0
+            channel != otherComparable.channel -> (channel.ordinal - otherComparable.channel.ordinal).toLong()
             else -> {
-                val l = Math.min(stages.size, otherComparable.stages.size)
-                return (0 until l)
+                val l = min(stages.size, otherComparable.stages.size)
+                (0 until l)
                         .firstOrNull { stages[it] != otherComparable.stages[it] }
                         ?.let { stages[it] - otherComparable.stages[it] }
                         ?: (stages.size - otherComparable.stages.size).int64Value

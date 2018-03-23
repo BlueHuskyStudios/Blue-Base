@@ -1,0 +1,5 @@
+rootProject.name = 'Text-Game-Tests'
+include './'
+findProject(':./')?.name = 'Blue Base Core'
+rootProject.buildFileName = 'Blue Base Core.test'
+

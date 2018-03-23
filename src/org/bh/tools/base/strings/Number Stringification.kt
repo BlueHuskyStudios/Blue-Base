@@ -64,7 +64,7 @@ fun Integer.toString(separator: String, groupSize: Int8 = 3): String =
             toString()
         } else {
             decimalSeparatorRegex(groupSize)
-                    .groupsWithin(toString())
+                    .findAll(input = toString())
                     .joinToString(separator = separator)
         }
 
