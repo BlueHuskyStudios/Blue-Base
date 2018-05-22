@@ -216,7 +216,9 @@ inline val Int16.absoluteValue get() = abs(this)
 inline val Int8.absoluteValue get() = abs(this)
 
 
-fun inverseSquareRoot(x: Float64): Float64 = inverseSquareRoot_functional_accuracy2(x)
+inline fun inverseSquareRoot(x: Float64): Float64 = inverseSquareRoot_allInOne_accuracy2(x)
+
+
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
 private inline fun _inverseSquareRootUnrefined(x: Float64): Float64 {
     var i = x.toRawBits()

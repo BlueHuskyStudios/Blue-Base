@@ -426,8 +426,8 @@ typealias FloatRect = FractionRect
 
 /** Returns this rectangle as a [FractionRect] */
 val AnyRect.fractionValue: FractionRect
-    get() = if (this is FractionRect) this
-    else FractionRect(x = x.fractionValue, y = y.fractionValue, width = width.fractionValue, height = height.fractionValue)
+    get() = this as? FractionRect
+            ?: FractionRect(x = x.fractionValue, y = y.fractionValue, width = width.fractionValue, height = height.fractionValue)
 /** Creates a new [FractionRect] from this AWT Rectangle */
 
 

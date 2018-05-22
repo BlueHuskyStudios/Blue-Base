@@ -34,7 +34,7 @@ open class Point<out NumberType : Number>(val x: NumberType, val y: NumberType) 
     }
 
 
-    override public fun clone(): Point<NumberType> {
+    override fun clone(): Point<NumberType> {
         return Point(x, y)
     }
 

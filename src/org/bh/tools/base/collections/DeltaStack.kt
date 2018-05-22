@@ -46,7 +46,7 @@ open class DeltaStack<ContentType, DeltaType>
 
         delegate?.deltaStackDidPushState(this)
 
-        if (delegate?.deltaStackShouldFlattenState(this) ?: false) {
+        if (delegate?.deltaStackShouldFlattenState(this) == true) {
             flattenState()
         }
     }

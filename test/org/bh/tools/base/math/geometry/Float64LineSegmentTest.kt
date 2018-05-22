@@ -2,13 +2,13 @@ package org.bh.tools.base.math.geometry
 
 import org.bh.tools.base.abstraction.Fraction
 import org.bh.tools.base.abstraction.Integer
+import org.bh.tools.base.logging.*
 import org.bh.tools.base.math.defaultFractionCalculationTolerance
 import org.bh.tools.base.math.defaultIntegerCalculationTolerance
 import org.bh.tools.base.math.geometry.FractionPoint.Companion.zero
 import org.bh.tools.base.math.geometry.IntersectionDescription.*
 import org.bh.tools.base.util.measureTimeInterval
 import org.junit.Test
-import java.util.logging.Logger
 
 
 private data class Intersection(
@@ -102,7 +102,7 @@ class Float64LineSegmentTest {
             }
         }
 
-        Logger.getGlobal().info { "rawIntersection took $totalTimeInSeconds seconds to evaluate ${allIntersections.size} intersections" }
+        TestOutputLogger.info { "rawIntersection took $totalTimeInSeconds seconds to evaluate ${allIntersections.size} intersections" }
     }
 
 
@@ -121,7 +121,7 @@ class Float64LineSegmentTest {
             }
         }
 
-        Logger.getGlobal().info { "rawIntersection took $totalTimeInSeconds seconds to evaluate ${allIntersections.size} intersections" }
+        TestOutputLogger.info { "rawIntersection took $totalTimeInSeconds seconds to evaluate ${allIntersections.size} intersections" }
     }
 
 
@@ -140,7 +140,7 @@ class Float64LineSegmentTest {
             }
         }
 
-        Logger.getGlobal().info { "findLineIntersection took $totalTimeInSeconds seconds to evaluate ${allIntersections.size} intersections" }
+        TestOutputLogger.info { "findLineIntersection took $totalTimeInSeconds seconds to evaluate ${allIntersections.size} intersections" }
     }
 }
 

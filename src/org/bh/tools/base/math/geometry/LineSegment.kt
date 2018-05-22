@@ -42,7 +42,7 @@ open class LineSegment<NumberType : Number, out PointType : Point<NumberType>>(
 
     val stringValue get() = toString()
 
-    override public fun clone(): LineSegment<NumberType, Point<NumberType>> {
+    override fun clone(): LineSegment<NumberType, Point<NumberType>> {
         return LineSegment(start.clone(), end.clone())
     }
 
@@ -261,9 +261,6 @@ sealed class IntersectionDescription {
         }
 
 
-        override fun hashCode(): Int {
-            return super.hashCode()
-        }
     }
 
 

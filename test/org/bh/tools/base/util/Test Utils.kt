@@ -301,7 +301,7 @@ sealed class Assertion<Raw, Processed> {
  * Asserts that the given two items of tolerable equality are equal within a given tolerance
  */
 @Suppress("NOTHING_TO_INLINE")
-public inline fun <TE: TolerableEquality<TE>> assertEquals(expected: TE,
+inline fun <TE: TolerableEquality<TE>> assertEquals(expected: TE,
                                                            actual: TE,
                                                            tolerance: Fraction,
                                                            message: String = "Expected ($expected), but got ($actual)")

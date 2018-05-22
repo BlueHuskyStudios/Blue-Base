@@ -294,7 +294,7 @@ abstract class ComputableOpenRange<NumberType: Comparable<NumberType>>(startIncl
     abstract fun isPoint(tolerance: NumberType): Boolean
 
     /** Indicates whether this is just a single value; start and end are equal and it is not open */
-    override abstract val isPoint: Boolean
+    abstract override val isPoint: Boolean
 
     /**
      * Calls [equals(other, tolerance)] with a default tolerance
@@ -400,13 +400,13 @@ abstract class ComputableOpenRange<NumberType: Comparable<NumberType>>(startIncl
     /**
      * Only used internally: Determines whether `lhs` equals `rhs` within the given `tolerance`
      */
-    abstract protected fun isEqual(lhs: NumberType, rhs: NumberType, tolerance: NumberType): Boolean
+    protected abstract fun isEqual(lhs: NumberType, rhs: NumberType, tolerance: NumberType): Boolean
 
 
     /**
      * Only used internally: Determines whether `lhs` is less than or equal to `rhs` within the given `tolerance`
      */
-    abstract protected fun isLessThanOrEqual(lhs: NumberType, rhs: NumberType, tolerance: NumberType): Boolean
+    protected abstract fun isLessThanOrEqual(lhs: NumberType, rhs: NumberType, tolerance: NumberType): Boolean
 }
 
 
