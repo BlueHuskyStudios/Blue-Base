@@ -3,7 +3,6 @@
 package org.bh.tools.base.logging
 
 import org.bh.tools.base.collections.extensions.*
-import org.bh.tools.base.logging.LoggerLevel.*
 
 /**
  * @author Ben

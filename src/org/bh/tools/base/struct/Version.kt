@@ -2,8 +2,6 @@
 
 package org.bh.tools.base.struct
 
-//import org.bh.tools.base.math.NumberConversion
-
 import org.bh.tools.base.abstraction.Int32
 import org.bh.tools.base.abstraction.Int64
 import org.bh.tools.base.abstraction.Integer

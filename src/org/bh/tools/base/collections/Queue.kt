@@ -1,11 +1,10 @@
-@file:Suppress("unused")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate")
 
 package org.bh.tools.base.collections
 
-import org.bh.tools.base.abstraction.Integer
+import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.collections.extensions.*
-import org.bh.tools.base.math.int32Value
-import org.bh.tools.base.math.integerValue
+import org.bh.tools.base.math.*
 
 /**
  * A basic queue of items, where new ones are placed on the back and items can only be read from the front

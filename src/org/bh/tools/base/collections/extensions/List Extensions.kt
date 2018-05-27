@@ -3,7 +3,6 @@
 package org.bh.tools.base.collections.extensions
 
 import org.bh.tools.base.collections.Index
-import org.bh.tools.base.collections.extensions.Conjunction.*
 import org.bh.tools.base.math.int32Value
 import org.bh.tools.base.struct.IntegerRange
 import org.bh.tools.base.util.*

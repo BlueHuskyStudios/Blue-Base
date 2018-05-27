@@ -1,6 +1,5 @@
 package org.bh.tools.base.util
 
-import kotlin.AssertionError
 
 /*
  * Basic convenience wrappers around assertions

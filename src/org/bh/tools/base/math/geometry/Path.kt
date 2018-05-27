@@ -6,8 +6,6 @@ import org.bh.tools.base.abstraction.Fraction
 import org.bh.tools.base.abstraction.Integer
 import org.bh.tools.base.collections.Index
 import org.bh.tools.base.collections.extensions.*
-import org.bh.tools.base.math.ComparatorBlock
-import org.bh.tools.base.math.ComparisonResult
 import org.bh.tools.base.math.geometry.IntegerPath.Companion.pathFromGenericSegments
 import org.bh.tools.base.math.geometry.IntersectionDescription.*
 import org.bh.tools.base.math.geometry.OtherSegmentRelationshipToCurrent.*

@@ -35,7 +35,7 @@ typealias Int32 = Int
 typealias Int64 = Long
 
 /**
- * The ideal type of integer.
+ * The ideal type of integer. This may vary by platform.
  * **BH Standards dictate you use this instead of an `Int` or `Long` when possible.**
  */
 typealias Integer = Int64
@@ -53,7 +53,7 @@ typealias Float32 = Float
 typealias Float64 = Double
 
 /**
- * The ideal type of fractional number.
+ * The ideal type of fractional number. This may vary by platform.
  * **BH Standards dictate you use this instead of a `Double` or `Float` when possible.**
  */
 typealias Fraction = Float64
