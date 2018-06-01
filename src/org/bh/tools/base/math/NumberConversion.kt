@@ -3,7 +3,6 @@
 package org.bh.tools.base.math
 
 import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.math.UnexpectedNaNException
 
 /*
  * NumberConversion, made for BHToolbox, is copyright Blue Husky Software ©2016 BH-1-PS
@@ -61,62 +60,112 @@ inline val Fraction.fractionValue: Fraction get() = this
 
 // MARK: - .to___Checked
 
-
 /**
- * Converts this number to a [Byte], but first checks if that's a sane move; throws exceptions when this is infinite or NaN
+ * Converts this number to a [Int8], but first checks if that's a sane move; throws exceptions when this is infinite or NaN
  */
-//@Throws(ArithmeticException::class)
-fun <N: Number> N.toByteChecked(): Byte {
-    _checkBeforeConversionToNativeInteger()
-    return this.toByte()
-}
-
-
-/**
- * Converts this number to a [Short], but first checks if that's a sane move; throws exceptions when this is infinite or NaN
- */
-//@Throws(ArithmeticException::class)
-fun <N: Number> N.toShortChecked(): Short {
-    _checkBeforeConversionToNativeInteger()
-    return this.toShort()
+@Throws(ArithmeticException::class)
+fun <N: Number> N.toInt8Checked(): Int8 {
+    checkBeforeConversionToNativeInteger()
+    return this.toInt8()
 }
 
 
 /**
- * Converts this number to a [Int], but first checks if that's a sane move; throws exceptions when this is infinite or NaN
+ * Converts this number to a [Int16], but first checks if that's a sane move; throws exceptions when this is infinite or NaN
  */
-//@Throws(ArithmeticException::class)
-fun <N: Number> N.toIntChecked(): Int {
-    _checkBeforeConversionToNativeInteger()
-    return this.toInt()
+@Throws(ArithmeticException::class)
+fun <N: Number> N.toInt16Checked(): Int16 {
+    checkBeforeConversionToNativeInteger()
+    return this.toInt16()
 }
 
 
 /**
- * Converts this number to a [Long], but first checks if that's a sane move; throws exceptions when this is infinite or NaN
+ * Converts this number to a [Int32], but first checks if that's a sane move; throws exceptions when this is infinite or NaN
  */
-//@Throws(ArithmeticException::class)
-fun <N: Number> N.toLongChecked(): Long {
-    _checkBeforeConversionToNativeInteger()
-    return this.toLong()
+@Throws(ArithmeticException::class)
+fun <N: Number> N.toInt32Checked(): Int32 {
+    checkBeforeConversionToNativeInteger()
+    return this.toInt32()
 }
 
 
-//@Throws(UnexpectedNaNException::class)
-private fun <N: Number> N._checkBeforeConversionToNativeInteger() {
-    _checkNaN()
+/**
+ * Converts this number to a [Int64], but first checks if that's a sane move; throws exceptions when this is infinite or NaN
+ */
+@Throws(UnexpectedNaNException::class)
+fun <N: Number> N.toInt64Checked(): Int64 {
+    checkBeforeConversionToNativeInteger()
+    return this.toInt64()
 }
 
 
-//@Throws(UnexpectedNaNException::class)
-private fun <N: Number> N._checkNaN() {
+@Suppress("NOTHING_TO_INLINE")
+inline fun <N: Number> N.toInt8(): Int8 = this.toByte()
+@Suppress("NOTHING_TO_INLINE")
+inline fun <N: Number> N.toInt16(): Int16 = this.toShort()
+@Suppress("NOTHING_TO_INLINE")
+inline fun <N: Number> N.toInt32(): Int32 = this.toInt()
+@Suppress("NOTHING_TO_INLINE")
+inline fun <N: Number> N.toInt64(): Int64 = this.toLong()
+@Suppress("NOTHING_TO_INLINE")
+inline fun <N: Number> N.toInteger(): Integer = this.toInt64()
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun <N: Number> N.toFloat32(): Float32 = this.toFloat()
+@Suppress("NOTHING_TO_INLINE")
+inline fun <N: Number> N.toFloat64(): Float64 = this.toDouble()
+@Suppress("NOTHING_TO_INLINE")
+inline fun <N: Number> N.toFraction(): Fraction = this.toFloat64()
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun <N: Number> N.toIntegerChecked(): Integer = this.toInt64Checked()
+
+
+@Suppress("NOTHING_TO_INLINE")
+@Throws(NumberFormatException::class)
+inline fun String.toInt8(radix: Int8 = 10): Int8 = this.toByte(radix = radix.int32Value)
+@Suppress("NOTHING_TO_INLINE")
+@Throws(NumberFormatException::class)
+inline fun String.toInt16(radix: Int8 = 10): Int16 = this.toShort(radix = radix.int32Value)
+@Suppress("NOTHING_TO_INLINE")
+@Throws(NumberFormatException::class)
+inline fun String.toInt32(radix: Int8 = 10): Int32 = this.toInt(radix = radix.int32Value)
+@Suppress("NOTHING_TO_INLINE")
+@Throws(NumberFormatException::class)
+inline fun String.toInt64(radix: Int8 = 10): Int64 = this.toLong(radix = radix.int32Value)
+@Suppress("NOTHING_TO_INLINE")
+@Throws(NumberFormatException::class)
+inline fun String.toInteger(radix: Int8 = 10): Integer = this.toInt64(radix = radix)
+
+@Suppress("NOTHING_TO_INLINE")
+@Throws(NumberFormatException::class)
+inline fun String.toFloat32(): Float32 = this.toFloat()
+@Suppress("NOTHING_TO_INLINE")
+@Throws(NumberFormatException::class)
+inline fun String.toFloat64(): Float64 = this.toDouble()
+@Suppress("NOTHING_TO_INLINE")
+@Throws(NumberFormatException::class)
+inline fun String.toFraction(): Fraction = this.toFloat64()
+
+
+@Suppress("NOTHING_TO_INLINE")
+@Throws(UnexpectedNaNException::class)
+private inline fun <N: Number> N.checkBeforeConversionToNativeInteger() {
+    checkNaN()
+}
+
+
+@Throws(UnexpectedNaNException::class)
+private fun <N: Number> N.checkNaN() {
     if (this.isNaN) {
-        throw org.bh.tools.base.math.UnexpectedNaNException("NaN cannot be converted to an integer")
+        throw UnexpectedNaNException("NaN cannot be converted to an integer")
     }
 }
 
 
-private fun <N: Number> N._checkInfinite() {
+@Throws(UnexpectedInfinityException::class)
+private fun <N: Number> N.checkInfinite() {
     if (this.isInfinite) {
         throw UnexpectedInfinityException("Infinity cannot be converted to an integer")
     }
@@ -124,9 +173,13 @@ private fun <N: Number> N._checkInfinite() {
 
 
 
-class ArithmeticException(message: String?, cause: Throwable? = null): Throwable(message = message, cause = cause)
 typealias UnexpectedNaNException = ArithmeticException
 typealias UnexpectedInfinityException = ArithmeticException
+
+
+
+// MARK: - Efficiencies
+// TODO: Add more
 
 
 
@@ -135,7 +188,7 @@ typealias UnexpectedInfinityException = ArithmeticException
 /**
  * The 8-bit integer value of this [Number]. If this is not a number, an exception is thrown.
  */
-inline val <N: Number> N.int8Value: Int8 get() = this.toByteChecked()
+inline val <N: Number> N.int8Value: Int8 get() = this.toInt8Checked()
 
 @Deprecated("This does nothing", ReplaceWith(""), DeprecationLevel.WARNING)
 inline val Int8.int8Value: Int8 get() = this
@@ -147,12 +200,12 @@ inline val Int8.int8Value: Int8 get() = this
 /**
  * The 16-bit integer value of this [Number]
  */
-inline val <N: Number> N.int16Value: Int16 get() = this.toShortChecked()
+inline val <N: Number> N.int16Value: Int16 get() = this.toInt16Checked()
 
 /**
  * The 16-bit integer value of this [Number]
  */
-inline val Float32.int16Value: Int16 get() = this.toShortChecked()
+inline val Float32.int16Value: Int16 get() = this.toInt16Checked()
 
 @Deprecated("This does nothing", ReplaceWith(""), DeprecationLevel.WARNING)
 inline val Int16.int16Value: Int16 get() = this
@@ -164,7 +217,7 @@ inline val Int16.int16Value: Int16 get() = this
 /**
  * The 32-bit integer value of this [Number]
  */
-inline val <N: Number> N.int32Value: Int32 get() = this.toIntChecked()
+inline val <N: Number> N.int32Value: Int32 get() = this.toInt32Checked()
 
 /**
  * The 32-bit integer value of this [Float32]
@@ -201,7 +254,7 @@ inline val Int64.int32Value: Int32 get() = this.toInt()
 /**
  * The 64-bit integer value of this [Number]
  */
-inline val <N: Number> N.int64Value: Int64 get() = this.toLongChecked()
+inline val <N: Number> N.int64Value: Int64 get() = this.toInt64Checked()
 
 @Deprecated("This does nothing", ReplaceWith(""), DeprecationLevel.WARNING)
 inline val Int64.int64Value: Int64 get() = this
@@ -223,14 +276,14 @@ fun <N: Number> N.integerValue(rounded: RoundingDirection): Integer = when {
 
 
 /** Indicates whether this is an integer native to the platform */
-inline val <N: Number> N.isNativeInteger: Boolean get()
+inline val <N: Number> N.isNativeInteger: Boolean get() // TODO: Enhance with contracts in Kotlin 1.3+
     = when (this) {
         is Int8, is Int16, is Int32, is Int64 -> true
         else -> false
     }
 
 /** Indicates whether this is a fraction native to the platform */
-inline val <N: Number> N.isNativeFraction: Boolean get()
+inline val <N: Number> N.isNativeFraction: Boolean get() // TODO: Enhance with contracts in Kotlin 1.3+
     = when (this) {
         is Float32, is Float64 -> true
         else -> false
@@ -350,8 +403,9 @@ inline val Float64.clampToPositive: Float64 get() = if (this < 0.0)  0.0  else t
 
 
 
-@Suppress("NOTHING_TO_INLINE")
-inline fun Integer(from: String, radix: Int = 10) = from.toInt(radix = radix)
+@Suppress("NOTHING_TO_INLINE", "FunctionName")
+@Throws(NumberFormatException::class)
+inline fun Integer(from: String, radix: Int8 = 10): Integer = from.toInteger(radix = radix)
 
 
 

@@ -1,11 +1,10 @@
 package org.bh.tools.base.math
 
-import org.bh.tools.base.abstraction.Fraction
+import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.math.RoundingDirection.*
 import org.bh.tools.base.math.RoundingThreshold.*
-import org.bh.tools.base.util.assertEquals
-import org.junit.Test
-
+import org.bh.tools.base.util.*
+import org.junit.*
 import org.junit.Assert.*
 
 /**
@@ -155,22 +154,6 @@ class FractionUtilitiesTest {
     }
 
 
-//    @Test
-//    fun ceil_shifting() {
-//        assertCeil_shifting(expected = 5.0, beforeRounding = 4.9)
-//        assertCeil_shifting(expected = 5.0, beforeRounding = 5.0)
-//        assertCeil_shifting(expected = 6.0, beforeRounding = 5.4)
-//        assertCeil_shifting(expected = 6.0, beforeRounding = 5.5)
-//        assertCeil_shifting(expected = 6.0, beforeRounding = 5.6)
-//
-//        assertCeil_shifting(expected = -5.0, beforeRounding = -4.9)
-//        assertCeil_shifting(expected = -5.0, beforeRounding = -5.0)
-//        assertCeil_shifting(expected = -6.0, beforeRounding = -5.4)
-//        assertCeil_shifting(expected = -6.0, beforeRounding = -5.5)
-//        assertCeil_shifting(expected = -6.0, beforeRounding = -5.6)
-//    }
-
-
     @Test
     fun ceil() {
         assertCeil(expected = 5.0, beforeRounding = 4.9)
@@ -185,22 +168,6 @@ class FractionUtilitiesTest {
         assertCeil(expected = -5.0, beforeRounding = -5.5)
         assertCeil(expected = -5.0, beforeRounding = -5.6)
     }
-
-
-//    @Test
-//    fun floor_shifting() {
-//        assertFloor_shifting(expected = 4.0, beforeRounding = 4.9)
-//        assertFloor_shifting(expected = 5.0, beforeRounding = 5.0)
-//        assertFloor_shifting(expected = 5.0, beforeRounding = 5.4)
-//        assertFloor_shifting(expected = 5.0, beforeRounding = 5.5)
-//        assertFloor_shifting(expected = 5.0, beforeRounding = 5.6)
-//
-//        assertFloor_shifting(expected = -4.0, beforeRounding = -4.9)
-//        assertFloor_shifting(expected = -5.0, beforeRounding = -5.0)
-//        assertFloor_shifting(expected = -5.0, beforeRounding = -5.4)
-//        assertFloor_shifting(expected = -5.0, beforeRounding = -5.5)
-//        assertFloor_shifting(expected = -5.0, beforeRounding = -5.6)
-//    }
 
 
     @Test
@@ -235,37 +202,39 @@ class FractionUtilitiesTest {
     }
 }
 
+
+
 fun assertRounded(expected: Fraction, beforeRounding: Fraction, direction: RoundingDirection = RoundingDirection.default, threshold: RoundingThreshold = RoundingThreshold.default) {
     val message = "$beforeRounding rounded ${direction.humanReadableTestString} with $threshold threshold should be $expected"
     assertEquals(message, expected, beforeRounding.rounded(direction, threshold), defaultFractionCalculationTolerance)
 }
 
-//fun assertCeil_shifting(expected: Fraction, beforeRounding: Fraction) {
-//    assertFracFunc(expected, beforeRounding, "ceil_shifting", Fraction::ceil_shifting)
-//}
 
 fun assertCeil(expected: Fraction, beforeRounding: Fraction) {
-    assertFracFunc(expected, beforeRounding, "ceil", Fraction::ceil)
+    assertFracFun(expected, beforeRounding, "ceil", Fraction::ceil)
 }
 
-fun assertFracFunc(expected: Fraction, beforeRounding: Fraction, funcName: String, ceilFun: FracFun) {
-    val actual = ceilFun(beforeRounding)
+
+fun assertFracFun(expected: Fraction, beforeRounding: Fraction, funcName: String, fracFun: FracFun) {
+    val actual = fracFun(beforeRounding)
     assertEquals("Expected $beforeRounding.$funcName() to be $expected, but was $actual", expected, actual, defaultFractionCalculationTolerance)
 }
 
+
 fun assertIntegerComponent(expected: Fraction, beforeRounding: Fraction) {
-    assertFracFunc(expected, beforeRounding, "integerComponent", Fraction::integerComponent)
+    assertFracFun(expected, beforeRounding, "integerComponent", Fraction::integerComponent)
 }
 
-//fun assertFloor_shifting(expected: Fraction, beforeRounding: Fraction) {
-//    assertFracFunc(expected, beforeRounding, "floor_shifting", Fraction::floor_shifting)
-//}
 
 fun assertFloor(expected: Fraction, beforeRounding: Fraction) {
-    assertFracFunc(expected, beforeRounding, "floor", Fraction::floor)
+    assertFracFun(expected, beforeRounding, "floor", Fraction::floor)
 }
 
+
+
 typealias FracFun = Fraction.() -> Fraction
+
+
 
 val RoundingDirection.humanReadableTestString: String get() = when (this) {
     up -> "up"

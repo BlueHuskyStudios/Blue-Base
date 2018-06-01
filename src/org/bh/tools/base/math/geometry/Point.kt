@@ -3,10 +3,9 @@
 package org.bh.tools.base.math.geometry
 
 import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.func.tuple
-import org.bh.tools.base.math.*
 import org.bh.tools.base.basics.Cloneable
-import kotlin.jvm.*
+import org.bh.tools.base.func.*
+import org.bh.tools.base.math.*
 import kotlin.reflect.*
 
 
@@ -132,7 +131,7 @@ private class PointOperatorUnavailableApology(
         otherTypeAType: String = "x",
         otherTypeB: KClass<*> = heightType,
         otherTypeBType: String = "y")
-    : /*UnsupportedOperationException*/Throwable("Sorry, but because of JVM signature nonsense, $operator extensions " +
+    : UnsupportedOperationException("Sorry, but because of JVM signature nonsense, $operator extensions " +
         "operators have to be done very explicitly, and I didn't think of points with ${widthType.simpleName} x " +
         "and ${heightType.simpleName} y combined with ${otherMainType.simpleName} having " +
         "${otherTypeA.simpleName} $otherTypeAType and ${otherTypeB.simpleName} $otherTypeBType when I wrote it.")
@@ -163,44 +162,38 @@ class IntegerPoint(x: Integer, y: Integer) : ComputablePoint<Integer>(x, y) {
 
 
     override infix operator fun <OtherType : Number> plus(rhs: Pair<OtherType, OtherType>): IntegerPoint =
-            if (rhs.first.isNativeInteger) {
-                IntegerPoint(x + rhs.first.integerValue, y + rhs.second.integerValue)
-            } else if (rhs.first.isNativeFraction) {
-                IntegerPoint((x + rhs.first.fractionValue).clampedIntegerValue,
-                        (y + rhs.second.fractionValue).clampedIntegerValue)
-            } else {
-                throw apology("addition",
-                        otherMainType = Pair::class,
-                        otherTypeA = rhs.first::class,
-                        otherTypeB = rhs.second::class)
+            when {
+                rhs.first.isNativeInteger -> IntegerPoint(x + rhs.first.integerValue, y + rhs.second.integerValue)
+                rhs.first.isNativeFraction -> IntegerPoint((x + rhs.first.fractionValue).clampedIntegerValue,
+                                                           (y + rhs.second.fractionValue).clampedIntegerValue)
+                else -> throw apology("addition",
+                                      otherMainType = Pair::class,
+                                      otherTypeA = rhs.first::class,
+                                      otherTypeB = rhs.second::class)
             }
 
 
     override infix operator fun <OtherType : Number> minus(rhs: Pair<OtherType, OtherType>): IntegerPoint =
-            if (rhs.first.isNativeInteger) {
-                IntegerPoint(x - rhs.first.integerValue, y - rhs.second.integerValue)
-            } else if (rhs.first.isNativeFraction) {
-                IntegerPoint((x - rhs.first.fractionValue).clampedIntegerValue,
-                        (y - rhs.second.fractionValue).clampedIntegerValue)
-            } else {
-                throw apology("subtraction",
-                        otherMainType = Pair::class,
-                        otherTypeA = rhs.first::class,
-                        otherTypeB = rhs.second::class)
+            when {
+                rhs.first.isNativeInteger -> IntegerPoint(x - rhs.first.integerValue, y - rhs.second.integerValue)
+                rhs.first.isNativeFraction -> IntegerPoint((x - rhs.first.fractionValue).clampedIntegerValue,
+                                                           (y - rhs.second.fractionValue).clampedIntegerValue)
+                else -> throw apology("subtraction",
+                                      otherMainType = Pair::class,
+                                      otherTypeA = rhs.first::class,
+                                      otherTypeB = rhs.second::class)
             }
 
 
     override infix operator fun <OtherType : Number> times(rhs: Pair<OtherType, OtherType>): IntegerPoint =
-            if (rhs.first.isNativeInteger) {
-                IntegerPoint(x * rhs.first.integerValue, y * rhs.second.integerValue)
-            } else if (rhs.first.isNativeFraction) {
-                IntegerPoint((x * rhs.first.fractionValue).clampedIntegerValue,
-                        (y * rhs.second.fractionValue).clampedIntegerValue)
-            } else {
-                throw apology("multiplication",
-                        otherMainType = Pair::class,
-                        otherTypeA = rhs.first::class,
-                        otherTypeB = rhs.second::class)
+            when {
+                rhs.first.isNativeInteger -> IntegerPoint(x * rhs.first.integerValue, y * rhs.second.integerValue)
+                rhs.first.isNativeFraction -> IntegerPoint((x * rhs.first.fractionValue).clampedIntegerValue,
+                                                           (y * rhs.second.fractionValue).clampedIntegerValue)
+                else -> throw apology("multiplication",
+                                      otherMainType = Pair::class,
+                                      otherTypeA = rhs.first::class,
+                                      otherTypeB = rhs.second::class)
             }
 
 

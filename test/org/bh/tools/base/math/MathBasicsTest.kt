@@ -3,14 +3,14 @@ package org.bh.tools.base.math
 
 import junit.framework.TestCase.*
 import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.util.assertThrows
-import org.junit.Test
+import org.bh.tools.base.util.*
+import org.junit.*
 
 
 /**
  * @author Kyli Rouge
  * *
- * @since 2017-03-21 021.
+ * @since 2017-03-21
  */
 class MathBasicsTest {
 
@@ -52,7 +52,7 @@ class MathBasicsTest {
         assertEquals("3^0 should be 1", 1L, 3L.toThePowerOf(0L))
         assertEquals("3^-1 should be 0", 0L, 3L.toThePowerOf(-1L))
         assertEquals("3^-100 should be 0", 0L, 3L.toThePowerOf(-100L))
-        assertEquals("3^-Integer.min should be 0", 0L, 3L.toThePowerOf(Integer.min))
+        assertEquals("3^Integer.min should be 0", 0L, 3L.toThePowerOf(Integer.min))
 
         assertEquals("0^5 should be 0", 0L, 0L.toThePowerOf(5L))
         assertEquals("1^4 should be 1", 1L, 1L.toThePowerOf(4L))
@@ -80,10 +80,10 @@ class MathBasicsTest {
         assertEquals("Since all powers of 1 are 1, 1^1 should be 1", 1L, 1L.toThePowerOf(1L))
         assertEquals("Since all powers of 1 are 1, 1^0 should be 1", 1L, 1L.toThePowerOf(0L))
 
-        assertThrows("Since 0 to a negative power is undefined, 0^-1 should throw an exception", { 0L.toThePowerOf(-1L) })
-        assertThrows("Since 0 to a negative power is undefined, 0^-100 should throw an exception", { 0L.toThePowerOf(-100L) })
-        assertThrows("Since 0 to a negative power is undefined, 0^Integer.min should throw an exception", { 0L.toThePowerOf(Integer.min) })
-        assertThrows("0 raised to any power is 0, but anything raised to the power of 0 is 1, so 0^0 should throw an exception", { 0.toThePowerOf(0) })
+        assertThrows("Since 0 to a negative power is undefined, 0^-1 should throw an exception") { 0L.toThePowerOf(-1L) }
+        assertThrows("Since 0 to a negative power is undefined, 0^-100 should throw an exception") { 0L.toThePowerOf(-100L) }
+        assertThrows("Since 0 to a negative power is undefined, 0^Integer.min should throw an exception") { 0L.toThePowerOf(Integer.min) }
+        assertThrows("0 raised to any power is 0, but anything raised to the power of 0 is 1, so 0^0 should throw an exception") { 0.toThePowerOf(0) }
 
         assertEquals("Since all powers of 0 are 0, 0^5 should be 0", 0L, 0L.toThePowerOf(5L))
         assertEquals("Since all powers of 0 are 0, 0^4 should be 0", 0L, 0L.toThePowerOf(4L))
@@ -151,9 +151,9 @@ class MathBasicsTest {
         assertEquals("All powers of 1 are 1, 1^1 should be 1", 1.0, 1.0.toThePowerOf(1.0), defaultFractionCalculationTolerance)
         assertEquals("All powers of 1 are 1, 1^0 should be 1", 1.0, 1.0.toThePowerOf(0.0), defaultFractionCalculationTolerance)
 
-        assertEquals("Zero to a negative power is undefined, 0^-1 should throw an exception", Fraction.nan, 0.0.toThePowerOf(-1.0))
-        assertEquals("Zero to a negative power is undefined, 0^-100 should throw an exception", Fraction.nan, 0.0.toThePowerOf(-100.0))
-        assertEquals("Zero to a negative power is undefined, 0^Integer.min should throw an exception", Fraction.nan, 0.0.toThePowerOf(Integer.min.fractionValue))
+        assertTrue("Zero to a negative power is infinity, 0^-1 should be infinite", 0.0.toThePowerOf(-1.0).isInfinite)
+        assertTrue("Zero to a negative power is infinity, 0^-100 should be infinite", 0.0.toThePowerOf(-100.0).isInfinite)
+        assertTrue("Zero to a negative power is infinity, 0^Integer.min should be infinite", 0.0.toThePowerOf(Integer.min.fractionValue).isInfinite)
 
         assertEquals("Since 0 raised to any power is 0, 0^5 should be 0", 0.0, 0.0.toThePowerOf(5.0), defaultFractionCalculationTolerance)
         assertEquals("Since 0 raised to any power is 0, 0^4 should be 0", 0.0, 0.0.toThePowerOf(4.0), defaultFractionCalculationTolerance)

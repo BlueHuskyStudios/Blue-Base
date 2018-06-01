@@ -3,6 +3,7 @@
 package org.bh.tools.base.math
 
 import org.bh.tools.base.abstraction.*
+import kotlin.math.*
 
 /* Basic Math Functions, made for Blue Base, is copyright Blue Husky Software ©2016 BH-1-PS.
  *
@@ -14,29 +15,29 @@ import org.bh.tools.base.abstraction.*
 /**
  * Indicates whether this integer is even
  */
-inline val Integer.isEven get() = (this % 2L) == 0L
+val Int64.isEven get() = (this % 2L) == 0L
 
 /**
  * Indicates whether this integer is even
  */
-inline val Int32.isEven get() = (this % 2) == 0
+val Int32.isEven get() = (this % 2) == 0
 
 /**
  * Indicates whether this integer is even
  */
-inline val Int16.isEven get() = (this % 2) == 0
+val Int16.isEven get() = (this % 2) == 0
 
 /**
  * Indicates whether this integer is even
  */
-inline val Int8.isEven get() = (this % 2) == 0
+val Int8.isEven get() = (this % 2) == 0
 
 /**
  * Indicates whether this integer is odd
  *
  * @see isEven
  */
-inline val Integer.isOdd get() = !this.isEven
+inline val Int64.isOdd get() = !this.isEven
 
 /**
  * Indicates whether this integer is odd
@@ -65,7 +66,7 @@ inline val Int8.isOdd get() = !this.isEven
  *
  * See also: [_Exponentiation_ on Wikipedia](https://en.wikipedia.org/wiki/Exponentiation)
  */
-fun pow(base: Fraction, exponent: Fraction): Fraction = pow_wikipedia_exponentiationBySquaring_basicMethod(base, exponent)
+fun pow(base: Fraction, exponent: Fraction): Fraction = base.pow(exponent) //pow_wikipedia_exponentiationBySquaring_basicMethod(base, exponent)
 
 //private fun pow_iForgotWhereIGotThis(base: Fraction, exponent: Fraction) =
 //        when {
@@ -77,47 +78,46 @@ fun pow(base: Fraction, exponent: Fraction): Fraction = pow_wikipedia_exponentia
 //                /* return */ p * p
 //            }
 //        }
-
-fun pow_wikipedia_exponentiationBySquaring_basicMethod(base: Fraction, exponent: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Fraction =
-        when {
-            exponent.isInfinite -> if (exponent < 0.0) 0.0 else Fraction.infinity
-
-            exponent.isLessThan(0.0, tolerance = tolerance) ->
-                if (base.equals(0.0, tolerance = tolerance)) Fraction.nan
-                else pow_wikipedia_exponentiationBySquaring_basicMethod(base = 1.0 / base, exponent = -exponent, tolerance = tolerance)
-            exponent.equals(0.0, tolerance = tolerance) ->
-                if (base.equals(0.0, tolerance = tolerance)) Fraction.nan
-                else 1.0
-            exponent.equals(1.0, tolerance = tolerance) -> base
-            exponent.integerValue.isEven -> pow_wikipedia_exponentiationBySquaring_basicMethod(base = base * base, exponent = exponent / 2.0, tolerance = tolerance)
-            /* exponent.isOdd, */ else -> base * pow_wikipedia_exponentiationBySquaring_basicMethod(base = base * base, exponent = (exponent - 1.0) / 2.0, tolerance = tolerance)
-        }
-
-fun pow_wikipedia_exponentiationBySquaring_basicMethodIterative(base: Fraction, exponent: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Fraction {
-    var x = base
-    var n = exponent
-    if (n.isLessThan(0.0, tolerance = tolerance)) {
-        x = 1.0 / x
-        n = -n
-    }
-    if (n.equals(0.0, tolerance = tolerance)) {
-        return 1.0
-    }
-    var y = 1.0
-    while (n.isGreaterThan(1.0, tolerance = tolerance)) {
-        if (n.integerValue.isEven) {
-            x = x * x
-            n = n / 2.0
-        }
-        else {
-            y = x * y
-            x = x * x
-            n = (n - 1) / 2.0
-        }
-    }
-    return x * y
-}
-
+//
+//fun pow_wikipedia_exponentiationBySquaring_basicMethod(base: Fraction, exponent: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Fraction =
+//        when {
+//            exponent.isInfinite -> if (exponent < 0.0) 0.0 else Fraction.infinity
+//
+//            exponent.isLessThan(0.0, tolerance = tolerance) ->
+//                if (base.equals(0.0, tolerance = tolerance)) Fraction.nan
+//                else pow_wikipedia_exponentiationBySquaring_basicMethod(base = 1.0 / base, exponent = -exponent, tolerance = tolerance)
+//            exponent.equals(0.0, tolerance = tolerance) ->
+//                if (base.equals(0.0, tolerance = tolerance)) Fraction.nan
+//                else 1.0
+//            exponent.equals(1.0, tolerance = tolerance) -> base
+//            exponent.integerValue.isEven -> pow_wikipedia_exponentiationBySquaring_basicMethod(base = base * base, exponent = exponent / 2.0, tolerance = tolerance)
+//            /* exponent.isOdd, */ else -> base * pow_wikipedia_exponentiationBySquaring_basicMethod(base = base * base, exponent = (exponent - 1.0) / 2.0, tolerance = tolerance)
+//        }
+//
+//fun pow_wikipedia_exponentiationBySquaring_basicMethodIterative(base: Fraction, exponent: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Fraction {
+//    var x = base
+//    var n = exponent
+//    if (n.isLessThan(0.0, tolerance = tolerance)) {
+//        x = 1.0 / x
+//        n = -n
+//    }
+//    if (n.equals(0.0, tolerance = tolerance)) {
+//        return 1.0
+//    }
+//    var y = 1.0
+//    while (n.isGreaterThan(1.0, tolerance = tolerance)) {
+//        if (n.integerValue.isEven) {
+//            x = x * x
+//            n = n / 2.0
+//        }
+//        else {
+//            y = x * y
+//            x = x * x
+//            n = (n - 1) / 2.0
+//        }
+//    }
+//    return x * y
+//}
 
 
 
@@ -126,22 +126,23 @@ fun pow_wikipedia_exponentiationBySquaring_basicMethodIterative(base: Fraction, 
  *
  * See also: [_Exponentiation_ on Wikipedia](https://en.wikipedia.org/wiki/Exponentiation)
  */
-infix fun Fraction.toThePowerOf(exponent: Fraction): Fraction = pow(this, exponent)
+infix fun Fraction.toThePowerOf(exponent: Fraction): Fraction = this.pow(exponent)//pow(this, exponent)
 
 
 /**
  * Finds the exponentiation of this integer to the power of [exponent]. If the result would be higher than
  * [max][Long.MAX_VALUE], then that max is returned. If [exponent] is negative, `0` is returned (unless `this` is `1`).
  */
-infix fun Integer.toThePowerOf(exponent: Integer): Integer =
-        this.fractionValue.toThePowerOf(exponent.fractionValue).clampedIntegerValue
+infix fun Int64.toThePowerOf(exponent: Int64): Int64 =
+        this.fractionValue.pow(exponent.clampedInt32Value).clampedInt64Value
 
 
 /**
  * Finds the exponentiation of this integer to the power of [exponent]. If the result would be higher than
  * [max][Int.MAX_VALUE], then that max is returned. If [exponent] is negative, `0` is returned.
  */
-infix fun Int32.toThePowerOf(exponent: Int32): Int32 = this.integerValue.toThePowerOf(exponent.integerValue).clampedInt32Value
+infix fun Int32.toThePowerOf(exponent: Int32): Int32 =
+        this.fractionValue.toThePowerOf(exponent.fractionValue).clampedInt32Value
 
 
 /**

@@ -2,35 +2,31 @@ package org.bh.tools.base.math
 
 
 import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.collections.extensions.length
-import org.bh.tools.base.func.tuple
-import org.bh.tools.base.strings.differingCharacters
-import org.bh.tools.base.strings.toString
-import org.bh.tools.base.util.assertTrue
-import org.junit.Test
+import org.bh.tools.base.collections.extensions.*
+import org.bh.tools.base.strings.*
+import org.bh.tools.base.util.*
+import org.junit.*
 
 
 /**
  * @author Ben Leggiero
  * @since 2017-03-22
  */
-class NumberConversionKtTest {
+open class NumberConversionKtTest {
 
     val sampleInt8s: List<Int8> = listOf(0, 1, -1, Int8.min, Int8.max, (Int8.min / 2).toByte(), (Int8.max / 2).toByte())
     val sampleInt16s: List<Int16> = sampleInt8s.map(Int8::toShort) + listOf(Int16.min, Int16.max, (Int16.min / 2).toShort(), (Int16.max / 2).toShort())
     val sampleInt32s: List<Int32> = sampleInt16s.map(Int16::toInt) + listOf(Int32.min, Int32.max, (Int32.min / 2), (Int32.max / 2))
     val sampleInt64s: List<Int64> = sampleInt32s.map(Int32::toLong) + listOf(Int64.min, Int64.max, (Int64.min / 2), (Int64.max / 2))
 
-    val sampleFloat32s: List<Float32> = sampleInt64s.map(Int64::toFloat) + listOf<Float32>(Float32.leastNonzeroMagnitude, Float32.greatestFiniteMagnitude, -Float32.leastNonzeroMagnitude, -Float32.greatestFiniteMagnitude)
+    val sampleFloat32s: List<Float32> = sampleInt64s.map(Int64::toFloat) + listOf(Float32.leastNonzeroMagnitude, Float32.greatestFiniteMagnitude, -Float32.leastNonzeroMagnitude, -Float32.greatestFiniteMagnitude)
     val sampleFloat64s: List<Float64> = sampleFloat32s.map(Float32::toDouble) + listOf(Float64.leastNonzeroMagnitude, Float64.greatestFiniteMagnitude, -Float64.leastNonzeroMagnitude, -Float64.greatestFiniteMagnitude)
 
-//    val sampleBigDecimals: List<BigDecimal> = sampleFloat64s.map { BigDecimal(it.toString()) }
-//    val sampleBigIntegers: List<BigInteger> = sampleBigDecimals.map { it.toBigInteger() }
+//    BigDecimals and BigIntegers in Blue Base/JVM
 
-    val allSamples: List<Number> = listOf<Number>() +
+    open val allSamples: List<Number> = listOf<Number>() +
             sampleInt8s + sampleInt16s + sampleInt32s + sampleInt64s +
-            sampleFloat32s + sampleFloat64s// +
-//            sampleBigIntegers + sampleBigDecimals
+            sampleFloat32s + sampleFloat64s
 
     init {
         println("Evaluating ${allSamples.length.toString(separator = ",")} sample numbers...")
@@ -38,443 +34,436 @@ class NumberConversionKtTest {
 
 
     @Test
-    fun Number_float32Value() {
-        allSamples
-//                .stream()
-                .map { tuple(it, it.float32Value) }
-                .forEach { (original, float32Value) ->
-                    assertNumbersClose("Original number should equal float 32 value",
-                            original,
-                            float32Value
-                    )
-                }
+    open fun Number_float32Value() {
+        allSamples.forEach {
+            assertNumbersClose("Original number should equal float 32 value",
+                               it, it.float32Value
+            )
+        }
     }
 
 
     @Test
-    fun Number_float64Value() {
-        allSamples
-                .map { tuple(it, it.float64Value) }
-                .forEach { (original, float64Value) ->
-                    assertNumbersClose("Original number should equal float 64 value",
-                            original,
-                            float64Value
-                    )
-                }
+    open fun Number_float64Value() {
+        allSamples.forEach {
+            assertNumbersClose("Original number should equal float 64 value",
+                               it, it.float64Value
+            )
+        }
     }
 
     // TODO: All these:
 
     @Test
-    fun Number_fractionValue() {
+    open fun Number_fractionValue() {
 
     }
 
 
     @Test
-    fun toByteChecked() {
+    open fun toByteChecked() {
 
     }
 
 
     @Test
-    fun toShortChecked() {
+    open fun toShortChecked() {
 
     }
 
 
     @Test
-    fun toIntChecked() {
+    open fun toIntChecked() {
 
     }
 
 
     @Test
-    fun toLongChecked() {
+    open fun toLongChecked() {
 
     }
 
 
     @Test
-    fun getInt8Value() {
+    open fun getInt8Value() {
 
     }
 
 
     @Test
-    fun getInt16Value() {
+    open fun getInt16Value() {
 
     }
 
 
     @Test
-    fun getInt32Value() {
+    open fun getInt32Value() {
 
     }
 
 
     @Test
-    fun getInt64Value() {
+    open fun getInt64Value() {
 
     }
 
 
     @Test
-    fun getIntegerValue() {
+    open fun getIntegerValue() {
 
     }
 
 
     @Test
-    fun integerValue() {
+    open fun integerValue() {
 
     }
 
 
     @Test
-    fun isNativeInteger() {
+    open fun isNativeInteger() {
 
     }
 
 
     @Test
-    fun isNativeFraction() {
+    open fun isNativeFraction() {
 
     }
 
 
     @Test
-    fun getClampedIntegerValue() {
+    open fun getClampedIntegerValue() {
 
     }
 
 
     @Test
-    fun getClampedInt64Value() {
+    open fun getClampedInt64Value() {
 
     }
 
 
     @Test
-    fun getClampedInt32Value() {
+    open fun getClampedInt32Value() {
 
     }
 
 
     @Test
-    fun getClampedInt162Value() {
+    open fun getClampedInt162Value() {
 
     }
 
 
     @Test
-    fun getClampedInt8Value() {
+    open fun getClampedInt8Value() {
 
     }
 
 
     @Test
-    fun getClampedInt32Value1() {
+    open fun getClampedInt32Value1() {
 
     }
 
 
     @Test
-    fun getClampedInt16Value() {
+    open fun getClampedInt16Value() {
 
     }
 
 
     @Test
-    fun getClampedInt8Value1() {
+    open fun getClampedInt8Value1() {
 
     }
 
 
     @Test
-    fun getClampToPositive() {
+    open fun getClampToPositive() {
 
     }
 
 
     @Test
-    fun getClampToPositive1() {
+    open fun getClampToPositive1() {
 
     }
 
 
     @Test
-    fun getClampToPositive2() {
+    open fun getClampToPositive2() {
 
     }
 
 
     @Test
-    fun getClampToPositive3() {
+    open fun getClampToPositive3() {
 
     }
 
 
     @Test
-    fun getClampToPositive4() {
+    open fun getClampToPositive4() {
 
     }
 
 
     @Test
-    fun getClampToPositive5() {
+    open fun getClampToPositive5() {
 
     }
 
 
     @Test
-    fun int8ArrayOf() {
+    open fun int8ArrayOf() {
 
     }
 
 
     @Test
-    fun int16ArrayOf() {
+    open fun int16ArrayOf() {
 
     }
 
 
     @Test
-    fun int32ArrayOf() {
+    open fun int32ArrayOf() {
 
     }
 
 
     @Test
-    fun int64ArrayOf() {
+    open fun int64ArrayOf() {
 
     }
 
 
     @Test
-    fun integerArrayOf() {
+    open fun integerArrayOf() {
 
     }
 
 
     @Test
-    fun float32ArrayOf() {
+    open fun float32ArrayOf() {
 
     }
 
 
     @Test
-    fun float64ArrayOf() {
+    open fun float64ArrayOf() {
 
     }
 
 
     @Test
-    fun fractionArrayOf() {
+    open fun fractionArrayOf() {
 
     }
 
 
     @Test
-    fun toInt8Array() {
+    open fun toInt8Array() {
 
     }
 
 
     @Test
-    fun toInt16Array() {
+    open fun toInt16Array() {
 
     }
 
 
     @Test
-    fun toInt32Array() {
+    open fun toInt32Array() {
 
     }
 
 
     @Test
-    fun toInt64Array() {
+    open fun toInt64Array() {
 
     }
 
 
     @Test
-    fun toIntegerArray() {
+    open fun toIntegerArray() {
 
     }
 
 
     @Test
-    fun toFloat32Array() {
+    open fun toFloat32Array() {
 
     }
 
 
     @Test
-    fun toFloat64Array() {
+    open fun toFloat64Array() {
 
     }
 
 
     @Test
-    fun toFractionArray() {
+    open fun toFractionArray() {
 
     }
 
 
     @Test
-    fun getInt8Value1() {
+    open fun getInt8Value1() {
 
     }
 
 
     @Test
-    fun getInt8Value2() {
+    open fun getInt8Value2() {
 
     }
 
 
     @Test
-    fun getInt8Value3() {
+    open fun getInt8Value3() {
 
     }
 
 
     @Test
-    fun getInt8Value4() {
+    open fun getInt8Value4() {
 
     }
 
 
     @Test
-    fun getInt16Value1() {
+    open fun getInt16Value1() {
 
     }
 
 
     @Test
-    fun getInt16Value2() {
+    open fun getInt16Value2() {
 
     }
 
 
     @Test
-    fun getInt16Value3() {
+    open fun getInt16Value3() {
 
     }
 
 
     @Test
-    fun getInt16Value4() {
+    open fun getInt16Value4() {
 
     }
 
 
     @Test
-    fun getInt32Value1() {
+    open fun getInt32Value1() {
 
     }
 
 
     @Test
-    fun getInt32Value2() {
+    open fun getInt32Value2() {
 
     }
 
 
     @Test
-    fun getInt32Value3() {
+    open fun getInt32Value3() {
 
     }
 
 
     @Test
-    fun getInt32Value4() {
+    open fun getInt32Value4() {
 
     }
 
 
     @Test
-    fun getInt64Value1() {
+    open fun getInt64Value1() {
 
     }
 
 
     @Test
-    fun getInt64Value2() {
+    open fun getInt64Value2() {
 
     }
 
 
     @Test
-    fun getInt64Value3() {
+    open fun getInt64Value3() {
 
     }
 
 
     @Test
-    fun getInt64Value4() {
+    open fun getInt64Value4() {
 
     }
 
 
     @Test
-    fun getIntegerValue1() {
+    open fun getIntegerValue1() {
 
     }
 
 
     @Test
-    fun getIntegerValue2() {
+    open fun getIntegerValue2() {
 
     }
 
 
     @Test
-    fun getIntegerValue3() {
+    open fun getIntegerValue3() {
 
     }
 
 
     @Test
-    fun getIntegerValue4() {
+    open fun getIntegerValue4() {
 
     }
 
 
     @Test
-    fun getFloat32Value1() {
+    open fun getFloat32Value1() {
 
     }
 
 
     @Test
-    fun getFloat32Value2() {
+    open fun getFloat32Value2() {
 
     }
 
 
     @Test
-    fun getFloat64Value1() {
+    open fun getFloat64Value1() {
 
     }
 
 
     @Test
-    fun getFloat64Value2() {
+    open fun getFloat64Value2() {
 
     }
 
 
     @Test
-    fun getFractionValue1() {
+    open fun getFractionValue1() {
 
     }
 
 
     @Test
-    fun getFractionValue2() {
+    open fun getFractionValue2() {
 
     }
 }

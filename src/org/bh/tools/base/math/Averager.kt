@@ -2,8 +2,7 @@
 
 package org.bh.tools.base.math
 
-import org.bh.tools.base.abstraction.Fraction
-import org.bh.tools.base.abstraction.Integer
+import org.bh.tools.base.abstraction.*
 
 /**
  * Averager, made for BHToolbox, is made by and copyrighted to Blue Husky Programming, ©2017 [BH-0-PD](https://github.com/BlueHuskyStudios/Licenses/blob/master/Licenses/BH-0-PD.txt).
@@ -91,7 +90,6 @@ class Averager
      *
      * @return `this`, so calls can be chained. For example: `averager.average(myNumber).average(123);`
      */
-//    @Strictfp
     fun average(newValue: Fraction): Averager {
         _currentAverage = (_currentAverage * timesAveraged + newValue) / ++timesAveraged
         return this
@@ -118,7 +116,6 @@ class Averager
      *
      * @see toDouble
      */
-    @Deprecated("This might be inaccurate. Use {@link #doubleValue()} instead.", ReplaceWith("toDouble()"))
     override fun toByte(): Byte = toDouble().toByte()
 
 
@@ -127,7 +124,6 @@ class Averager
      *
      * @see toDouble
      */
-    @Deprecated("This might be inaccurate. Use {@link #doubleValue()} instead.", ReplaceWith("toDouble()"))
     override fun toShort(): Short = toDouble().toShort()
 
 
@@ -136,7 +132,6 @@ class Averager
      *
      * @see toDouble
      */
-    @Deprecated("This might be inaccurate. Use {@link #doubleValue()} instead.", ReplaceWith("toDouble()"))
     override fun toChar(): Char = toDouble().toChar()
 
 
@@ -145,7 +140,6 @@ class Averager
      *
      * @see toDouble
      */
-    @Deprecated("This might be inaccurate. Use {@link #doubleValue()} instead.", ReplaceWith("toDouble()"))
     override fun toInt(): Int = toDouble().toInt()
 
 
@@ -157,7 +151,6 @@ class Averager
      * @since 2017-01-08
      * @version 1.0.0
      */
-    @Deprecated("This might be inaccurate. Use {@link #doubleValue()} instead.", ReplaceWith("toDouble()"))
     override fun toLong(): Long = toDouble().toLong()
 
 
@@ -166,7 +159,6 @@ class Averager
      *
      * @see toDouble
      */
-    @Deprecated("This might be inaccurate. Use {@link #doubleValue()} instead.", ReplaceWith("toDouble()"))
     override fun toFloat(): Float = toDouble().toFloat()
 
 

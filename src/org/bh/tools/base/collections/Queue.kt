@@ -19,7 +19,8 @@ open class Queue<Element>(protected var backingList: MutableList<Element> = muta
     val size: Integer
         get() = backingList.size.integerValue
 
-    val isEmpty: Boolean = size == 0L
+    val isEmpty: Boolean
+        get() = size == 0L
 
 
     fun pushOntoBack(newElement: Element): Queue<Element> {
@@ -31,6 +32,12 @@ open class Queue<Element>(protected var backingList: MutableList<Element> = muta
     fun popFromFront(): Element? = backingList.removeFirst()
 
 
+    /**
+     * Goes through this queue, removing each item and then sending it to `processor`.
+     * After the call to this completes, the queue will be empty.
+     *
+     * @param processor The function which will be called on each item after it's removed from the queue
+     */
     fun pumpAll(processor: QueueElementProcessor<Element>) {
         var each = popFromFront()
         while (each != null) {

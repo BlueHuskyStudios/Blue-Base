@@ -136,41 +136,29 @@ enum class ComparisonResult(
 
         fun from(raw: Number): ComparisonResult {
             return from(object : Comparable<Number> {
-                override fun compareTo(other: Number): Int {
-                    val backupResult: Int
+                override fun compareTo(other: Number): Int32 {
+                    val backupResult: Int32
                     when {
                         raw.isNativeInteger -> {
                             val rawInt = raw.integerValue
                             when {
-                                other.isNativeInteger -> {
-                                    val otherInt = other.integerValue
-                                    return (otherInt - rawInt).clampedInt32Value
-                                }
-                                other.isNativeFraction -> {
-                                    val otherFloat = other.fractionValue
-                                    return (otherFloat - rawInt).clampedInt32Value
-                                }
+                                other.isNativeInteger -> return (other.integerValue - rawInt).clampedInt32Value
+                                other.isNativeFraction -> return (other.fractionValue - rawInt).clampedInt32Value
                                 else -> backupResult = (other.fractionValue - rawInt).clampedInt32Value
                             }
                         }
                         raw.isNativeFraction -> {
                             val rawFloat = raw.fractionValue
                             when {
-                                other.isNativeInteger -> {
-                                    val otherInt = other.integerValue
-                                    return (otherInt - rawFloat).clampedInt32Value
-                                }
-                                other.isNativeFraction -> {
-                                    val otherFloat = other.fractionValue
-                                    return (otherFloat - rawFloat).clampedInt32Value
-                                }
+                                other.isNativeInteger -> return (other.integerValue - rawFloat).clampedInt32Value
+                                other.isNativeFraction -> return (other.fractionValue - rawFloat).clampedInt32Value
                                 else -> backupResult = (other.fractionValue - rawFloat).clampedInt32Value
                             }
                         }
                         else -> backupResult = (other.fractionValue - raw.fractionValue).clampedInt32Value
                     }
-                    print("Sorry; I hadn't thought about subtracting a ${other::class.simpleName} from a ${raw::class.simpleName}...")
-                    print("I'll attempt to convert them to fractions and do the math from there!")
+                    println("Sorry; I hadn't thought about subtracting a ${other::class.simpleName} from a ${raw::class.simpleName}...")
+                    println("I'll attempt to convert them to fractions and do the math from there!")
                     return backupResult
                 }
             })
@@ -245,7 +233,7 @@ fun <Self: TolerableEquality<Self>> TolerableEquality<Self>.isApproximately(othe
 
 
 /**
- * Determines whether this 64-bit float is equal to the other, within a given tolerance.
+ * Determines whether this 64-bit fraction is equal to the other, within a given tolerance.
  *
  * @param rhs       The other fraction to compare to this one
  * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
@@ -262,7 +250,7 @@ fun Float64.equals(rhs: Float64, tolerance: Float64 = defaultFractionCalculation
 
 
 /**
- * Determines whether this 64-bit float is approximately equal to the other, within a given tolerance.
+ * Determines whether this 64-bit fraction is approximately equal to the other, within a given tolerance.
  *
  * @param rhs       The other fraction to compare to this one
  * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.

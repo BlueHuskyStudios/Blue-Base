@@ -3,10 +3,10 @@
 package org.bh.tools.base.math
 
 
-import org.bh.tools.base.abstraction.Fraction
+import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.util.*
-import org.junit.jupiter.api.Test
-import kotlin.test.assertTrue
+import org.junit.jupiter.api.*
+import kotlin.test.*
 
 
 /**
@@ -96,7 +96,7 @@ internal class BasicMathFunctionsTest {
                                                                      warmupTrials = warmupTrials,
                                                                      trials = trialsPerTest) {
             allInverseSquareRootTests(functionToTest = ::inverseSquareRoot_functional_accuracy2,
-                                      specialTolerance = 0.0001,
+                                      specialTolerance = defaultFractionCalculationTolerance,
                                       resultAccumulator = ::saveResult)
         }
 
@@ -106,7 +106,7 @@ internal class BasicMathFunctionsTest {
                                                                      warmupTrials = warmupTrials,
                                                                      trials = trialsPerTest) {
             allInverseSquareRootTests(functionToTest = ::inverseSquareRoot_functional_accuracy3,
-                                      specialTolerance = 0.000007,
+                                      specialTolerance = defaultFractionCalculationTolerance,
                                       resultAccumulator = ::saveResult)
         }
 

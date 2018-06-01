@@ -4,8 +4,7 @@ package org.bh.tools.base.math
 
 import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.math.RoundingDirection.*
-import org.bh.tools.base.math.RoundingThreshold.halfway
-import org.bh.tools.base.math.RoundingThreshold.integer
+import org.bh.tools.base.math.RoundingThreshold.*
 
 /*
  * For using fractions easier
@@ -31,53 +30,24 @@ fun Fraction.integerComponent(): Fraction {
 }
 
 
-///**
-// * Shifts the bits in this number to determine its floored value.
-// * If this is infinite or not a number, it's returned unchanged.
-// *
-// * This is based on https://www.codeproject.com/Tips/700780/Fast-floor-ceiling-functions
-// */
-//fun Float64.floor_shifting(): Float64 {
-//    return when {
-//        isInfinite
-//                || isNaN -> this
-//        else -> (this + Int64.max) - Int64.max
-//    }
-//}
-
-
 /** Removes the fractional part of this number. If this is infinite or not a number, it's returned unchanged. */
 @Suppress("NOTHING_TO_INLINE")
-inline fun Float64.floor() = if (this < 0) ceil_truncating2() else integerComponent()
+inline fun Float64.floor() = kotlin.math.floor(this)
 
-
-///**
-// * Shifts the bits in this number to determine its ceiling value.
-// * If this is infinite or not a number, it's returned unchanged.
-// *
-// * This is based on https://www.codeproject.com/Tips/700780/Fast-floor-ceiling-functions
-// */
-//fun Float64.ceil_shifting() = when {
-//    isInfinite
-//            || isNaN -> this
-//    else -> Int64.max - (Int64.max.fractionValue - this)
-//}
-
-fun Float64.roundUp_truncating(): Float64 =
-        this.int64Value.let { inum ->
-            inum.float64Value.let { fnum ->
-                when (fnum) {
-                    this -> fnum
-                    else -> (inum + if (this < 0) -1 else 1).float64Value
-                }
-            }
-        }
+fun Float64.roundUp_truncating(): Float64 {
+    val inum = this.int64Value
+    val fnum = inum.float64Value
+    return when (fnum) {
+        this -> fnum
+        else -> (inum + if (this < 0) -1 else 1).float64Value
+    }
+}
 
 fun Float64.ceil_truncating2(): Float64 = if (hasFractionComponent) integerComponent() + (if (this > 0) 1 else -1) else this
 
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun Float64.ceil() = if (this < 0) integerComponent() else ceil_truncating2()
+inline fun Float64.ceil() = kotlin.math.ceil(this)
 
 
 /** Determines whether this [Fraction] has any values after the radix point */
