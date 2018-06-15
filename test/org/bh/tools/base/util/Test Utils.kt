@@ -2,18 +2,15 @@
 
 package org.bh.tools.base.util
 
-import org.bh.tools.base.abstraction.Fraction
-import org.bh.tools.base.abstraction.Integer
-import org.bh.tools.base.collections.extensions.length
+import org.bh.tools.base.abstraction.*
+import org.bh.tools.base.collections.extensions.*
 import org.bh.tools.base.func.StringSupplier
 import org.bh.tools.base.math.*
-import org.bh.tools.base.util.Assertion.invalid
-import org.bh.tools.base.util.Assertion.valid
+import org.bh.tools.base.util.Assertion.*
 import org.bh.tools.base.util.TimeConversion.nanosecondsToTimeInterval
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import kotlin.system.measureNanoTime
-import kotlin.test.assertTrue
+import org.junit.Assert.*
+import kotlin.system.*
+import kotlin.test.*
 
 /*
  * To aid in testing
@@ -246,44 +243,44 @@ fun <Raw, Processed> expect(kind: String, processor: (Raw) -> Processed?, assert
             is valid -> {
                 val processed = processor(assertion.raw)
                 if (null == processed) {
-                    return ExpectationResult("null - Expected ${assertion.raw} to be a valid $kind", success = false)
+                    return ExpectationResult("null - Expected ${assertion.raw} to be a valid $kind", wasSuccessful = false)
                 }
                 else if (processed != assertion.expectation) {
-                    return ExpectationResult("$processed - Expected ${assertion.raw} to be ${assertion.expectation}", success = false)
+                    return ExpectationResult("$processed - Expected ${assertion.raw} to be ${assertion.expectation}, a valid $kind", wasSuccessful = false)
                 }
             }
             is invalid -> {
                 val processed = processor(assertion.raw)
                 if (null != processed) {
-                    return ExpectationResult("$processed - Expected ${assertion.raw} to be an invalid $kind", success = false)
+                    return ExpectationResult("$processed - Expected ${assertion.raw} to be an invalid $kind", wasSuccessful = false)
                 }
             }
         }
     }
 
-    return ExpectationResult("All good", success = true)
+    return ExpectationResult("All good", wasSuccessful = true)
 }
 
 
 /**
- * A message/success pair returned from [expect]
+ * A message/wasSuccessful pair returned from [expect]
  *
  * @param message A descriptive English message about the result of one or more assertions
- * @param success `true` iff all assertions passed
+ * @param wasSuccessful `true` iff all assertions passed
  */
 data class ExpectationResult(
         /** A descriptive English message about the result of one or more assertions */
         val message: String,
 
         /** `true` iff all assertions passed */
-        val success: Boolean
+        val wasSuccessful: Boolean
 )
 
 
 /** Defines an expectation about the success state of an assertion */
-sealed class Assertion<Raw, Processed> {
+sealed class Assertion<out Raw, out Processed> {
     /** A raw value is expected to be validly processed into a specific non-`null` result */
-    data class valid<Raw, Processed>(
+    data class valid<out Raw, out Processed>(
             /** The value before processing */
             val raw: Raw,
 
@@ -293,7 +290,7 @@ sealed class Assertion<Raw, Processed> {
     ): Assertion<Raw, Processed>()
 
     /** A raw value is expected to be invalid, so that after it's processed, the result should be `null` */
-    data class invalid<Raw>(val raw: Raw): Assertion<Raw, Unit>()
+    data class invalid<out Raw>(val raw: Raw): Assertion<Raw, Nothing>()
 }
 
 
@@ -321,6 +318,7 @@ data class FractionFunctionTestCase(val input: Fraction,
                                     val message: String = "Input of $input should yield $expectedOutput (within a tolerance of $tolerance)"
 ) : TestCase {
 
+    // TODO: Place expected output here:
     fun test(specialTolerance: Fraction = tolerance,
              block: (Fraction) -> Fraction): FractionFunctionTestResult {
         val actualOutput = block(input)

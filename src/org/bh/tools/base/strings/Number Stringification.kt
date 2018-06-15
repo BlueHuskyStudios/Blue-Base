@@ -1,6 +1,7 @@
 package org.bh.tools.base.strings
 
 import org.bh.tools.base.abstraction.*
+import org.bh.tools.base.collections.extensions.*
 import org.bh.tools.base.math.*
 
 /*
@@ -15,12 +16,14 @@ import org.bh.tools.base.math.*
  * Creates a string where this fraction is presented with exactly the given number of digits, rounded normally.
  *
  * @param fractionDigits The number of digits to show after the radix point. It's nonsense to make this negative.
+ * @param roundingDirection The direction to round if this is not already an integer
+ * @param roundingThreshold The part at which the number rounding should occur
  *
  * @return A string representation of this fraction with the exact given number of digits after the radix.
  */
-fun Fraction.toString(fractionDigits: Int32,
-                      roundingDirection: RoundingDirection = RoundingDirection.default,
-                      roundingThreshold: RoundingThreshold = RoundingThreshold.default
+fun Float64.toString(fractionDigits: Int32,
+                     roundingDirection: RoundingDirection = RoundingDirection.default,
+                     roundingThreshold: RoundingThreshold = RoundingThreshold.default
 ): String {
 //    return BigDecimal.valueOf(this).setScale(fractionDigits, RoundingMode(this)).toString()
 
@@ -43,8 +46,17 @@ fun Fraction.toString(fractionDigits: Int32,
     if (missingDigits > 0) {                                           // false    | true      |
         digitsAfterRadix += "0" * missingDigits                        //          | "400"     |
     }
-    return digitsBeforeRadix + "." + digitsAfterRadix                  // "123.46" | "123.400" |
+    return "$digitsBeforeRadix.$digitsAfterRadix"                      // "123.46" | "123.400" |
 }
+
+
+fun Float32.toString(fractionDigits: Int32,
+                     roundingDirection: RoundingDirection = RoundingDirection.default,
+                     roundingThreshold: RoundingThreshold = RoundingThreshold.default
+) = float64Value.toString(
+        fractionDigits = fractionDigits,
+        roundingDirection = roundingDirection,
+        roundingThreshold = roundingThreshold)
 
 
 private fun decimalSeparatorRegex(groupSize: Int8) = Regex("^(\\d{1,$groupSize}?)(\\d{$groupSize})*\$")
@@ -59,13 +71,15 @@ private fun decimalSeparatorRegex(groupSize: Int8) = Regex("^(\\d{1,$groupSize}?
  *
  * @return A string representation of this integer, with digits grouped as specified
  */
-fun Integer.toString(separator: String, groupSize: Int8 = 3): String =
+fun Int64.toString(separator: String, groupSize: Int8 = 3): String =
         if (numberOfDigits() <= groupSize) {
             toString()
-        } else {
+        }
+        else {
             decimalSeparatorRegex(groupSize)
-                    .findAll(input = toString())
-                    .joinToString(separator = separator)
+                    .find(input = toString())?.groupValues?.allButFirst
+                    ?.joinToString(separator = separator)
+                    ?: toString()
         }
 
 
@@ -76,4 +90,4 @@ fun Integer.toString(separator: String, groupSize: Int8 = 3): String =
  * @param groupSize _optional_ - How big the groups should be. Defaults to `3`.
  */
 @Suppress("NOTHING_TO_INLINE")
-inline fun Int32.toString(separator: String, groupSize: Int8 = 3): String = integerValue.toString(separator = separator, groupSize = groupSize)
+inline fun Int32.toString(separator: String, groupSize: Int8 = 3): String = int64Value.toString(separator = separator, groupSize = groupSize)

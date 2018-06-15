@@ -66,8 +66,9 @@ inline val Int8.isOdd get() = !this.isEven
  *
  * See also: [_Exponentiation_ on Wikipedia](https://en.wikipedia.org/wiki/Exponentiation)
  */
-fun pow(base: Fraction, exponent: Fraction): Fraction = base.pow(exponent) //pow_wikipedia_exponentiationBySquaring_basicMethod(base, exponent)
+fun pow(base: Fraction, exponent: Fraction): Fraction = base.toThePowerOf(exponent) //pow_wikipedia_exponentiationBySquaring_basicMethod(base, exponent)
 
+// Vitrified 2017-09-16 in case we need a custom pow implementation in the future:
 //private fun pow_iForgotWhereIGotThis(base: Fraction, exponent: Fraction) =
 //        when {
 //            base == 0.0 && exponent <= 0.0 -> /* return */ Fraction.nan
@@ -126,7 +127,10 @@ fun pow(base: Fraction, exponent: Fraction): Fraction = base.pow(exponent) //pow
  *
  * See also: [_Exponentiation_ on Wikipedia](https://en.wikipedia.org/wiki/Exponentiation)
  */
-infix fun Fraction.toThePowerOf(exponent: Fraction): Fraction = this.pow(exponent)//pow(this, exponent)
+infix fun Fraction.toThePowerOf(exponent: Fraction): Fraction = when (this) {
+    0.0 -> if (exponent <= 0.0) Fraction.nan else 0.0
+    else -> pow(exponent)
+}
 
 
 /**
@@ -134,7 +138,7 @@ infix fun Fraction.toThePowerOf(exponent: Fraction): Fraction = this.pow(exponen
  * [max][Long.MAX_VALUE], then that max is returned. If [exponent] is negative, `0` is returned (unless `this` is `1`).
  */
 infix fun Int64.toThePowerOf(exponent: Int64): Int64 =
-        this.fractionValue.pow(exponent.clampedInt32Value).clampedInt64Value
+        this.fractionValue.toThePowerOf(exponent.fractionValue).clampedInt64Value
 
 
 /**

@@ -24,11 +24,16 @@ open class NumberConversionKtTest {
 
 //    BigDecimals and BigIntegers in Blue Base/JVM
 
-    open val allSamples: List<Number> = listOf<Number>() +
+    val allSamples = (listOf<Number>() +
             sampleInt8s + sampleInt16s + sampleInt32s + sampleInt64s +
-            sampleFloat32s + sampleFloat64s
+            sampleFloat32s + sampleFloat64s).toMutableList()
+
+    val sampleInt16sAndBelow: List<Number> = sampleInt8s + sampleInt16s
+    val sampleInt32sAndBelow: List<Number> = sampleInt16sAndBelow + sampleInt32s
+    val sampleInt64sAndBelow: List<Number> = sampleInt32sAndBelow + sampleInt64s
 
     init {
+        @Suppress("LeakingThis")
         println("Evaluating ${allSamples.length.toString(separator = ",")} sample numbers...")
     }
 
@@ -36,7 +41,7 @@ open class NumberConversionKtTest {
     @Test
     open fun Number_float32Value() {
         allSamples.forEach {
-            assertNumbersClose("Original number should equal float 32 value",
+            assertNumbersClose("Original number should equal to its float 32 value",
                                it, it.float32Value
             )
         }
@@ -46,43 +51,58 @@ open class NumberConversionKtTest {
     @Test
     open fun Number_float64Value() {
         allSamples.forEach {
-            assertNumbersClose("Original number should equal float 64 value",
+            assertNumbersClose("Original number should equal to its float 64 value",
                                it, it.float64Value
             )
         }
     }
 
-    // TODO: All these:
 
     @Test
     open fun Number_fractionValue() {
-
+        allSamples.forEach {
+            assertNumbersClose("Original number should equal to its fraction value",
+                               it, it.fractionValue)
+        }
     }
 
 
     @Test
-    open fun toByteChecked() {
-
+    open fun toInt8Checked() {
+        sampleInt8s.forEach {
+            assertNumbersClose("Original number should equal to its Int8 value",
+                               it, it.toInt8Checked())
+        }
     }
 
 
     @Test
-    open fun toShortChecked() {
-
+    open fun toInt16Checked() {
+        sampleInt16sAndBelow.forEach {
+            assertNumbersClose("Original number should equal to its Int16 value",
+                               it, it.toInt16Checked())
+        }
     }
 
 
     @Test
-    open fun toIntChecked() {
-
+    open fun toInt32Checked() {
+        sampleInt32sAndBelow.forEach {
+            assertNumbersClose("Original number should equal to its Int32 value",
+                               it, it.toInt32Checked())
+        }
     }
 
 
     @Test
-    open fun toLongChecked() {
-
+    open fun toInt64Checked() {
+        sampleInt64sAndBelow.forEach {
+            assertNumbersClose("Original number should equal to its Int64 value",
+                               it, it.toInt64Checked())
+        }
     }
 
+    // TODO: All these:
 
     @Test
     open fun getInt8Value() {

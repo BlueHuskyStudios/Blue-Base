@@ -2,6 +2,9 @@
 
 package org.bh.tools.base.collections.extensions
 
+import org.bh.tools.base.abstraction.*
+import org.bh.tools.base.math.*
+
 /*
  * Copyright BHStudios ©2016 BH-1-PS. Made for Snek.
  *
@@ -19,19 +22,29 @@ package org.bh.tools.base.collections.extensions
 inline val <ElementType> Iterable<ElementType>.first: ElementType get() = first()
 
 
-
 /**
  * @return the first element, or `null` if there are no elements.
  */
 inline val <ElementType> Iterable<ElementType>.firstOrNull: ElementType? get() = firstOrNull()
 
 
+/**
+ * Returns a copy as a list, without the first _n_ elements
+ *
+ * @param badFirstElements The number of elements at the beginning of this iterable to exclude from the returned list
+ * @return All items in this iterable, except the first _n_
+ */
+@Suppress("NOTHING_TO_INLINE")
+inline fun <Element> Iterable<Element>.allButFirst(badFirstElements: Integer): List<Element> = this.drop(badFirstElements.clampedInt32Value)
+
+/** @return All items in this iterable, except the first */
+inline val <Element> Iterable<Element>.allButFirst: List<Element> get() = this.allButFirst(1)
+
 
 /**
  * @return the last element, or throws `NoSuchElementException` if there are no elements.
  */
 inline val <ElementType> Iterable<ElementType>.last: ElementType get() = last()
-
 
 
 /**
