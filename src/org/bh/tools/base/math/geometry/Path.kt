@@ -2,9 +2,8 @@
 
 package org.bh.tools.base.math.geometry
 
-import org.bh.tools.base.abstraction.Fraction
-import org.bh.tools.base.abstraction.Integer
-import org.bh.tools.base.collections.Index
+import org.bh.tools.base.abstraction.*
+import org.bh.tools.base.collections.*
 import org.bh.tools.base.collections.extensions.*
 import org.bh.tools.base.math.geometry.IntegerPath.Companion.pathFromGenericSegments
 import org.bh.tools.base.math.geometry.IntersectionDescription.*
@@ -84,7 +83,10 @@ enum class OtherSegmentRelationshipToCurrent {
 interface ComputablePath
     <NumberType, PointType, out SegmentType>
     : Path<NumberType, PointType, SegmentType>
-    where NumberType: Number, PointType: ComputablePoint<NumberType>, SegmentType: ComputableLineSegment<NumberType, PointType> {
+    where NumberType: Number,
+          NumberType: Comparable<NumberType>,
+          PointType: ComputablePoint<NumberType>,
+          SegmentType: ComputableLineSegment<NumberType, PointType> {
 
 
     /**
@@ -139,13 +141,13 @@ interface ComputablePath
             where NumberType : Number, PointType : ComputablePoint<NumberType>, SegmentType : ComputableLineSegment<NumberType, PointType>
             = when (left.describeIntersection(right)) {
                 is IntersectionDescription.none,
-                is IntersectionDescription.leftVertexTouchesRightVertex<*>
+                is IntersectionDescription.leftVertexTouchesRightVertex<*, *>
                     -> false
 
                 is IntersectionDescription.completeOverlap,
-                is IntersectionDescription.leftVertexTouchesRightEdge<*>,
-                is IntersectionDescription.rightVertexTouchesLeftEdge<*>,
-                is IntersectionDescription.edgesCross<*>
+                is IntersectionDescription.leftVertexTouchesRightEdge<*, *>,
+                is IntersectionDescription.rightVertexTouchesLeftEdge<*, *>,
+                is IntersectionDescription.edgesCross<*, *>
                     -> true
             }
     }
@@ -244,22 +246,22 @@ open class IntegerPath(override val segments: List<IntegerLineSegment> = listOf(
      *  All other forms of intersection return `true` immediately
      */
     override val intersectsSelf: Boolean by lazy {
-        /*return*/ anyTwoSegments { currentSegment, otherSegment, relationship ->
-            /*return*/ when (relationship) {
-                otherIsCurrent -> /*return*/ false // Don't evaluate current against itself
+        return@lazy anyTwoSegments { currentSegment, otherSegment, relationship ->
+            return@anyTwoSegments when (relationship) {
+                otherIsCurrent -> return@anyTwoSegments false // Don't evaluate current against itself
 
                 otherIsLeftNeighborOfCurrent,
                 otherIsRightNeighborOfCurrent -> {
                     val intersection = currentSegment.describeIntersection(otherSegment)
                     when (intersection) {
-                        is none -> /*return*/ false
+                        is none -> return@anyTwoSegments false
 
                         // Neighbors touch vertices? If they're opposing (start touches end or vice versa), that's normal.
-                        is leftVertexTouchesRightVertex<*> -> /*return*/ intersection.isLeftStartVertex == intersection.isRightStartVertex
+                        is leftVertexTouchesRightVertex<*, *> -> /*return*/ intersection.isLeftStartVertex == intersection.isRightStartVertex
 
-                        is leftVertexTouchesRightEdge<*>,
-                        is rightVertexTouchesLeftEdge<*>,
-                        is edgesCross<*>,
+                        is leftVertexTouchesRightEdge<*, *>,
+                        is rightVertexTouchesLeftEdge<*, *>,
+                        is edgesCross<*, *>,
                         is completeOverlap -> /*return*/ true
                     }
                 }
@@ -269,10 +271,10 @@ open class IntegerPath(override val segments: List<IntegerLineSegment> = listOf(
                     when (intersection) {
                         is none -> /*return*/ false
 
-                        is leftVertexTouchesRightVertex<*>,
-                        is leftVertexTouchesRightEdge<*>,
-                        is rightVertexTouchesLeftEdge<*>,
-                        is edgesCross<*>,
+                        is leftVertexTouchesRightVertex<*, *>,
+                        is leftVertexTouchesRightEdge<*, *>,
+                        is rightVertexTouchesLeftEdge<*, *>,
+                        is edgesCross<*, *>,
                         is completeOverlap -> /*return*/ true
                     }
                 }

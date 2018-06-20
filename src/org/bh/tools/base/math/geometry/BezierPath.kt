@@ -3,6 +3,7 @@
 package org.bh.tools.base.math.geometry
 
 import org.bh.tools.base.abstraction.*
+import org.bh.tools.base.math.*
 
 /**
  * A path comprised of Bézier points. For behavior, see: https://en.wikipedia.org/wiki/B%C3%A9zier_curve
@@ -67,7 +68,7 @@ data class CubicBezierPathSegment(
     inline val nonNullEndControlPoint get() = endControlPoint ?: end
 
 
-    override fun contains(point: Point<Fraction>, tolerance: Fraction): Boolean {
+    override fun contains(point: Point<Fraction>, tolerance: Tolerance): Boolean {
         return super.contains(point, tolerance)
     }
 

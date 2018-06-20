@@ -64,15 +64,27 @@ typealias Coordinate<NumberType> = Point<NumberType>
 
 
 val <NumberType : Number> Point<NumberType>.pairValue: Pair<NumberType, NumberType> get() = Pair(x, y)
-val <NumberType : Number> Point<NumberType>.integerValue: IntegerPoint get() = this as? IntegerPoint ?: IntegerPoint(x.integerValue, y.integerValue)
-fun <NumberType : Number> Point<NumberType>.integerValue(rounding: RoundingDirection): IntegerPoint = this as? IntegerPoint ?: IntegerPoint(x.integerValue(rounding), y.integerValue(rounding))
+
+val <NumberType : Number> Point<NumberType>.integerValue: IntegerPoint get()
+    = this as? IntegerPoint ?: IntegerPoint(x.integerValue, y.integerValue)
+
+fun <NumberType : Number> Point<NumberType>.integerValue(rounding: RoundingDirection = RoundingDirection.default): IntegerPoint
+        = this as? IntegerPoint
+        ?: IntegerPoint(x.integerValue(rounding), y.integerValue(rounding))
+
 val <NumberType : Number> Point<NumberType>.fractionValue: FractionPoint get() = this as? FractionPoint ?: FractionPoint(x.fractionValue, y.fractionValue)
 
 
 
 // MARK: - Computations
 
-abstract class ComputablePoint<NumberType : Number>(x: NumberType, y: NumberType) : Point<NumberType>(x, y) {
+abstract class ComputablePoint
+    <NumberType>
+    (x: NumberType, y: NumberType)
+    : Point<NumberType>(x, y),
+        TolerableEquality<ComputablePoint<NumberType>>
+    where NumberType : Number,
+        NumberType: Comparable<NumberType> {
 
     abstract infix operator fun <OtherType : Number> plus(rhs: Point<OtherType>): Point<NumberType>
     abstract infix operator fun <OtherType : Number> minus(rhs: Point<OtherType>): Point<NumberType>
@@ -105,13 +117,13 @@ abstract class ComputablePoint<NumberType : Number>(x: NumberType, y: NumberType
     /**
      * Determines whether this point is equal to another of the same type within a certain tolerance
      *
-     * @param rhs       The other point to compare
+     * @param other     The other point to compare
      * @param tolerance _optional_ - The distance on either axis by which the other point must be away from this one
      *                  before they are considered unequal
      *
      * @return `true` iff the two points are equal within the given tolerance
      */
-    abstract fun equals(rhs: ComputablePoint<NumberType>, tolerance: NumberType): Boolean
+    abstract override fun equals(other: ComputablePoint<NumberType>, tolerance: Tolerance): Boolean
 
 
     /**
@@ -211,12 +223,12 @@ class IntegerPoint(x: Integer, y: Integer) : ComputablePoint<Integer>(x, y) {
             }
 
 
-    override fun equals(rhs: ComputablePoint<Integer>): Boolean = equals(rhs, tolerance = defaultIntegerCalculationTolerance)
+    override fun equals(rhs: ComputablePoint<Integer>): Boolean = equals(rhs, tolerance = defaultCalculationTolerance)
 
 
-    override fun equals(rhs: ComputablePoint<Integer>, tolerance: Integer): Boolean =
-            x.equals(rhs.x, tolerance = tolerance)
-            && y.equals(rhs.y, tolerance = tolerance)
+    override fun equals(other: ComputablePoint<Integer>, tolerance: Tolerance): Boolean =
+            x.equals(other.x, tolerance = tolerance)
+            && y.equals(other.y, tolerance = tolerance)
 
 
     override fun copy(x: Integer, y: Integer): IntegerPoint {
@@ -306,9 +318,9 @@ open class FractionPoint(x: Fraction, y: Fraction) : ComputablePoint<Fraction>(x
     override fun equals(rhs: ComputablePoint<Fraction>): Boolean = equals(rhs, tolerance = defaultFractionCalculationTolerance)
 
 
-    override fun equals(rhs: ComputablePoint<Fraction>, tolerance: Fraction): Boolean =
-            x.equals(rhs.x, tolerance = tolerance)
-            && y.equals(rhs.y, tolerance = tolerance)
+    override fun equals(other: ComputablePoint<Fraction>, tolerance: Tolerance): Boolean =
+            x.equals(other.x, tolerance = tolerance)
+            && y.equals(other.y, tolerance = tolerance)
 
 
     override fun copy(x: Fraction, y: Fraction): FractionPoint {

@@ -42,10 +42,11 @@ typealias Dimension<NumberType> = Size<NumberType>
 // MARK: - Computations
 
 abstract class ComputableSize
-<out NumberType>
-(width: NumberType, height: NumberType)
+    <NumberType>
+    (width: NumberType, height: NumberType)
     : Size<NumberType>(width, height)
-where NumberType: Number {
+    where NumberType : Number,
+        NumberType : Comparable<NumberType> {
 
     /** Indicates whether this size has a `0` area. */
     abstract val isEmpty: Boolean
@@ -71,34 +72,48 @@ where NumberType: Number {
     abstract val maxY: NumberType
 
 
-    abstract val minXminY: Point<NumberType>
-    abstract val minXmidY: Point<NumberType>
-    abstract val minXmaxY: Point<NumberType>
+    abstract val minXminY: ComputablePoint<NumberType>
+    abstract val minXmidY: ComputablePoint<NumberType>
+    abstract val minXmaxY: ComputablePoint<NumberType>
 
-    abstract val midXminY: Point<NumberType>
-    abstract val midXmidY: Point<NumberType>
-    abstract val midXmaxY: Point<NumberType>
+    abstract val midXminY: ComputablePoint<NumberType>
+    abstract val midXmidY: ComputablePoint<NumberType>
+    abstract val midXmaxY: ComputablePoint<NumberType>
 
-    abstract val maxXminY: Point<NumberType>
-    abstract val maxXmidY: Point<NumberType>
-    abstract val maxXmaxY: Point<NumberType>
+    abstract val maxXminY: ComputablePoint<NumberType>
+    abstract val maxXmidY: ComputablePoint<NumberType>
+    abstract val maxXmaxY: ComputablePoint<NumberType>
 
 
-    abstract infix operator fun <OtherType : Number> plus(rhs: Size<OtherType>): Size<NumberType>
-    abstract infix operator fun <OtherType : Number> minus(rhs: Size<OtherType>): Size<NumberType>
-    abstract infix operator fun <OtherType : Number> times(rhs: Size<OtherType>): Size<NumberType>
-    abstract infix operator fun <OtherType : Number> div(rhs: Size<OtherType>): Size<NumberType>
+    abstract infix operator fun <OtherType> plus(rhs: ComputableSize<OtherType>): ComputableSize<NumberType> where OtherType : Number, OtherType : Comparable<OtherType>
+    abstract infix operator fun <OtherType> minus(rhs: ComputableSize<OtherType>): ComputableSize<NumberType> where OtherType : Number, OtherType : Comparable<OtherType>
+    abstract infix operator fun <OtherType> times(rhs: ComputableSize<OtherType>): ComputableSize<NumberType> where OtherType : Number, OtherType : Comparable<OtherType>
+    abstract infix operator fun <OtherType> div(rhs: ComputableSize<OtherType>): ComputableSize<NumberType> where OtherType : Number, OtherType : Comparable<OtherType>
 
-    abstract infix operator fun <OtherType : Number> plus(rhs: OtherType): Size<NumberType>
-    abstract infix operator fun <OtherType : Number> minus(rhs: OtherType): Size<NumberType>
-    abstract infix operator fun <OtherType : Number> times(rhs: OtherType): Size<NumberType>
-    abstract infix operator fun <OtherType : Number> div(rhs: OtherType): Size<NumberType>
+    abstract infix operator fun <OtherType> plus(rhs: OtherType): ComputableSize<NumberType> where OtherType : Number, OtherType : Comparable<OtherType>
+    abstract infix operator fun <OtherType> minus(rhs: OtherType): ComputableSize<NumberType> where OtherType : Number, OtherType : Comparable<OtherType>
+    abstract infix operator fun <OtherType> times(rhs: OtherType): ComputableSize<NumberType> where OtherType : Number, OtherType : Comparable<OtherType>
+    abstract infix operator fun <OtherType> div(rhs: OtherType): ComputableSize<NumberType> where OtherType : Number, OtherType : Comparable<OtherType>
 
-    abstract infix operator fun <OtherType : Number> plus(rhs: Pair<OtherType, OtherType>): Size<NumberType>
-    abstract infix operator fun <OtherType : Number> minus(rhs: Pair<OtherType, OtherType>): Size<NumberType>
-    abstract infix operator fun <OtherType : Number> times(rhs: Pair<OtherType, OtherType>): Size<NumberType>
-    abstract infix operator fun <OtherType : Number> div(rhs: Pair<OtherType, OtherType>): Size<NumberType>
+    abstract infix operator fun <OtherType> plus(rhs: Pair<OtherType, OtherType>): ComputableSize<NumberType> where OtherType : Number, OtherType : Comparable<OtherType>
+    abstract infix operator fun <OtherType> minus(rhs: Pair<OtherType, OtherType>): ComputableSize<NumberType> where OtherType : Number, OtherType : Comparable<OtherType>
+    abstract infix operator fun <OtherType> times(rhs: Pair<OtherType, OtherType>): ComputableSize<NumberType> where OtherType : Number, OtherType : Comparable<OtherType>
+    abstract infix operator fun <OtherType> div(rhs: Pair<OtherType, OtherType>): ComputableSize<NumberType> where OtherType : Number, OtherType : Comparable<OtherType>
 }
+
+
+
+
+
+fun <NumberType> ComputableSize<NumberType>.contains(point: ComputablePoint<NumberType>): Boolean
+    where NumberType : Number,
+    NumberType : Comparable<NumberType> {
+    return this.minX <= point.x
+        && this.minY <= point.y
+        && this.maxX >= point.x
+        && this.maxY >= point.y
+}
+
 
 
 // Operators
@@ -162,34 +177,45 @@ class IntegerSize(width: Integer, height: Integer) : ComputableSize<Integer>(wid
     constructor(width: Int32, height: Int32) : this(width = width.integerValue, height = height.integerValue)
     constructor(squareSide: Integer) : this(width = squareSide, height = squareSide)
 
-
-    override infix operator fun <OtherType : Number> plus(rhs: Size<OtherType>): IntegerSize = plus(Pair(rhs.width, rhs.height))
-    override infix operator fun <OtherType : Number> minus(rhs: Size<OtherType>): IntegerSize = minus(Pair(rhs.width, rhs.height))
-    override infix operator fun <OtherType : Number> times(rhs: Size<OtherType>): IntegerSize = times(Pair(rhs.width, rhs.height))
-    override infix operator fun <OtherType : Number> div(rhs: Size<OtherType>): IntegerSize = div(Pair(rhs.width, rhs.height))
-
-
-    override infix operator fun <OtherType : Number> plus(rhs: OtherType): IntegerSize = plus(Pair(rhs, rhs))
-    override infix operator fun <OtherType : Number> minus(rhs: OtherType): IntegerSize = minus(Pair(rhs, rhs))
-    override infix operator fun <OtherType : Number> times(rhs: OtherType): IntegerSize = times(Pair(rhs, rhs))
-    override infix operator fun <OtherType : Number> div(rhs: OtherType): IntegerSize = div(Pair(rhs, rhs))
+//  abstract infix operator fun <OtherType> plus(rhs: ComputableSize<OtherType>): ComputableSize<NumberType> where OtherType : Number, OtherType : Comparable<OtherType>
+    override infix operator fun <OtherType> plus(rhs: ComputableSize<OtherType>): IntegerSize where OtherType : Number, OtherType : Comparable<OtherType>
+            = plus(Pair(rhs.width, rhs.height))
+    override infix operator fun <OtherType> minus(rhs: ComputableSize<OtherType>): IntegerSize where OtherType : Number, OtherType : Comparable<OtherType>
+            = minus(Pair(rhs.width, rhs.height))
+    override infix operator fun <OtherType> times(rhs: ComputableSize<OtherType>): IntegerSize where OtherType : Number, OtherType : Comparable<OtherType>
+            = times(Pair(rhs.width, rhs.height))
+    override infix operator fun <OtherType> div(rhs: ComputableSize<OtherType>): IntegerSize where OtherType : Number, OtherType : Comparable<OtherType>
+            = div(Pair(rhs.width, rhs.height))
 
 
-    override infix operator fun <OtherType : Number> plus(rhs: Pair<OtherType, OtherType>): IntegerSize =
-            (if (rhs.first.isNativeInteger) {
-                IntegerSize(width + (rhs.first.integerValue), height + (rhs.second.integerValue))
-            } else if (rhs.first.isNativeFraction) {
-                IntegerSize((width + (rhs.first.fractionValue)).clampedIntegerValue,
-                        (height + (rhs.second.fractionValue)).clampedIntegerValue)
-            } else {
-                throw apology("addition",
-                        otherMainType = Pair::class,
-                        otherTypeA = rhs.first::class,
-                        otherTypeB = rhs.second::class)
-            })
+    override infix operator fun <OtherType> plus(rhs: OtherType): IntegerSize where OtherType : Number, OtherType : Comparable<OtherType>
+            = plus(Pair(rhs, rhs))
+    override infix operator fun <OtherType> minus(rhs: OtherType): IntegerSize where OtherType : Number, OtherType : Comparable<OtherType>
+            = minus(Pair(rhs, rhs))
+    override infix operator fun <OtherType> times(rhs: OtherType): IntegerSize where OtherType : Number, OtherType : Comparable<OtherType>
+            = times(Pair(rhs, rhs))
+    override infix operator fun <OtherType> div(rhs: OtherType): IntegerSize where OtherType : Number, OtherType : Comparable<OtherType>
+            = div(Pair(rhs, rhs))
 
 
-    override infix operator fun <OtherType : Number> minus(rhs: Pair<OtherType, OtherType>): IntegerSize =
+    override infix operator fun <OtherType> plus(rhs: Pair<OtherType, OtherType>): IntegerSize
+            where OtherType : Number, OtherType : Comparable<OtherType>
+            =
+            when {
+                rhs.first.isNativeInteger -> IntegerSize(width + (rhs.first.integerValue),
+                                                         height + (rhs.second.integerValue))
+                rhs.first.isNativeFraction -> IntegerSize((width + (rhs.first.fractionValue)).clampedIntegerValue,
+                                                          (height + (rhs.second.fractionValue)).clampedIntegerValue)
+                else -> throw apology("addition",
+                                      otherMainType = Pair::class,
+                                      otherTypeA = rhs.first::class,
+                                      otherTypeB = rhs.second::class)
+            }
+
+
+    override infix operator fun <OtherType> minus(rhs: Pair<OtherType, OtherType>): IntegerSize
+            where OtherType : Number, OtherType : Comparable<OtherType>
+            =
             (if (rhs.first.isNativeInteger) {
                 IntegerSize(width - (rhs.first.integerValue), height - (rhs.second.integerValue))
             } else if (rhs.first.isNativeFraction) {
@@ -203,7 +229,9 @@ class IntegerSize(width: Integer, height: Integer) : ComputableSize<Integer>(wid
             })
 
 
-    override infix operator fun <OtherType : Number> times(rhs: Pair<OtherType, OtherType>): IntegerSize =
+    override infix operator fun <OtherType> times(rhs: Pair<OtherType, OtherType>): IntegerSize
+            where OtherType : Number, OtherType : Comparable<OtherType>
+            =
             (if (rhs.first.isNativeInteger) {
                 IntegerSize(width * (rhs.first.integerValue), height * (rhs.second.integerValue))
             } else if (rhs.first.isNativeFraction) {
@@ -217,7 +245,9 @@ class IntegerSize(width: Integer, height: Integer) : ComputableSize<Integer>(wid
             })
 
 
-    override infix operator fun <OtherType : Number> div(rhs: Pair<OtherType, OtherType>): IntegerSize =
+    override infix operator fun <OtherType> div(rhs: Pair<OtherType, OtherType>): IntegerSize
+            where OtherType : Number, OtherType : Comparable<OtherType>
+            =
             (if (rhs.first.isNativeInteger) {
                 IntegerSize(width / (rhs.first.integerValue), height / (rhs.second.integerValue))
             } else if (rhs.first.isNativeFraction) {
@@ -234,6 +264,7 @@ class IntegerSize(width: Integer, height: Integer) : ComputableSize<Integer>(wid
     override val minDimension: Integer by lazy { min(width, height) }
     override val maxDimension: Integer by lazy { max(width, height) }
 }
+
 typealias Int64Size = IntegerSize
 typealias IntSize = IntegerSize
 
@@ -277,74 +308,91 @@ class FractionSize(width: Fraction, height: Fraction) : ComputableSize<Fraction>
     override val maxXmaxY: FractionPoint by lazy { FractionPoint(maxX, maxY) }
 
 
-    override infix operator fun <OtherType : Number> plus(rhs: Size<OtherType>): FractionSize = plus(Pair(rhs.width, rhs.height))
-    override infix operator fun <OtherType : Number> minus(rhs: Size<OtherType>): FractionSize = minus(Pair(rhs.width, rhs.height))
-    override infix operator fun <OtherType : Number> times(rhs: Size<OtherType>): FractionSize = times(Pair(rhs.width, rhs.height))
-    override infix operator fun <OtherType : Number> div(rhs: Size<OtherType>): FractionSize = div(Pair(rhs.width, rhs.height))
+    override infix operator fun <OtherType> plus(rhs: ComputableSize<OtherType>): FractionSize
+            where OtherType : Number, OtherType: Comparable<OtherType>
+            = plus(Pair(rhs.width, rhs.height))
+    override infix operator fun <OtherType> minus(rhs: ComputableSize<OtherType>): FractionSize
+            where OtherType : Number, OtherType: Comparable<OtherType>
+            = minus(Pair(rhs.width, rhs.height))
+    override infix operator fun <OtherType> times(rhs: ComputableSize<OtherType>): FractionSize
+            where OtherType : Number, OtherType: Comparable<OtherType>
+            = times(Pair(rhs.width, rhs.height))
+    override infix operator fun <OtherType> div(rhs: ComputableSize<OtherType>): FractionSize
+            where OtherType : Number, OtherType: Comparable<OtherType>
+            = div(Pair(rhs.width, rhs.height))
 
 
-    override infix operator fun <OtherType : Number> plus(rhs: OtherType): FractionSize = plus(Pair(rhs, rhs))
-    override infix operator fun <OtherType : Number> minus(rhs: OtherType): FractionSize = minus(Pair(rhs, rhs))
-    override infix operator fun <OtherType : Number> times(rhs: OtherType): FractionSize = times(Pair(rhs, rhs))
-    override infix operator fun <OtherType : Number> div(rhs: OtherType): FractionSize = div(Pair(rhs, rhs))
+    override infix operator fun <OtherType> plus(rhs: OtherType): FractionSize
+            where OtherType : Number, OtherType : Comparable<OtherType>
+            = plus(Pair(rhs, rhs))
+    override infix operator fun <OtherType> minus(rhs: OtherType): FractionSize
+            where OtherType : Number, OtherType : Comparable<OtherType>
+            = minus(Pair(rhs, rhs))
+    override infix operator fun <OtherType> times(rhs: OtherType): FractionSize
+            where OtherType : Number, OtherType : Comparable<OtherType>
+            = times(Pair(rhs, rhs))
+    override infix operator fun <OtherType> div(rhs: OtherType): FractionSize
+            where OtherType : Number, OtherType : Comparable<OtherType>
+            = div(Pair(rhs, rhs))
 
 
-    override infix operator fun <OtherType : Number> plus(rhs: Pair<OtherType, OtherType>): FractionSize =
-            if (rhs.first.isNativeInteger) {
-                FractionSize(width + (rhs.first.integerValue), height + (rhs.second.integerValue))
-            } else if (rhs.first.isNativeFraction) {
-                FractionSize((width + rhs.first.fractionValue),
-                        (height + rhs.second.fractionValue))
-            } else {
-                throw apology("addition",
-                        otherMainType = Pair::class,
-                        otherTypeA = rhs.first::class,
-                        otherTypeB = rhs.second::class)
+    override infix operator fun <OtherType> plus(rhs: Pair<OtherType, OtherType>): FractionSize
+            where OtherType : Number, OtherType : Comparable<OtherType>
+            = when {
+                rhs.first.isNativeInteger -> FractionSize(width = width + (rhs.first.integerValue),
+                                                          height = height + (rhs.second.integerValue))
+                rhs.first.isNativeFraction -> FractionSize(width = (width + rhs.first.fractionValue),
+                                                           height = (height + rhs.second.fractionValue))
+                else -> throw apology("addition",
+                                      otherMainType = Pair::class,
+                                      otherTypeA = rhs.first::class,
+                                      otherTypeB = rhs.second::class)
             }
 
-    override infix operator fun <OtherType : Number> minus(rhs: Pair<OtherType, OtherType>): FractionSize =
-            if (rhs.first.isNativeInteger) {
-                FractionSize(width - (rhs.first.integerValue), height - (rhs.second.integerValue))
-            } else if (rhs.first.isNativeFraction) {
-                FractionSize((width - rhs.first.fractionValue),
-                        (height - rhs.second.fractionValue))
-            } else {
-                throw apology("subtraction",
-                        otherMainType = Pair::class,
-                        otherTypeA = rhs.first::class,
-                        otherTypeB = rhs.second::class)
+    override infix operator fun <OtherType> minus(rhs: Pair<OtherType, OtherType>): FractionSize
+            where OtherType : Number, OtherType : Comparable<OtherType>
+            = when {
+                rhs.first.isNativeInteger -> FractionSize(width = width - (rhs.first.integerValue),
+                                                          height = height - (rhs.second.integerValue))
+                rhs.first.isNativeFraction -> FractionSize(width = (width - rhs.first.fractionValue),
+                                                           height = (height - rhs.second.fractionValue))
+                else -> throw apology("subtraction",
+                                      otherMainType = Pair::class,
+                                      otherTypeA = rhs.first::class,
+                                      otherTypeB = rhs.second::class)
             }
 
-    override infix operator fun <OtherType : Number> times(rhs: Pair<OtherType, OtherType>): FractionSize =
-            if (rhs.first.isNativeInteger) {
-                FractionSize(width * (rhs.first.integerValue), height * (rhs.second.integerValue))
-            } else if (rhs.first.isNativeFraction) {
-                FractionSize((width * rhs.first.fractionValue),
-                        (height * rhs.second.fractionValue))
-            } else {
-                throw apology("multiplication",
-                        otherMainType = Pair::class,
-                        otherTypeA = rhs.first::class,
-                        otherTypeB = rhs.second::class)
+    override infix operator fun <OtherType> times(rhs: Pair<OtherType, OtherType>): FractionSize
+            where OtherType : Number, OtherType : Comparable<OtherType>
+            = when {
+                rhs.first.isNativeInteger -> FractionSize(width = width * (rhs.first.integerValue),
+                                                          height = height * (rhs.second.integerValue))
+                rhs.first.isNativeFraction -> FractionSize(width = (width * rhs.first.fractionValue),
+                                                           height = (height * rhs.second.fractionValue))
+                else -> throw apology("multiplication",
+                                      otherMainType = Pair::class,
+                                      otherTypeA = rhs.first::class,
+                                      otherTypeB = rhs.second::class)
             }
 
-    override infix operator fun <OtherType : Number> div(rhs: Pair<OtherType, OtherType>): FractionSize =
-            if (rhs.first.isNativeInteger) {
-                FractionSize(width = width / (rhs.first.integerValue), height = height / (rhs.second.integerValue))
-            } else if (rhs.first.isNativeFraction) {
-                FractionSize(width = (width / rhs.first.fractionValue),
-                        height = (height / rhs.second.fractionValue))
-            } else {
-                throw apology("division",
-                        otherMainType = Pair::class,
-                        otherTypeA = rhs.first::class,
-                        otherTypeB = rhs.second::class)
+    override infix operator fun <OtherType> div(rhs: Pair<OtherType, OtherType>): FractionSize
+            where OtherType : Number, OtherType : Comparable<OtherType>
+            = when {
+                rhs.first.isNativeInteger -> FractionSize(width = width / (rhs.first.integerValue),
+                                                          height = height / (rhs.second.integerValue))
+                rhs.first.isNativeFraction -> FractionSize(width = (width / rhs.first.fractionValue),
+                                                           height = (height / rhs.second.fractionValue))
+                else -> throw apology("division",
+                                      otherMainType = Pair::class,
+                                      otherTypeA = rhs.first::class,
+                                      otherTypeB = rhs.second::class)
             }
 
 
     override val minDimension: Fraction by lazy { min(width, height) }
     override val maxDimension: Fraction by lazy { max(width, height) }
 }
+
 typealias Float64Size = FractionSize
 typealias FloatSize = FractionSize
 

@@ -202,32 +202,47 @@ enum class ComparisonResult(
 
 
 
+typealias Tolerance = Fraction
+
+
+
 /**
  * The default amount by which 32-bit floating-point calculations and comparisons can be off
  */
-inline val defaultFloat32CalculationTolerance: Float32 get() = 0.0001f
+const val defaultFloat32CalculationTolerance: Float32 = 0.0001f
 
 /**
  * The default amount by which 64-bit floating-point calculations and comparisons can be off
  */
-inline val defaultFloat64CalculationTolerance: Float64 get() = 0.0001
+const val defaultFloat64CalculationTolerance: Float64 = 0.0001
 
 /**
  * The default amount by which fractional calculations and comparisons can be off
  */
-inline val defaultFractionCalculationTolerance: Fraction get() = 0.0001
+const val defaultFractionCalculationTolerance: Fraction = 0.0001
 
 /**
  * The default amount by which integer calculations and comparisons can be off
  */
-inline val defaultIntegerCalculationTolerance: Integer get() = 0
+const val defaultIntegerCalculationTolerance: Integer = 0
+
+/**
+ * The default amount by which calculations and comparisons can be off
+ */
+inline val defaultCalculationTolerance: Tolerance get() = defaultFractionCalculationTolerance
 
 
+/**
+ *
+ */
 interface TolerableEquality<Self: TolerableEquality<Self>> {
-    fun equals(other: Self, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean
+    fun equals(other: Self, tolerance: Tolerance = defaultCalculationTolerance): Boolean
 }
 
-fun <Self: TolerableEquality<Self>> TolerableEquality<Self>.isApproximately(other: Self, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean
+/**
+ * An unambiguous way to check if two things are approximately qual
+ */
+fun <Self: TolerableEquality<Self>> TolerableEquality<Self>.isApproximately(other: Self, tolerance: Tolerance = defaultCalculationTolerance): Boolean
         = this.equals(other, tolerance = tolerance)
 
 
@@ -240,7 +255,7 @@ fun <Self: TolerableEquality<Self>> TolerableEquality<Self>.isApproximately(othe
  *                  Defaults to [defaultFractionCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
-fun Float64.equals(rhs: Float64, tolerance: Float64 = defaultFractionCalculationTolerance) = when {
+fun Float64.equals(rhs: Float64, tolerance: Float64 = defaultFloat64CalculationTolerance) = when {
     tolerance == 0.0 -> this == rhs
     this > Float64.greatestFiniteMagnitude && rhs > Float64.greatestFiniteMagnitude -> true
     this < -Float64.greatestFiniteMagnitude && rhs < 0 && rhs.isInfinite -> true
@@ -257,7 +272,7 @@ fun Float64.equals(rhs: Float64, tolerance: Float64 = defaultFractionCalculation
  *                  Defaults to [defaultFractionCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
-fun Float64.isApproximately(rhs: Float64, tolerance: Float64 = defaultFractionCalculationTolerance)
+fun Float64.isApproximately(rhs: Float64, tolerance: Float64 = defaultFloat64CalculationTolerance)
         = this.equals(rhs, tolerance = tolerance)
 
 
@@ -297,7 +312,7 @@ fun Float32.isApproximately(rhs: Float32, tolerance: Float32 = defaultFloat32Cal
  *                  Defaults to [defaultFractionCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
-fun Float64.equals(rhs: Float32, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean = when {
+fun Float64.equals(rhs: Float32, tolerance: Tolerance = defaultCalculationTolerance): Boolean = when {
     tolerance == 0.0 -> this.toFloat() == rhs
     this > Float32.greatestFiniteMagnitude && rhs > 0 && rhs.isInfinite -> true
     this < -Float32.greatestFiniteMagnitude && rhs < 0 && rhs.isInfinite -> true
@@ -313,7 +328,7 @@ fun Float64.equals(rhs: Float32, tolerance: Fraction = defaultFractionCalculatio
  *                  Defaults to [defaultFractionCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
-fun Float64.isApproximately(rhs: Float32, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean
+fun Float64.isApproximately(rhs: Float32, tolerance: Tolerance = defaultCalculationTolerance): Boolean
         = this.equals(rhs, tolerance = tolerance)
 
 
@@ -325,7 +340,7 @@ fun Float64.isApproximately(rhs: Float32, tolerance: Fraction = defaultFractionC
  *                  Defaults to [defaultFractionCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
-fun Float32.equals(rhs: Float64, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean
+fun Float32.equals(rhs: Float64, tolerance: Tolerance = defaultCalculationTolerance): Boolean
         = rhs.equals(this, tolerance = tolerance)
 
 
@@ -337,7 +352,7 @@ fun Float32.equals(rhs: Float64, tolerance: Fraction = defaultFractionCalculatio
  *                  Defaults to [defaultFractionCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
-fun Float32.isApproximately(rhs: Float64, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean
+fun Float32.isApproximately(rhs: Float64, tolerance: Tolerance = defaultCalculationTolerance): Boolean
         = this.equals(rhs, tolerance = tolerance)
 
 
@@ -346,10 +361,10 @@ fun Float32.isApproximately(rhs: Float64, tolerance: Fraction = defaultFractionC
  *
  * @param rhs       The other integer to compare to this one
  * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
- *                  Defaults to [defaultIntegerCalculationTolerance]
+ *                  Defaults to [defaultFractionCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
-fun Integer.equals(rhs: Integer, tolerance: Integer = defaultIntegerCalculationTolerance): Boolean = abs(rhs - this) <= tolerance
+fun Integer.equals(rhs: Integer, tolerance: Tolerance = defaultCalculationTolerance): Boolean = abs(rhs - this) <= tolerance
 
 
 /**

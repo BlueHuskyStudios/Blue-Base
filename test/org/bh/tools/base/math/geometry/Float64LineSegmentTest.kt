@@ -1,26 +1,26 @@
+@file:Suppress("unused")
+
 package org.bh.tools.base.math.geometry
 
-import org.bh.tools.base.abstraction.Fraction
-import org.bh.tools.base.abstraction.Integer
+import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.logging.*
-import org.bh.tools.base.math.defaultFractionCalculationTolerance
-import org.bh.tools.base.math.defaultIntegerCalculationTolerance
+import org.bh.tools.base.math.*
 import org.bh.tools.base.math.geometry.FractionPoint.Companion.zero
 import org.bh.tools.base.math.geometry.IntersectionDescription.*
-import org.bh.tools.base.util.measureTimeInterval
-import org.junit.Test
+import org.bh.tools.base.util.*
+import org.junit.*
 
 
 private data class Intersection(
         val name: String,
         val line1: FractionLineSegment, val line2: FractionLineSegment,
         val expectedPoint: FractionPoint?,
-        val expectedType: IntersectionDescription
+        val expectedType: IntersectionDescription<*, *>
 ) {
     constructor(name: String,
                 line1Start: FractionPoint, line1End: FractionPoint,   line2Start: FractionPoint, line2End: FractionPoint,
                 expectedIntersectionPoint: FractionPoint?,
-                expectedIntersectionDescriptionType: IntersectionDescription):
+                expectedIntersectionDescriptionType: IntersectionDescription<*, *>):
             this(name, FractionLineSegment(line1Start, line1End), FractionLineSegment(line2Start, line2End), expectedIntersectionPoint, expectedIntersectionDescriptionType)
 }
 
@@ -46,7 +46,7 @@ class Float64LineSegmentTest {
             Intersection("Edge crosses edge perpendicularly at (0, 0) B", p(-1, 1)   lineTo p(1, -1),      p(1, 1)    lineTo p(-1, -1),   expectedPoint = zero,                                 expectedType = edgesCross(zero)),
             Intersection("Edge crosses edge perpendicularly at (0, 0) C", p(-1, 2)   lineTo p(1, -2),      p(1, 2)    lineTo p(-1, -2),   expectedPoint = zero,                                 expectedType = edgesCross(zero)),
             Intersection("Edge crosses edge at (4, 5)",                   p(4, 1)    lineTo p(4, 8),       p(7, 2)    lineTo p(1, 8),     expectedPoint = p(4, 5),                              expectedType = edgesCross(p(4, 5))),
-            Intersection("Edge crosses edge at (658, 139)",               p(631, 87) lineTo p(851, 481),   p(729, 48) lineTo p(651, 150), expectedPoint = p(2923451.0/4431.0, 613820.0/4431.0), expectedType = edgesCross(p(2923451.0/4431.0, 613820.0/4431.0)))
+            Intersection("Edge crosses edge at (660, 139)",               p(631, 87) lineTo p(851, 481),   p(729, 48) lineTo p(651, 150), expectedPoint = p(2923451.0/4431.0, 613820.0/4431.0), expectedType = edgesCross(p(2923451.0/4431.0, 613820.0/4431.0)))
     )
 
     private val vertexTouchingEdgeIntersections: List<Intersection> = listOf(
@@ -94,11 +94,11 @@ class Float64LineSegmentTest {
                 assertEquals("describe: " + it.name,
                         it.expectedType,
                         it.line1.describeIntersection(it.line2),
-                        tolerance = defaultFractionCalculationTolerance)
+                        tolerance = defaultCalculationTolerance)
                 assertEquals("describe: " + it.name,
-                        it.expectedType,
-                        it.line1.integerValue.describeIntersection(it.line2.integerValue),
-                        tolerance = defaultIntegerCalculationTolerance)
+                        it.expectedType.integerValue(),
+                        it.line1.integerValue().describeIntersection(it.line2.integerValue()),
+                        tolerance = 1.0) // Integer calculations can be offset from accurate fraction calculations by 1
             }
         }
 
@@ -113,11 +113,11 @@ class Float64LineSegmentTest {
                 assertEquals("rawIntersection: " + it.name,
                         it.expectedPoint,
                         it.line1.rawIntersection(it.line2),
-                        defaultFractionCalculationTolerance)
+                        defaultCalculationTolerance)
                 assertEquals("rawIntersection: " + it.name,
                         it.expectedPoint?.integerValue,
                         it.line1.integerValue.rawIntersection(it.line2.integerValue),
-                        defaultIntegerCalculationTolerance)
+                        defaultCalculationTolerance)
             }
         }
 
@@ -132,11 +132,11 @@ class Float64LineSegmentTest {
                 assertEquals("findLineIntersection: " + it.name,
                         it.expectedPoint,
                         FractionLineSegment.findLineIntersection(it.line1, it.line2),
-                        defaultFractionCalculationTolerance)
+                        defaultCalculationTolerance)
                 assertEquals("findLineIntersection: " + it.name,
                         it.expectedPoint?.integerValue,
                         IntegerLineSegment.findLineIntersection(it.line1.integerValue, it.line2.integerValue),
-                        defaultIntegerCalculationTolerance)
+                        defaultCalculationTolerance)
             }
         }
 
@@ -146,7 +146,8 @@ class Float64LineSegmentTest {
 
 
 @Suppress("NOTHING_TO_INLINE")
-private inline fun assertEquals(message: String, expected: ComputablePoint<Fraction>?, actual: ComputablePoint<Fraction>?, tolerance: Fraction = defaultFractionCalculationTolerance) {
+@JvmName("assertFractionPointsEqual")
+private inline fun assertEquals(message: String, expected: ComputablePoint<Fraction>?, actual: ComputablePoint<Fraction>?, tolerance: Tolerance = defaultCalculationTolerance) {
     val fail: Boolean
     if (actual != null) {
         if (expected != null) {
@@ -165,16 +166,18 @@ private inline fun assertEquals(message: String, expected: ComputablePoint<Fract
 
 
 @Suppress("NOTHING_TO_INLINE")
-private inline fun assertEquals(message: String, expected: ComputablePoint<Integer>?, actual: ComputablePoint<Integer>?, tolerance: Integer = defaultIntegerCalculationTolerance) {
-    val fail: Boolean
-    if (actual != null) {
+@JvmName("assertIntegerPointsEqual")
+private inline fun assertEquals(message: String, expected: ComputablePoint<Integer>?, actual: ComputablePoint<Integer>?, tolerance: Tolerance = defaultCalculationTolerance) {
+    val fail = if (actual != null) {
         if (expected != null) {
-            fail = !expected.equals(actual, tolerance)
-        } else { // if expected == null
-            fail = true
+            !expected.equals(actual, tolerance)
         }
-    } else { // if actual == null
-        fail = expected != null
+        else { // if expected == null
+            true
+        }
+    }
+    else { // if actual == null
+        expected != null
     }
     if (fail) {
         @Suppress("DEPRECATION")
@@ -184,37 +187,16 @@ private inline fun assertEquals(message: String, expected: ComputablePoint<Integ
 
 
 @Suppress("NOTHING_TO_INLINE")
-private inline fun assertEquals(message: String, expected: IntersectionDescription, actual: IntersectionDescription, tolerance: Fraction = defaultFractionCalculationTolerance) {
+private inline fun assertEquals(message: String, expected: IntersectionDescription<*, *>, actual: IntersectionDescription<*, *>, tolerance: Tolerance = defaultCalculationTolerance) {
     val fail: Boolean = if (expected::class != actual::class ) {
         false
     } else {
         when (expected) {
             none -> false
-            is leftVertexTouchesRightVertex<*> -> !expected.verticesLocation.fractionValue.equals((actual as leftVertexTouchesRightVertex<*>).verticesLocation.fractionValue, tolerance = tolerance)
-            is leftVertexTouchesRightEdge<*> -> !expected.leftVertexLocation.fractionValue.equals((actual as leftVertexTouchesRightEdge<*>).leftVertexLocation.fractionValue, tolerance = tolerance)
-            is rightVertexTouchesLeftEdge<*> -> !expected.rightVertexLocation.fractionValue.equals((actual as rightVertexTouchesLeftEdge<*>).rightVertexLocation.fractionValue, tolerance = tolerance)
-            is edgesCross<*> -> !expected.crossingLocation.fractionValue.equals((actual as edgesCross<*>).crossingLocation.fractionValue, tolerance = tolerance)
-            is completeOverlap -> !expected.isStartAndEndFlipped == (actual as completeOverlap).isStartAndEndFlipped
-        }
-    }
-    if (fail) {
-        @Suppress("DEPRECATION")
-        junit.framework.Assert.failNotEquals(message, expected, actual)
-    }
-}
-
-
-@Suppress("NOTHING_TO_INLINE")
-private inline fun assertEquals(message: String, expected: IntersectionDescription, actual: IntersectionDescription, tolerance: Integer = defaultIntegerCalculationTolerance) {
-    val fail: Boolean = if (expected::class != actual::class ) {
-        false
-    } else {
-        when (expected) {
-            none -> false
-            is leftVertexTouchesRightVertex<*> -> !expected.verticesLocation.integerValue.equals((actual as leftVertexTouchesRightVertex<*>).verticesLocation.integerValue, tolerance = tolerance)
-            is leftVertexTouchesRightEdge<*> -> !expected.leftVertexLocation.integerValue.equals((actual as leftVertexTouchesRightEdge<*>).leftVertexLocation.integerValue, tolerance = tolerance)
-            is rightVertexTouchesLeftEdge<*> -> !expected.rightVertexLocation.integerValue.equals((actual as rightVertexTouchesLeftEdge<*>).rightVertexLocation.integerValue, tolerance = tolerance)
-            is edgesCross<*> -> !expected.crossingLocation.integerValue.equals((actual as edgesCross<*>).crossingLocation.integerValue, tolerance = tolerance)
+            is leftVertexTouchesRightVertex<*, *> -> !expected.verticesLocation.fractionValue.equals((actual as leftVertexTouchesRightVertex<*, *>).verticesLocation.fractionValue, tolerance = tolerance)
+            is leftVertexTouchesRightEdge<*, *> -> !expected.leftVertexLocation.fractionValue.equals((actual as leftVertexTouchesRightEdge<*, *>).leftVertexLocation.fractionValue, tolerance = tolerance)
+            is rightVertexTouchesLeftEdge<*, *> -> !expected.rightVertexLocation.fractionValue.equals((actual as rightVertexTouchesLeftEdge<*, *>).rightVertexLocation.fractionValue, tolerance = tolerance)
+            is edgesCross<*, *> -> !expected.crossingLocation.fractionValue.equals((actual as edgesCross<*, *>).crossingLocation.fractionValue, tolerance = tolerance)
             is completeOverlap -> !expected.isStartAndEndFlipped == (actual as completeOverlap).isStartAndEndFlipped
         }
     }

@@ -96,7 +96,7 @@ internal class BasicMathFunctionsTest {
                                                                      warmupTrials = warmupTrials,
                                                                      trials = trialsPerTest) {
             allInverseSquareRootTests(functionToTest = ::inverseSquareRoot_functional_accuracy2,
-                                      specialTolerance = defaultFractionCalculationTolerance,
+                                      specialTolerance = defaultCalculationTolerance,
                                       resultAccumulator = ::saveResult)
         }
 
@@ -106,7 +106,7 @@ internal class BasicMathFunctionsTest {
                                                                      warmupTrials = warmupTrials,
                                                                      trials = trialsPerTest) {
             allInverseSquareRootTests(functionToTest = ::inverseSquareRoot_functional_accuracy3,
-                                      specialTolerance = defaultFractionCalculationTolerance,
+                                      specialTolerance = defaultCalculationTolerance,
                                       resultAccumulator = ::saveResult)
         }
 

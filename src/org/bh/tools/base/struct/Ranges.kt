@@ -420,7 +420,7 @@ open class FractionOpenRange(startInclusive: Fraction?, endInclusive: Fraction?)
 
     override val isPoint: Boolean by lazy { isPoint(tolerance = defaultFractionCalculationTolerance) }
 
-    override fun isPoint(tolerance: Fraction): Boolean {
+    override fun isPoint(tolerance: Tolerance): Boolean {
         return startInclusive != null && endInclusive != null && startInclusive.equals(endInclusive, tolerance = tolerance)
     }
 
@@ -429,7 +429,7 @@ open class FractionOpenRange(startInclusive: Fraction?, endInclusive: Fraction?)
             = equals(other, defaultFractionCalculationTolerance)
 
 
-    override fun isEqual(lhs: Fraction, rhs: Fraction, tolerance: Fraction): Boolean
+    override fun isEqual(lhs: Fraction, rhs: Fraction, tolerance: Tolerance): Boolean
             = lhs.equals(rhs, tolerance = tolerance)
 
 
@@ -437,7 +437,7 @@ open class FractionOpenRange(startInclusive: Fraction?, endInclusive: Fraction?)
             = intersects(other, tolerance = defaultFractionCalculationTolerance)
 
 
-    override fun isLessThanOrEqual(lhs: Fraction, rhs: Fraction, tolerance: Fraction): Boolean
+    override fun isLessThanOrEqual(lhs: Fraction, rhs: Fraction, tolerance: Tolerance): Boolean
             = lhs.isLessThanOrEqualTo(rhs, tolerance = tolerance)
 
 
@@ -487,7 +487,7 @@ open class FractionOpenRange(startInclusive: Fraction?, endInclusive: Fraction?)
 
             override fun intersects(other: ComputableOpenRange<Fraction>): Boolean = false
 
-            override fun intersects(other: ComputableOpenRange<Fraction>, tolerance: Fraction): Boolean = false
+            override fun intersects(other: ComputableOpenRange<Fraction>, tolerance: Tolerance): Boolean = false
 
             override fun intersection(other: OpenRange<Fraction>): OpenRange<Fraction> = this
 
@@ -511,7 +511,7 @@ open class FractionOpenRange(startInclusive: Fraction?, endInclusive: Fraction?)
 
             override fun hashCode(): Int = 1
 
-            override fun isPoint(tolerance: Fraction): Boolean = false
+            override fun isPoint(tolerance: Tolerance): Boolean = false
 
             override fun toString(): String = "(empty)"
 
