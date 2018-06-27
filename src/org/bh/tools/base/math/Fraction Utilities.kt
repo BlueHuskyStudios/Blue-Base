@@ -77,8 +77,8 @@ data class RadixNumberParts(
         val integerPart: Integer,
         /** The part of a number after the radix point */
         val fractionPart: Fraction): TolerableEquality<RadixNumberParts> {
-    override fun equals(other: RadixNumberParts, tolerance: Fraction): Boolean {
-        return integerPart.equals(other.integerPart, tolerance = tolerance.integerValue)
+    override fun equals(other: RadixNumberParts, tolerance: Tolerance): Boolean {
+        return integerPart.equals(other.integerPart, tolerance = tolerance)
                 && fractionPart.equals(other.fractionPart, tolerance = tolerance)
     }
 }

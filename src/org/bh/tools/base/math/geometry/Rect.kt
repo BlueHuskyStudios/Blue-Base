@@ -7,7 +7,7 @@ import org.bh.tools.base.math.*
 
 
 /**
- * Copyright BHStudios ©2016 BH-1-PS. Made for BH Tic Tac Toe IntelliJ Project.
+ * Copyright BHStudios ©2016 BH-1-PS. Made for BH Tic Tac Toe IDEA Project.
  *
  * A size which uses a number of any type
  *
@@ -30,7 +30,6 @@ abstract class Rect<NumberType : Number, PointType: Point<NumberType>, SizeType:
 
     abstract fun copy(newOrigin: PointType = this.origin, newSize: SizeType = this.size): Rect<NumberType, PointType, SizeType>
 
-
     abstract fun copy(newX: NumberType = this.x, newY: NumberType = this.y, newWidth: NumberType = this.width, newHeight: NumberType = this.height): Rect<NumberType, PointType, SizeType>
 }
 
@@ -43,9 +42,16 @@ typealias AnyRect = Rect<*, *, *>
 /**
  * A type of [Rect] that can be used in computations and have computations performed on it
  */
-abstract class ComputableRect<NumberType : Number, PointType: ComputablePoint<NumberType>,
-        SizeType: ComputableSize<NumberType>>(origin: PointType, size: SizeType)
-    : Rect<NumberType, PointType, SizeType>(origin, size) {
+abstract class ComputableRect
+    <NumberType, PointType, SizeType>
+    (origin: PointType, size: SizeType)
+    : Rect<NumberType, PointType, SizeType>(origin, size),
+        TolerableEquality<ComputableRect<NumberType, PointType, SizeType>>
+    where NumberType : Number,
+          NumberType: Comparable<NumberType>,
+          PointType: ComputablePoint<NumberType>,
+          SizeType: ComputableSize<NumberType>
+{
 
     /** The lowest X value of this rectangle */
     abstract val minX: NumberType
@@ -183,6 +189,40 @@ abstract class ComputableRect<NumberType : Number, PointType: ComputablePoint<Nu
      * Returns a rectangle that is the same size as this one, but whose position is this one given an offset to its origin
      */
     abstract fun offset(xOffset: NumberType, yOffset: NumberType): ComputableRect<NumberType, PointType, SizeType>
+
+
+    /**
+     * Returns a copy of this rectangle that is resized so that it contains the given extremes
+     *
+     * @param newMinX The new lowest X value of this rectangle (left edge in a Euclidean plane)
+     * @param newMinY The new lowest Y value of this rectangle (bottom edge in a Euclidean plane)
+     * @param newMaxX The new highest X value of this rectangle (right edge in a Euclidean plane)
+     * @param newMaxY The new highest Y value of this rectangle (top edge in a Euclidean plane)
+     */
+    abstract fun copyWithExtremes(newMinX: NumberType = minX,
+                                  newMinY: NumberType = minY,
+                                  newMaxX: NumberType = maxX,
+                                  newMaxY: NumberType = maxY): ComputableRect<NumberType, PointType, SizeType>
+
+
+    /**
+     * Returns a copy of this rect which is expanded in size to ensure it contains the given point
+     */
+    open fun expanded(toInclude: PointType) : ComputableRect<NumberType, PointType, SizeType> {
+        @Suppress("UnnecessaryVariable")
+        val includedPoint = toInclude
+        val newMinX: NumberType
+        val newMinY: NumberType
+        val newMaxX: NumberType
+        val newMaxY: NumberType
+
+        newMinX = if (includedPoint.x < this.minX) includedPoint.x else minX
+        newMinY = if (includedPoint.y < this.minY) includedPoint.y else minY
+        newMaxX = if (includedPoint.x > this.maxX) includedPoint.x else maxX
+        newMaxY = if (includedPoint.y > this.maxY) includedPoint.y else maxY
+
+        return copyWithExtremes(newMinX = newMinX, newMaxX = newMaxX, newMinY = newMinY, newMaxY = newMaxY)
+    }
 }
 
 
@@ -287,12 +327,24 @@ open class IntegerRect(origin: ComputablePoint<Integer>, size: ComputableSize<In
     }
 
 
-    override fun copy(newOrigin: ComputablePoint<Integer>, newSize: ComputableSize<Integer>): IntegerRect
+    override fun copy(newOrigin: ComputablePoint<Integer>, newSize: ComputableSize<Integer>)
             = IntegerRect(newOrigin, newSize)
 
 
-    override fun copy(newX: Integer, newY: Integer, newWidth: Integer, newHeight: Integer): IntegerRect
+    override fun copy(newX: Integer, newY: Integer, newWidth: Integer, newHeight: Integer)
             = IntegerRect(newX, newY, newWidth, newHeight)
+
+
+    override fun copyWithExtremes(newMinX: Integer, newMinY: Integer, newMaxX: Integer, newMaxY: Integer)
+            = IntegerRect(origin = IntegerPoint(x = newMinX, y = newMinY),
+                            size = IntegerSize(width = newMaxX - newMinX, height = newMaxY - newMinY))
+
+
+    override fun expanded(toInclude: ComputablePoint<Integer>): IntegerRect = super.expanded(toInclude).integerValue
+
+
+    override fun equals(other: IntegerRectBaseType, tolerance: Tolerance): Boolean
+            = origin.equals(other.origin, tolerance = tolerance)
 
 
     inline val integerValue: IntegerRect get() = this
@@ -351,7 +403,7 @@ open class FractionRect(origin: ComputablePoint<Fraction>, size: ComputableSize<
     override fun contains(other: FractionRectBaseType): Boolean
             = contains(other, defaultFractionCalculationTolerance)
 
-    override fun contains(other: FractionRectBaseType, tolerance: Fraction): Boolean
+    override fun contains(other: FractionRectBaseType, tolerance: Tolerance): Boolean
             = this.minX.isLessThanOrEqualTo(x, tolerance = tolerance)
             && this.minY.isLessThanOrEqualTo(y, tolerance = tolerance)
             && this.maxX.isGreaterThanOrEqualTo(x, tolerance = tolerance)
@@ -361,7 +413,7 @@ open class FractionRect(origin: ComputablePoint<Fraction>, size: ComputableSize<
     override fun intersects(other: FractionRectBaseType): Boolean
             = intersection(other) != null
 
-    override fun intersects(other: FractionRectBaseType, tolerance: Fraction): Boolean
+    override fun intersects(other: FractionRectBaseType, tolerance: Tolerance): Boolean
             = intersection(other, tolerance = tolerance) != null
 
 
@@ -389,7 +441,7 @@ open class FractionRect(origin: ComputablePoint<Fraction>, size: ComputableSize<
             = intersection(other, tolerance = -defaultFractionCalculationTolerance)
 
 
-    override fun intersection(other: FractionRectBaseType, tolerance: Fraction): FractionRectBaseType? {
+    override fun intersection(other: FractionRectBaseType, tolerance: Tolerance): FractionRectBaseType? {
         if (this.maxX.isLessThan(other.minX, tolerance = tolerance)
                 || other.maxX.isLessThan(this.minX, tolerance = tolerance)
                 || this.maxY.isLessThan(other.minY, tolerance = tolerance)
@@ -414,6 +466,18 @@ open class FractionRect(origin: ComputablePoint<Fraction>, size: ComputableSize<
 
     override fun copy(newX: Fraction, newY: Fraction, newWidth: Fraction, newHeight: Fraction): FractionRect
             = FractionRect(newX, newY, newWidth, newHeight)
+
+
+    override fun copyWithExtremes(newMinX: Fraction, newMinY: Fraction, newMaxX: Fraction, newMaxY: Fraction)
+            = FractionRect(origin = FractionPoint(x = newMinX, y = newMinY),
+                          size = FractionSize(width = newMaxX - newMinX, height = newMaxY - newMinY))
+
+
+    override fun expanded(toInclude: ComputablePoint<Fraction>): FractionRect = super.expanded(toInclude).fractionValue
+
+
+    override fun equals(other: FractionRectBaseType, tolerance: Tolerance): Boolean
+            = origin.equals(other.origin, tolerance = tolerance)
 
 
     inline val fractionValue: FractionRect get() = this

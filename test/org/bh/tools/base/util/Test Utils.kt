@@ -1,4 +1,5 @@
 @file:kotlin.jvm.JvmName("TestUtils")
+@file:Suppress("unused")
 
 package org.bh.tools.base.util
 
@@ -6,6 +7,7 @@ import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.collections.extensions.*
 import org.bh.tools.base.func.StringSupplier
 import org.bh.tools.base.math.*
+import org.bh.tools.base.math.geometry.*
 import org.bh.tools.base.util.Assertion.*
 import org.bh.tools.base.util.TimeConversion.nanosecondsToTimeInterval
 import org.junit.Assert.*
@@ -299,9 +301,9 @@ sealed class Assertion<out Raw, out Processed> {
  */
 @Suppress("NOTHING_TO_INLINE")
 inline fun <TE: TolerableEquality<TE>> assertEquals(expected: TE,
-                                                           actual: TE,
-                                                           tolerance: Fraction,
-                                                           message: String = "Expected ($expected), but got ($actual)")
+                                                    actual: TE,
+                                                    tolerance: Tolerance,
+                                                    message: String = "Expected no farther than ($tolerance) from ($expected), but got ($actual)")
         = assertTrue(expected.equals(actual, tolerance = tolerance), message)
 
 
@@ -314,7 +316,7 @@ interface TestResult
 @Suppress("unused", "MemberVisibilityCanPrivate")
 data class FractionFunctionTestCase(val input: Fraction,
                                     val expectedOutput: Fraction,
-                                    val tolerance: Fraction = defaultFractionCalculationTolerance,
+                                    val tolerance: Tolerance = defaultCalculationTolerance,
                                     val message: String = "Input of $input should yield $expectedOutput (within a tolerance of $tolerance)"
 ) : TestCase {
 
@@ -346,3 +348,35 @@ data class FractionFunctionTestResult(
 
 fun Collection<FractionFunctionTestResult>.humanReadableString(): String =
         "[\n\t${this.joinToString(separator = ",\n\t", prefix = "", postfix = "", transform = FractionFunctionTestResult::humanReadableString)}\n]"
+
+
+
+/**
+ * Asserts that the given element is in the given collection
+ *
+ * @param message    _optional_ - The message sent on failure
+ * @param collection The collection that should contain the element
+ * @param element    The element that should be in the collection
+ */
+//@JvmOverloads
+fun <C, Element> assertContains(message: String? = null, collection: C, element: Element)
+        where C: Collection<Element> {
+    assertTrue(message, collection.contains(element))
+}
+
+
+/**
+ * Asserts that the given element is in the given size
+ *
+ * @param message _optional_ - The message sent on failure
+ * @param size    The size that should contain the point
+ * @param point   The point that should be in the size
+ */
+//@JvmOverloads
+fun <Size, Point, NumberType> assertContains(message: String? = null, size: Size, point: Point)
+        where Size: ComputableSize<NumberType>,
+              Point : ComputablePoint<NumberType>,
+              NumberType : Number,
+              NumberType : Comparable<NumberType> {
+    assertTrue(message, size.contains(point))
+}

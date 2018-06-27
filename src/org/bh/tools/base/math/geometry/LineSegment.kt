@@ -1,13 +1,12 @@
-@file:Suppress("unused")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate")
 
 package org.bh.tools.base.math.geometry
 
-import org.bh.tools.base.abstraction.Fraction
-import org.bh.tools.base.abstraction.Integer
+import org.bh.tools.base.abstraction.*
+import org.bh.tools.base.basics.Cloneable
 import org.bh.tools.base.func.*
 import org.bh.tools.base.math.*
 import org.bh.tools.base.math.abs
-import org.bh.tools.base.basics.Cloneable
 import kotlin.math.*
 
 
@@ -62,8 +61,11 @@ typealias AnyLineSegment = LineSegment<*, *>
 abstract class ComputableLineSegment
     <NumberType, PointType>
     (start: PointType, end: PointType)
-    : LineSegment<NumberType, PointType>(start, end)
-    where NumberType: Number, PointType: ComputablePoint<NumberType>{
+    : LineSegment<NumberType, PointType>(start, end),
+        TolerableEquality<ComputableLineSegment<NumberType, PointType>>
+    where NumberType: Number,
+          NumberType: Comparable<NumberType>,
+          PointType: ComputablePoint<NumberType>{
 
     abstract val bounds: ComputableRect<NumberType, ComputablePoint<NumberType>, ComputableSize<NumberType>>
 
@@ -97,7 +99,7 @@ abstract class ComputableLineSegment
      *
      * @return `true` iff the given point lies on this line
      */
-    abstract fun contains(point: Point<NumberType>, tolerance: NumberType): Boolean
+    abstract fun contains(point: Point<NumberType>, tolerance: Tolerance): Boolean
 
 
     /**
@@ -122,7 +124,7 @@ abstract class ComputableLineSegment
      *
      * @return `true` iff the given line segment is equal to this one
      */
-    abstract fun equals(other: ComputableLineSegment<NumberType, PointType>, tolerance: NumberType): Boolean
+    abstract override fun equals(other: ComputableLineSegment<NumberType, PointType>, tolerance: Tolerance): Boolean
 
 
     protected abstract fun orientation(p: ComputablePoint<NumberType>, q: ComputablePoint<NumberType>, r: ComputablePoint<NumberType>): ThreePointOrientation
@@ -142,13 +144,13 @@ abstract class ComputableLineSegment
     /**
      * Finds where this line segment intersects the other one. Returns `null` if there is no such intersection.
      */
-    abstract fun rawIntersection(other: ComputableLineSegment<NumberType, PointType>, tolerance: NumberType): ComputablePoint<NumberType>?
+    abstract fun rawIntersection(other: ComputableLineSegment<NumberType, PointType>, tolerance: Tolerance): ComputablePoint<NumberType>?
 
 
     /**
      * Calls [describeIntersection(other: ComputableLineSegment<NumberType>, tolerance: NumberType)] with default tolerance
      */
-    abstract fun describeIntersection(other: ComputableLineSegment<NumberType, PointType>): IntersectionDescription
+    abstract fun describeIntersection(other: ComputableLineSegment<NumberType, PointType>): IntersectionDescription<*, *>
 
 
     /**
@@ -157,7 +159,7 @@ abstract class ComputableLineSegment
      *
      * @param
      */
-    fun describeIntersection(other: ComputableLineSegment<NumberType, PointType>, tolerance: NumberType): IntersectionDescription {
+    fun describeIntersection(other: ComputableLineSegment<NumberType, PointType>, tolerance: Tolerance): IntersectionDescription<*, *> {
 
         // Easy win: If they're equal, they completely overlap and thus always intersect
 
@@ -238,7 +240,7 @@ abstract class ComputableLineSegment
      *
      * @param `true` iff the two lines intersect with the given tolerance
      */
-    fun intersects(other: ComputableLineSegment<NumberType, PointType>, tolerance: NumberType): Boolean {
+    fun intersects(other: ComputableLineSegment<NumberType, PointType>, tolerance: Tolerance): Boolean {
         return rawIntersection(other, tolerance = tolerance) != null
     }
 }
@@ -249,17 +251,25 @@ abstract class ComputableLineSegment
  * Describes how and where two line segments intersect, if at all
  */
 @Suppress("UNUSED_PARAMETER")
-sealed class IntersectionDescription {
+sealed class IntersectionDescription<out NumberType, out PointType>
+        where NumberType : Number, PointType : Point<NumberType> {
+
+    abstract val fractionValue: IntersectionDescription<Fraction, FractionPoint>
+
+    abstract fun integerValue(rounding: RoundingDirection = RoundingDirection.default): IntersectionDescription<Integer, IntegerPoint>
 
     /**
      * The line segments do not intersect
      */
-    object none : IntersectionDescription() {
+    object none : IntersectionDescription<Nothing, Nothing>() {
+
+        override val fractionValue get() = this
+
+        override fun integerValue(rounding: RoundingDirection) = this
+
         override fun equals(other: Any?): Boolean {
-            return other != null && other is none
+            return other === this
         }
-
-
     }
 
 
@@ -270,9 +280,25 @@ sealed class IntersectionDescription {
      * @param isLeftStartVertex `true` iff the left line segment's vertex is its starting vertex
      * @param isRightStartVertex `true` iff the right line segment's vertex is its starting vertex
      */
-    class leftVertexTouchesRightVertex<out NumberType : Number>(val verticesLocation: Point<NumberType>, val isLeftStartVertex: Boolean, val isRightStartVertex: Boolean) : IntersectionDescription() {
+    class leftVertexTouchesRightVertex
+    <out NumberType, out PointType>
+    (val verticesLocation: Point<NumberType>, val isLeftStartVertex: Boolean, val isRightStartVertex: Boolean)
+        : IntersectionDescription<NumberType, PointType>()
+            where NumberType : Number, PointType : Point<NumberType> {
+        override val fractionValue
+            get() = leftVertexTouchesRightVertex<Fraction, FractionPoint>(verticesLocation.fractionValue,
+                                                                          isLeftStartVertex,
+                                                                          isRightStartVertex)
+
+
+        override fun integerValue(rounding: RoundingDirection) = leftVertexTouchesRightVertex<Integer, IntegerPoint>(
+                verticesLocation.integerValue(rounding),
+                isLeftStartVertex,
+                isRightStartVertex)
+
+
         override fun equals(other: Any?): Boolean {
-            return other is leftVertexTouchesRightVertex<*>
+            return other is leftVertexTouchesRightVertex<*, *>
                     && verticesLocation == other.verticesLocation
                     && isLeftStartVertex == other.isLeftStartVertex
                     && isRightStartVertex == other.isRightStartVertex
@@ -299,15 +325,31 @@ sealed class IntersectionDescription {
      * @property leftVertexLocation The location of the touching vertex
      * @property isLeftStartVertex `true` iff the left line segment's touching vertex is its starting vertex
      */
-    class leftVertexTouchesRightEdge<out NumberType : Number>(val leftVertexLocation: Point<NumberType>, val isLeftStartVertex: Boolean) : IntersectionDescription() {
+    class leftVertexTouchesRightEdge
+    <out NumberType, out PointType>
+    (val leftVertexLocation: Point<NumberType>, val isLeftStartVertex: Boolean)
+        : IntersectionDescription<NumberType, PointType>()
+            where NumberType : Number, PointType : Point<NumberType> {
+        override val fractionValue
+            get() = leftVertexTouchesRightEdge<Fraction, FractionPoint>(leftVertexLocation.fractionValue,
+                                                                        isLeftStartVertex)
+
+
+        override fun integerValue(rounding: RoundingDirection) = leftVertexTouchesRightEdge<Integer, IntegerPoint>(
+                leftVertexLocation.integerValue(rounding),
+                isLeftStartVertex)
+
+
         override fun equals(other: Any?): Boolean {
-            return other is leftVertexTouchesRightEdge<*>
+            return other is leftVertexTouchesRightEdge<*, *>
                     && isLeftStartVertex == other.isLeftStartVertex
         }
 
 
         override fun hashCode(): Int {
-            return super.hashCode() xor isLeftStartVertex.hashCode()
+            return (super.hashCode()
+                    xor leftVertexLocation.hashCode()
+                    xor isLeftStartVertex.hashCode())
         }
 
 
@@ -323,15 +365,32 @@ sealed class IntersectionDescription {
      * @param rightVertexLocation The location of the touching vertex
      * @param isRightStartVertex `true` iff the right line segment's touching vertex is its starting vertex
      */
-    class rightVertexTouchesLeftEdge<out NumberType : Number>(val rightVertexLocation: Point<NumberType>, val isRightStartVertex: Boolean) : IntersectionDescription() {
+    class rightVertexTouchesLeftEdge
+    <out NumberType, out PointType>
+    (val rightVertexLocation: Point<NumberType>,
+     val isRightStartVertex: Boolean)
+        : IntersectionDescription<NumberType, PointType>()
+            where NumberType : Number, PointType : Point<NumberType> {
+        override val fractionValue
+            get() = rightVertexTouchesLeftEdge<Fraction, FractionPoint>(rightVertexLocation.fractionValue,
+                                                                        isRightStartVertex)
+
+
+        override fun integerValue(rounding: RoundingDirection) = rightVertexTouchesLeftEdge<Integer, IntegerPoint>(
+                rightVertexLocation.integerValue(rounding),
+                isRightStartVertex)
+
+
         override fun equals(other: Any?): Boolean {
-            return other is rightVertexTouchesLeftEdge<*>
+            return other is rightVertexTouchesLeftEdge<*, *>
                     && isRightStartVertex == other.isRightStartVertex
         }
 
 
         override fun hashCode(): Int {
-            return super.hashCode() xor isRightStartVertex.hashCode()
+            return (super.hashCode()
+                    xor rightVertexLocation.hashCode()
+                    xor isRightStartVertex.hashCode())
         }
 
 
@@ -346,9 +405,21 @@ sealed class IntersectionDescription {
      *
      * @param crossingLocation The location of the crossing point
      */
-    class edgesCross<out NumberType : Number>(val crossingLocation: Point<NumberType>) : IntersectionDescription() {
+    class edgesCross
+    <out NumberType, out PointType>
+    (val crossingLocation: Point<NumberType>)
+        : IntersectionDescription<NumberType, PointType>()
+            where NumberType : Number, PointType : Point<NumberType> {
+        override val fractionValue
+            get() = edgesCross<Fraction, FractionPoint>(crossingLocation.fractionValue)
+
+
+        override fun integerValue(rounding: RoundingDirection) = edgesCross<Integer, IntegerPoint>(crossingLocation.integerValue(
+                rounding))
+
+
         override fun equals(other: Any?): Boolean {
-            return other is edgesCross<*>
+            return other is edgesCross<*, *>
                     && crossingLocation == other.crossingLocation
         }
 
@@ -371,7 +442,12 @@ sealed class IntersectionDescription {
      * @param isStartAndEndFlipped `true` iff the starts touch ends and ends touch starts; `false` if the starts touch
      *                             starts and ends touch ends.
      */
-    class completeOverlap(val isStartAndEndFlipped: Boolean) : IntersectionDescription() {
+    class completeOverlap(val isStartAndEndFlipped: Boolean) : IntersectionDescription<Nothing, Nothing>() {
+
+        override val fractionValue get() = this
+
+        override fun integerValue(rounding: RoundingDirection) = this
+
         override fun equals(other: Any?): Boolean {
             return other is completeOverlap
                     && isStartAndEndFlipped == other.isStartAndEndFlipped
@@ -429,25 +505,30 @@ class IntegerLineSegment
         return LineSegmentDirection.fromRadians(atan2(normalized.y.fractionValue, normalized.x.fractionValue))
     }
 
-    override fun contains(point: Point<Integer>): Boolean = contains(point, tolerance = defaultIntegerCalculationTolerance)
+    override fun contains(point: Point<Integer>): Boolean = contains(point, tolerance = defaultCalculationTolerance)
 
-    override fun contains(point: Point<Integer>, tolerance: Integer): Boolean {
+    override fun contains(point: Point<Integer>, tolerance: Tolerance): Boolean {
+
         point.integerValue.let { integerPoint ->
             if (start.equals(integerPoint, tolerance = tolerance)
                     || end.equals(integerPoint, tolerance = tolerance)) {
                 return true
             }
         }
-        return if (start.x.equals(end.x, tolerance = tolerance)) { // it's vertical
-            point.x.equals(start.x, tolerance = tolerance) // just compare the horizontal
-                    && point.y.isBetween(start.y, end.y, tolerance = tolerance)
-        } else if (start.y.equals(end.y, tolerance = tolerance)) { // it's horizontal
-            point.y.equals(start.y, tolerance = tolerance) // just compare the vertical
-                    && point.x.isBetween(start.x, end.x, tolerance = tolerance)
-        } else {
-            val m = (end.y - start.y) / (end.x - start.x)
-            val b = start.y - (m * start.x)
-            point.y.equals(((m * point.x) + b), tolerance = tolerance) // derived from y=mx+b
+        return when {
+            start.x.equals(end.x, tolerance = tolerance) -> // it's vertical
+                point.x.equals(start.x, tolerance = tolerance) // just compare the horizontal
+                        && point.y.isBetween(start.y, end.y, tolerance = tolerance.roundedIntegerValue)
+
+            start.y.equals(end.y, tolerance = tolerance) -> // it's horizontal
+                point.y.equals(start.y, tolerance = tolerance) // just compare the vertical
+                        && point.x.isBetween(start.x, end.x, tolerance = tolerance.roundedIntegerValue)
+
+            else -> {
+                val m = (end.y - start.y) / (end.x - start.x)
+                val b = start.y - (m * start.x)
+                point.y.equals(((m * point.x) + b), tolerance = tolerance) // derived from y=mx+b
+            }
         }
     }
 
@@ -496,10 +577,10 @@ class IntegerLineSegment
 
 
     override fun equals(other: ComputableLineSegment<Integer, IntegerPoint>): Boolean
-            = equals(other, tolerance = defaultIntegerCalculationTolerance)
+            = equals(other, tolerance = defaultCalculationTolerance)
 
 
-    override fun equals(other: ComputableLineSegment<Integer, IntegerPoint>, tolerance: Integer): Boolean
+    override fun equals(other: ComputableLineSegment<Integer, IntegerPoint>, tolerance: Tolerance): Boolean
             = this.start.equals(other.start, tolerance = tolerance)
             && this.end.equals(other.end, tolerance = tolerance)
 
@@ -510,18 +591,18 @@ class IntegerLineSegment
 
 
     override fun intersects(other: ComputableLineSegment<Integer, IntegerPoint>): Boolean
-            = intersects(other, tolerance = defaultIntegerCalculationTolerance)
+            = intersects(other, tolerance = defaultCalculationTolerance)
 
 
-    override fun describeIntersection(other: ComputableLineSegment<Integer, IntegerPoint>): IntersectionDescription
-            = describeIntersection(other, tolerance = defaultIntegerCalculationTolerance)
+    override fun describeIntersection(other: ComputableLineSegment<Integer, IntegerPoint>): IntersectionDescription<*, *>
+            = describeIntersection(other, tolerance = defaultCalculationTolerance)
 
 
     override fun rawIntersection(other: ComputableLineSegment<Integer, IntegerPoint>): ComputablePoint<Integer>?
-            = rawIntersection(other, tolerance = defaultIntegerCalculationTolerance)
+            = rawIntersection(other, tolerance = defaultCalculationTolerance)
 
 
-    override fun rawIntersection(other: ComputableLineSegment<Integer, IntegerPoint>, tolerance: Integer): ComputablePoint<Integer>?
+    override fun rawIntersection(other: ComputableLineSegment<Integer, IntegerPoint>, tolerance: Tolerance): ComputablePoint<Integer>?
             = findLineIntersection(this, other)
 
 
@@ -550,6 +631,11 @@ typealias IntLineSegment = IntegerLineSegment
 val AnyLineSegment.integerValue: IntegerLineSegment get() = this as? IntegerLineSegment ?: IntegerLineSegment(start = this.start.integerValue, end = this.end.integerValue)
 
 
+fun AnyLineSegment.integerValue(rounding: RoundingDirection = RoundingDirection.default): IntegerLineSegment
+        = this as? IntegerLineSegment
+        ?: IntegerLineSegment(start = start.integerValue(rounding), end = end.integerValue(rounding))
+
+
 open class FractionLineSegment(start: FractionPoint, end: FractionPoint) : ComputableLineSegment<Fraction, FractionPoint>(start, end) {
 
     constructor(x1: Fraction, y1: Fraction, x2: Fraction, y2: Fraction)
@@ -560,23 +646,27 @@ open class FractionLineSegment(start: FractionPoint, end: FractionPoint) : Compu
         return contains(point, tolerance = defaultFractionCalculationTolerance)
     }
 
-    override fun contains(point: Point<Fraction>, tolerance: Fraction): Boolean {
+    override fun contains(point: Point<Fraction>, tolerance: Tolerance): Boolean {
         point.fractionValue.let { fractionPoint ->
             if (start.equals(fractionPoint, tolerance = tolerance)
                     || end.equals(fractionPoint, tolerance = tolerance)) {
                 return true
             }
         }
-        return if (start.x.equals(end.x, tolerance = tolerance)) { // it's vertical
-            point.x.equals(start.x, tolerance = tolerance) // just compare the horizontal
-                    && point.y.isBetween(start.y, end.y, tolerance = tolerance)
-        } else if (start.y.equals(end.y, tolerance = tolerance)) { // it's horizontal
-            point.y.equals(start.y, tolerance = tolerance) // just compare the vertical
-                    && point.x.isBetween(start.x, end.x, tolerance = tolerance)
-        } else {
-            val m = (end.y - start.y) / (end.x - start.x)
-            val b = start.y - (m * start.x)
-            point.y.equals(((m * point.x) + b), tolerance = tolerance) // derived from y=mx+b
+        return when {
+            start.x.equals(end.x, tolerance = tolerance) -> // it's vertical
+                point.x.equals(start.x, tolerance = tolerance) // just compare the horizontal
+                        && point.y.isBetween(start.y, end.y, tolerance = tolerance)
+
+            start.y.equals(end.y, tolerance = tolerance) -> // it's horizontal
+                point.y.equals(start.y, tolerance = tolerance) // just compare the vertical
+                        && point.x.isBetween(start.x, end.x, tolerance = tolerance)
+
+            else -> {
+                val m = (end.y - start.y) / (end.x - start.x)
+                val b = start.y - (m * start.x)
+                point.y.equals(((m * point.x) + b), tolerance = tolerance) // derived from y=mx+b
+            }
         }
     }
 
@@ -630,7 +720,7 @@ open class FractionLineSegment(start: FractionPoint, end: FractionPoint) : Compu
     override fun equals(other: ComputableLineSegment<Fraction, FractionPoint>): Boolean = equals(other, tolerance = defaultFractionCalculationTolerance)
 
 
-    override fun equals(other: ComputableLineSegment<Fraction, FractionPoint>, tolerance: Fraction): Boolean
+    override fun equals(other: ComputableLineSegment<Fraction, FractionPoint>, tolerance: Tolerance): Boolean
             = this.start.equals(other.start, tolerance = tolerance)
             && this.end.equals(other.end, tolerance = tolerance)
 
@@ -644,7 +734,7 @@ open class FractionLineSegment(start: FractionPoint, end: FractionPoint) : Compu
             = intersects(other, tolerance = defaultFractionCalculationTolerance)
 
 
-    override fun describeIntersection(other: ComputableLineSegment<Fraction, FractionPoint>): IntersectionDescription
+    override fun describeIntersection(other: ComputableLineSegment<Fraction, FractionPoint>): IntersectionDescription<*, *>
             = describeIntersection(other, tolerance = defaultFractionCalculationTolerance)
 
 
@@ -652,7 +742,7 @@ open class FractionLineSegment(start: FractionPoint, end: FractionPoint) : Compu
             = rawIntersection(other, tolerance = defaultFractionCalculationTolerance)
 
 
-    override fun rawIntersection(other: ComputableLineSegment<Fraction, FractionPoint>, tolerance: Fraction): ComputablePoint<Fraction>?
+    override fun rawIntersection(other: ComputableLineSegment<Fraction, FractionPoint>, tolerance: Tolerance): ComputablePoint<Fraction>?
             = findLineIntersection(this, other)
 
     companion object {
@@ -676,7 +766,7 @@ open class FractionLineSegment(start: FractionPoint, end: FractionPoint) : Compu
          */
         fun findLineIntersection(line1: ComputableLineSegment<Fraction, FractionPoint>,
                                  line2: ComputableLineSegment<Fraction, FractionPoint>,
-                                 tolerance: Fraction = defaultFractionCalculationTolerance): ComputablePoint<Fraction>? {
+                                 tolerance: Tolerance = defaultCalculationTolerance): ComputablePoint<Fraction>? {
 
             // There may not be any algorithm that detects collinear vertex-only intersections, so always perform this primitive check first:
 
