@@ -275,6 +275,17 @@ fun <N: Number> N.integerValue(rounded: RoundingDirection): Integer = when {
 
 
 
+@Deprecated("It's nonsense to round an Int8 to an Integer", ReplaceWith("integerValue"), DeprecationLevel.HIDDEN)
+fun Int8.integerValue(rounded: RoundingDirection): Integer = error("Not implemented on-purpose")
+@Deprecated("It's nonsense to round an Int16 to an Integer", ReplaceWith("integerValue"), DeprecationLevel.HIDDEN)
+fun Int16.integerValue(rounded: RoundingDirection): Integer = error("Not implemented on-purpose")
+@Deprecated("It's nonsense to round an Int32 to an Integer", ReplaceWith("integerValue"), DeprecationLevel.HIDDEN)
+fun Int32.integerValue(rounded: RoundingDirection): Integer = error("Not implemented on-purpose")
+@Deprecated("It's nonsense to round an Int64 to an Integer", ReplaceWith("integerValue"), DeprecationLevel.HIDDEN)
+fun Int64.integerValue(rounded: RoundingDirection): Integer = error("Not implemented on-purpose")
+
+
+
 /** Indicates whether this is an integer native to the platform */
 inline val <N: Number> N.isNativeInteger: Boolean get() // TODO: Enhance with contracts in Kotlin 1.3+
     = when (this) {

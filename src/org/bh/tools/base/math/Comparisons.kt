@@ -364,7 +364,40 @@ fun Float32.isApproximately(rhs: Float64, tolerance: Tolerance = defaultCalculat
  *                  Defaults to [defaultFractionCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
-fun Integer.equals(rhs: Integer, tolerance: Tolerance = defaultCalculationTolerance): Boolean = abs(rhs - this) <= tolerance
+fun Int8.equals(rhs: Int8, tolerance: Tolerance = defaultCalculationTolerance): Boolean = abs(rhs - this) <= tolerance
+
+
+/**
+ * This determines whether this integer is equal to the other, within a given tolerance.
+ *
+ * @param rhs       The other integer to compare to this one
+ * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
+ *                  Defaults to [defaultFractionCalculationTolerance]
+ * @return `true` iff this value and the other are equal within the given tolerance
+ */
+fun Int16.equals(rhs: Int16, tolerance: Tolerance = defaultCalculationTolerance): Boolean = abs(rhs - this) <= tolerance
+
+
+/**
+ * This determines whether this integer is equal to the other, within a given tolerance.
+ *
+ * @param rhs       The other integer to compare to this one
+ * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
+ *                  Defaults to [defaultFractionCalculationTolerance]
+ * @return `true` iff this value and the other are equal within the given tolerance
+ */
+fun Int32.equals(rhs: Int32, tolerance: Tolerance = defaultCalculationTolerance): Boolean = abs(rhs - this) <= tolerance
+
+
+/**
+ * This determines whether this integer is equal to the other, within a given tolerance.
+ *
+ * @param rhs       The other integer to compare to this one
+ * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
+ *                  Defaults to [defaultFractionCalculationTolerance]
+ * @return `true` iff this value and the other are equal within the given tolerance
+ */
+fun Int64.equals(rhs: Int64, tolerance: Tolerance = defaultCalculationTolerance): Boolean = abs(rhs - this) <= tolerance
 
 
 /**

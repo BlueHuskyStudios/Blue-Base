@@ -6,6 +6,7 @@ import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.basics.Cloneable
 import org.bh.tools.base.func.*
 import org.bh.tools.base.math.*
+import org.bh.tools.base.math.RoundingDirection.*
 import kotlin.reflect.*
 
 
@@ -160,7 +161,7 @@ private fun Point<*>.apology(type: String,
 
 
 
-class IntegerPoint(x: Integer, y: Integer) : ComputablePoint<Integer>(x, y) {
+open class IntegerPoint(x: Integer, y: Integer) : ComputablePoint<Integer>(x, y) {
     override infix operator fun <OtherType : Number> plus(rhs: Point<OtherType>): IntegerPoint = plus(Pair(rhs.x, rhs.y))
     override infix operator fun <OtherType : Number> minus(rhs: Point<OtherType>): IntegerPoint = minus(Pair(rhs.x, rhs.y))
     override infix operator fun <OtherType : Number> times(rhs: Point<OtherType>): IntegerPoint = times(Pair(rhs.x, rhs.y))
@@ -210,16 +211,14 @@ class IntegerPoint(x: Integer, y: Integer) : ComputablePoint<Integer>(x, y) {
 
 
     override infix operator fun <OtherType : Number> div(rhs: Pair<OtherType, OtherType>): IntegerPoint =
-            if (rhs.first.isNativeInteger) {
-                IntegerPoint(x / rhs.first.integerValue, y / rhs.second.integerValue)
-            } else if (rhs.first.isNativeFraction) {
-                IntegerPoint((x / rhs.first.fractionValue).clampedIntegerValue,
-                        (y / rhs.second.fractionValue).clampedIntegerValue)
-            } else {
-                throw apology("division",
-                        otherMainType = Pair::class,
-                        otherTypeA = rhs.first::class,
-                        otherTypeB = rhs.second::class)
+            when {
+                rhs.first.isNativeInteger -> IntegerPoint(x / rhs.first.integerValue, y / rhs.second.integerValue)
+                rhs.first.isNativeFraction -> IntegerPoint((x / rhs.first.fractionValue).clampedIntegerValue,
+                                                           (y / rhs.second.fractionValue).clampedIntegerValue)
+                else -> throw apology("division",
+                                      otherMainType = Pair::class,
+                                      otherTypeA = rhs.first::class,
+                                      otherTypeB = rhs.second::class)
             }
 
 
@@ -242,6 +241,8 @@ class IntegerPoint(x: Integer, y: Integer) : ComputablePoint<Integer>(x, y) {
 }
 typealias Int64Point = IntegerPoint
 typealias IntPoint = IntegerPoint
+
+
 
 open class FractionPoint(x: Fraction, y: Fraction) : ComputablePoint<Fraction>(x, y) {
     constructor(x: Integer, y: Integer) : this(x.fractionValue, y.fractionValue)
@@ -338,9 +339,88 @@ typealias FloatPoint = FractionPoint
 
 
 
-//infix operator fun IntPoint.times(rhs: IntPoint): IntPoint
-//        = IntPoint(x * rhs.x, y * rhs.y)
-//infix operator fun IntPoint.times(rhs: IntSize): IntPoint
-//        = IntPoint(x * rhs.width, y * rhs.height)
-//infix operator fun IntPoint.times(rhs: Int): IntPoint
-//        = IntPoint(x * rhs, y * rhs)
+
+
+
+class Int8Point(x: Int8, y: Int8) : ComputablePoint<Int8>(x, y) {
+    override infix operator fun <OtherType : Number> plus(rhs: Point<OtherType>) = plus(Pair(rhs.x, rhs.y))
+    override infix operator fun <OtherType : Number> minus(rhs: Point<OtherType>) = minus(Pair(rhs.x, rhs.y))
+    override infix operator fun <OtherType : Number> times(rhs: Point<OtherType>) = times(Pair(rhs.x, rhs.y))
+    override infix operator fun <OtherType : Number> div(rhs: Point<OtherType>) = div(Pair(rhs.x, rhs.y))
+
+
+    override infix operator fun <OtherType : Number> plus(rhs: OtherType) = plus(Pair(rhs, rhs))
+    override infix operator fun <OtherType : Number> minus(rhs: OtherType) = minus(Pair(rhs, rhs))
+    override infix operator fun <OtherType : Number> times(rhs: OtherType) = times(Pair(rhs, rhs))
+    override infix operator fun <OtherType : Number> div(rhs: OtherType) = div(Pair(rhs, rhs))
+
+
+    override infix operator fun <OtherType : Number> plus(rhs: Pair<OtherType, OtherType>): Int8Point =
+            when {
+                rhs.first.isNativeInteger -> Int8Point((x + rhs.first.int8Value).int8Value,
+                                                       (y + rhs.second.int8Value).int8Value)
+                rhs.first.isNativeFraction -> Int8Point((x + rhs.first.fractionValue).clampedInt8Value,
+                                                           (y + rhs.second.fractionValue).clampedInt8Value)
+                else -> throw apology("addition",
+                                      otherMainType = Pair::class,
+                                      otherTypeA = rhs.first::class,
+                                      otherTypeB = rhs.second::class)
+            }
+
+
+    override infix operator fun <OtherType : Number> minus(rhs: Pair<OtherType, OtherType>): Int8Point =
+            when {
+                rhs.first.isNativeInteger -> Int8Point((x - rhs.first.int8Value).int8Value,
+                                                       (y - rhs.second.int8Value).int8Value)
+                rhs.first.isNativeFraction -> Int8Point((x - rhs.first.fractionValue).clampedInt8Value,
+                                                           (y - rhs.second.fractionValue).clampedInt8Value)
+                else -> throw apology("subtraction",
+                                      otherMainType = Pair::class,
+                                      otherTypeA = rhs.first::class,
+                                      otherTypeB = rhs.second::class)
+            }
+
+
+    override infix operator fun <OtherType : Number> times(rhs: Pair<OtherType, OtherType>): Int8Point =
+            when {
+                rhs.first.isNativeInteger -> Int8Point((x * rhs.first.int8Value).int8Value,
+                                                       (y * rhs.second.int8Value).int8Value)
+                rhs.first.isNativeFraction -> Int8Point((x * rhs.first.fractionValue).clampedInt8Value,
+                                                           (y * rhs.second.fractionValue).clampedInt8Value)
+                else -> throw apology("multiplication",
+                                      otherMainType = Pair::class,
+                                      otherTypeA = rhs.first::class,
+                                      otherTypeB = rhs.second::class)
+            }
+
+
+    override infix operator fun <OtherType : Number> div(rhs: Pair<OtherType, OtherType>): Int8Point =
+            when {
+                rhs.first.isNativeInteger -> Int8Point((x / rhs.first.int8Value).int8Value,
+                                                       (y / rhs.second.int8Value).int8Value)
+                rhs.first.isNativeFraction -> Int8Point((x / rhs.first.fractionValue).clampedInt8Value,
+                                                           (y / rhs.second.fractionValue).clampedInt8Value)
+                else -> throw apology("division",
+                                      otherMainType = Pair::class,
+                                      otherTypeA = rhs.first::class,
+                                      otherTypeB = rhs.second::class)
+            }
+
+
+    override fun equals(rhs: ComputablePoint<Int8>): Boolean = equals(rhs, tolerance = defaultCalculationTolerance)
+
+
+    override fun equals(other: ComputablePoint<Int8>, tolerance: Tolerance): Boolean =
+            x.equals(other.x, tolerance = tolerance)
+            && y.equals(other.y, tolerance = tolerance)
+
+
+    override fun copy(x: Int8, y: Int8): Int8Point {
+        return Int8Point(x = x, y = y)
+    }
+
+
+    companion object {
+        val zero = Int8Point(0, 0)
+    }
+}
