@@ -252,3 +252,16 @@ fun <A, B, ElementA, ElementB>
                 iterator(a, b)
             }
         }
+
+
+
+fun <Self, OldElement, NewElement>
+        Self.firstMappedOrNull(mapper : FlatMapper<OldElement, NewElement>) : NewElement?
+        where Self : Iterable<OldElement>{
+
+    forEach { each ->
+        mapper(each)?.let { return it }
+    }
+
+    return null
+}
