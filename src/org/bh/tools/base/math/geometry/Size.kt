@@ -142,6 +142,7 @@ private fun Size<*>.apology(type: String,
         otherMainType, otherTypeA, otherTypeAType, otherTypeB, otherTypeBType)
 
 
+
 class IntegerSize(width: Integer, height: Integer) : ComputableSize<Integer>(width, height) {
 
     companion object {
@@ -267,6 +268,131 @@ class IntegerSize(width: Integer, height: Integer) : ComputableSize<Integer>(wid
 
 typealias Int64Size = IntegerSize
 typealias IntSize = IntegerSize
+
+
+
+class Int8Size(width: Int8, height: Int8) : ComputableSize<Int8>(width, height) {
+
+    companion object {
+        val zero = Int8Size(0, 0)
+    }
+
+
+    override val isEmpty: Boolean = this == zero
+
+
+    override val minX: Int8 by lazy { 0.int8Value }
+    override val midX: Int8 by lazy { (width / 2).int8Value }
+    override val maxX: Int8 by lazy { width }
+
+    override val minY: Int8 by lazy { 0.int8Value }
+    override val midY: Int8 by lazy { (height / 2).int8Value }
+    override val maxY: Int8 by lazy { height }
+
+
+    override val minXminY: Int8Point by lazy { Int8Point(minX, minY) }
+    override val minXmidY: Int8Point by lazy { Int8Point(minX, midY) }
+    override val minXmaxY: Int8Point by lazy { Int8Point(minX, maxY) }
+
+    override val midXminY: Int8Point by lazy { Int8Point(midX, minY) }
+    override val midXmidY: Int8Point by lazy { Int8Point(midX, midY) }
+    override val midXmaxY: Int8Point by lazy { Int8Point(midX, maxY) }
+
+    override val maxXminY: Int8Point by lazy { Int8Point(maxX, minY) }
+    override val maxXmidY: Int8Point by lazy { Int8Point(maxX, midY) }
+    override val maxXmaxY: Int8Point by lazy { Int8Point(maxX, maxY) }
+
+
+    constructor(width: Int32, height: Int32) : this(width = width.int8Value, height = height.int8Value)
+    constructor(squareSide: Int8) : this(width = squareSide, height = squareSide)
+
+    //  abstract infix operator fun <OtherType> plus(rhs: ComputableSize<OtherType>): ComputableSize<NumberType> where OtherType : Number, OtherType : Comparable<OtherType>
+    override infix operator fun <OtherType> plus(rhs: ComputableSize<OtherType>): Int8Size where OtherType : Number, OtherType : Comparable<OtherType>
+            = plus(Pair(rhs.width, rhs.height))
+    override infix operator fun <OtherType> minus(rhs: ComputableSize<OtherType>): Int8Size where OtherType : Number, OtherType : Comparable<OtherType>
+            = minus(Pair(rhs.width, rhs.height))
+    override infix operator fun <OtherType> times(rhs: ComputableSize<OtherType>): Int8Size where OtherType : Number, OtherType : Comparable<OtherType>
+            = times(Pair(rhs.width, rhs.height))
+    override infix operator fun <OtherType> div(rhs: ComputableSize<OtherType>): Int8Size where OtherType : Number, OtherType : Comparable<OtherType>
+            = div(Pair(rhs.width, rhs.height))
+
+
+    override infix operator fun <OtherType> plus(rhs: OtherType): Int8Size where OtherType : Number, OtherType : Comparable<OtherType>
+            = plus(Pair(rhs, rhs))
+    override infix operator fun <OtherType> minus(rhs: OtherType): Int8Size where OtherType : Number, OtherType : Comparable<OtherType>
+            = minus(Pair(rhs, rhs))
+    override infix operator fun <OtherType> times(rhs: OtherType): Int8Size where OtherType : Number, OtherType : Comparable<OtherType>
+            = times(Pair(rhs, rhs))
+    override infix operator fun <OtherType> div(rhs: OtherType): Int8Size where OtherType : Number, OtherType : Comparable<OtherType>
+            = div(Pair(rhs, rhs))
+
+
+    override infix operator fun <OtherType> plus(rhs: Pair<OtherType, OtherType>): Int8Size
+            where OtherType : Number, OtherType : Comparable<OtherType>
+            =
+            when {
+                rhs.first.isNativeInteger -> Int8Size(width + (rhs.first.int8Value),
+                                                         height + (rhs.second.int8Value))
+                rhs.first.isNativeFraction -> Int8Size((width + (rhs.first.fractionValue)).clampedInt8Value,
+                                                          (height + (rhs.second.fractionValue)).clampedInt8Value)
+                else -> throw apology("addition",
+                                      otherMainType = Pair::class,
+                                      otherTypeA = rhs.first::class,
+                                      otherTypeB = rhs.second::class)
+            }
+
+
+    override infix operator fun <OtherType> minus(rhs: Pair<OtherType, OtherType>): Int8Size
+            where OtherType : Number, OtherType : Comparable<OtherType>
+            =
+            (if (rhs.first.isNativeInteger) {
+                Int8Size(width - (rhs.first.int8Value), height - (rhs.second.int8Value))
+            } else if (rhs.first.isNativeFraction) {
+                Int8Size((width - (rhs.first.fractionValue)).clampedInt8Value,
+                            (height - (rhs.second.fractionValue)).clampedInt8Value)
+            } else {
+                throw apology("subtraction",
+                              otherMainType = Pair::class,
+                              otherTypeA = rhs.first::class,
+                              otherTypeB = rhs.second::class)
+            })
+
+
+    override infix operator fun <OtherType> times(rhs: Pair<OtherType, OtherType>): Int8Size
+            where OtherType : Number, OtherType : Comparable<OtherType>
+            =
+            (if (rhs.first.isNativeInteger) {
+                Int8Size(width * (rhs.first.int8Value), height * (rhs.second.int8Value))
+            } else if (rhs.first.isNativeFraction) {
+                Int8Size((width * (rhs.first.fractionValue)).clampedInt8Value,
+                            (height * (rhs.second.fractionValue)).clampedInt8Value)
+            } else {
+                throw apology("multiplication",
+                              otherMainType = Pair::class,
+                              otherTypeA = rhs.first::class,
+                              otherTypeB = rhs.second::class)
+            })
+
+
+    override infix operator fun <OtherType> div(rhs: Pair<OtherType, OtherType>): Int8Size
+            where OtherType : Number, OtherType : Comparable<OtherType>
+            =
+            (if (rhs.first.isNativeInteger) {
+                Int8Size(width / (rhs.first.int8Value), height / (rhs.second.int8Value))
+            } else if (rhs.first.isNativeFraction) {
+                Int8Size((width / (rhs.first.fractionValue)).clampedInt8Value,
+                            (height / (rhs.second.fractionValue)).clampedInt8Value)
+            } else {
+                throw apology("division",
+                              otherMainType = Pair::class,
+                              otherTypeA = rhs.first::class,
+                              otherTypeB = rhs.second::class)
+            })
+
+
+    override val minDimension: Int8 by lazy { min(width, height) }
+    override val maxDimension: Int8 by lazy { max(width, height) }
+}
 
 
 
