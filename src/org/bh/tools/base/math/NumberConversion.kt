@@ -3,6 +3,7 @@
 package org.bh.tools.base.math
 
 import org.bh.tools.base.abstraction.*
+import org.bh.tools.base.math.RoundingDirection.*
 import kotlin.DeprecationLevel.*
 
 /*
@@ -297,7 +298,7 @@ inline val <N: Number> N.integerValue: Integer get() = this.int64Value
 @Deprecated("This does nothing", ReplaceWith(""), DeprecationLevel.WARNING)
 inline val Integer.integerValue: Integer get() = this
 
-fun <N: Number> N.integerValue(rounded: RoundingDirection): Integer = when {
+fun <N: Number> N.integerValue(rounded: RoundingDirection = RoundingDirection.default): Integer = when {
     this.isNativeInteger -> this.integerValue
     //this.isNativeFraction ->
     else -> this.fractionValue.rounded(rounded).integerValue

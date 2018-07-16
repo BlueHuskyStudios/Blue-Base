@@ -343,6 +343,10 @@ typealias FloatPoint = FractionPoint
 
 
 class Int8Point(x: Int8, y: Int8) : ComputablePoint<Int8>(x, y) {
+
+    constructor(x: Int32, y: Int32) : this(x = x.int8Value, y = y.int8Value)
+
+
     override infix operator fun <OtherType : Number> plus(rhs: Point<OtherType>) = plus(Pair(rhs.x, rhs.y))
     override infix operator fun <OtherType : Number> minus(rhs: Point<OtherType>) = minus(Pair(rhs.x, rhs.y))
     override infix operator fun <OtherType : Number> times(rhs: Point<OtherType>) = times(Pair(rhs.x, rhs.y))

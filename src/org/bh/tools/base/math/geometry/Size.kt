@@ -4,6 +4,7 @@ package org.bh.tools.base.math.geometry
 
 import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.math.*
+import org.bh.tools.base.math.geometry.RectangleScanningApproach.*
 import kotlin.reflect.*
 
 
@@ -99,9 +100,37 @@ abstract class ComputableSize
     abstract infix operator fun <OtherType> minus(rhs: Pair<OtherType, OtherType>): ComputableSize<NumberType> where OtherType : Number, OtherType : Comparable<OtherType>
     abstract infix operator fun <OtherType> times(rhs: Pair<OtherType, OtherType>): ComputableSize<NumberType> where OtherType : Number, OtherType : Comparable<OtherType>
     abstract infix operator fun <OtherType> div(rhs: Pair<OtherType, OtherType>): ComputableSize<NumberType> where OtherType : Number, OtherType : Comparable<OtherType>
+
+
+    abstract fun forEach(scanningApproach: RectangleScanningApproach = RectangleScanningApproach.default,
+                         iterator: (coordinate: ComputablePoint<NumberType>, didRollOver: Boolean) -> Unit)
 }
 
 
+
+internal fun
+        <NumberType, PointType, IterableNumber, IterableType>
+        rectangularIteratorTemplate(scanningApproach: RectangleScanningApproach,
+                                    xIterator: IterableType, yIterator: IterableType,
+                                    pointGenerator: (x: IterableNumber, y: IterableNumber) -> PointType,
+                                    iterator: (coordinate: PointType, didRollOver: Boolean) -> Unit)
+        where NumberType: Number, NumberType: Comparable<NumberType>, PointType: ComputablePoint<NumberType>, IterableType : Iterable<IterableNumber>
+{
+    when (scanningApproach) {
+        columnsAscendingThenRowsAscending -> {
+            var didRollOver: Boolean
+            yIterator.forEach { y ->
+                didRollOver = true
+                xIterator.forEach { x ->
+                    iterator(pointGenerator(x, y), didRollOver)
+                    didRollOver = false
+                }
+            }
+        }
+
+        else -> TODO("Scanning approaches other than CARA are not yet supported")
+    }
+}
 
 
 
@@ -112,6 +141,88 @@ fun <NumberType> ComputableSize<NumberType>.contains(point: ComputablePoint<Numb
         && this.minY <= point.y
         && this.maxX >= point.x
         && this.maxY >= point.y
+}
+
+
+
+/**
+ * Describes an approach on how to traverse every single pixel in a rectangle.
+ * If you don't care, use [`default`][RectangleScanningApproach.default].
+ */
+enum class RectangleScanningApproach {
+    /**
+     * Columns start at their min and are incremented until hitting their max, before being reset to their min and the
+     * row is incremented. This continues until both columns and rows hit their max.
+     */
+    columnsAscendingThenRowsAscending,
+
+    /**
+     * Rows start at their min and are incremented until hitting their max, before being reset to their min and the
+     * column is incremented. This continues until both columns and rows hit their max.
+     */
+    rowsAscendingThenColumnsAscending,
+
+
+    /**
+     * Columns start at their min and are incremented until hitting their max, before being reset to their min and the
+     * row is decremented. This continues until columns hit their max _and_ rows hit their min.
+     */
+    columnsAscendingThenRowsDescending,
+
+    /**
+     * Rows start at their min and are incremented until hitting their max, before being reset to their min and the
+     * column is decremented. This continues until columns hit their max _and_ rows hit their min.
+     */
+    rowsAscendingThenColumnsDescending,
+
+
+    /**
+     * Columns start at their max and are decremented until hitting their min, before being reset to their max and the
+     * row is incremented. This continues until columns hit their min _and_ rows hit their max.
+     */
+    columnsDescendingThenRowsAscending,
+
+    /**
+     * Rows start at their max and are decremented until hitting their min, before being reset to their max and the
+     * column is incremented. This continues until rows hit their min _and_ columns hit their max.
+     */
+    rowsDescendingThenColumnsAscending,
+
+
+    /**
+     * Columns start at their max and are decremented until hitting their min, before being reset to their max and the
+     * row is decremented. This continues until both columns and rows hit their min.
+     */
+    columnsDescendingThenRowsDescending,
+
+    /**
+     * Rows start at their max and are decremented until hitting their min, before being reset to their max and the
+     * column is decremented. This continues until both columns and rows hit their min.
+     */
+    rowsDescendingThenColumnsDescending,
+    ;
+
+    companion object {
+        /**
+         * The default scanning approach.
+         * Use this when you don't care what approach is used so long as all pixels are traversed
+         */
+        inline val default get() = columnsAscendingThenRowsAscending
+
+        inline val breadthFirst get() = columnsAscendingThenRowsAscending
+        inline val depthFirst get() = rowsAscendingThenColumnsAscending
+
+        inline val xThenY get() = columnsAscendingThenRowsAscending
+        inline val yThenX get() = rowsAscendingThenColumnsAscending
+        inline val xUpThenYUp get() = columnsAscendingThenRowsAscending
+        inline val yUpThenXUp get() = rowsAscendingThenColumnsAscending
+        inline val xUpThenYDown get() = columnsAscendingThenRowsDescending
+        inline val yUpThenXDown get() = rowsAscendingThenColumnsDescending
+        inline val xDownThenYUp get() = columnsDescendingThenRowsAscending
+        inline val yDownThenXUp get() = rowsDescendingThenColumnsAscending
+        inline val xDownThenYDown get() = columnsDescendingThenRowsDescending
+        inline val yDownThenXDown get() = rowsDescendingThenColumnsDescending
+    }
 }
 
 
@@ -233,37 +344,44 @@ class IntegerSize(width: Integer, height: Integer) : ComputableSize<Integer>(wid
     override infix operator fun <OtherType> times(rhs: Pair<OtherType, OtherType>): IntegerSize
             where OtherType : Number, OtherType : Comparable<OtherType>
             =
-            (if (rhs.first.isNativeInteger) {
-                IntegerSize(width * (rhs.first.integerValue), height * (rhs.second.integerValue))
-            } else if (rhs.first.isNativeFraction) {
-                IntegerSize((width * (rhs.first.fractionValue)).clampedIntegerValue,
-                        (height * (rhs.second.fractionValue)).clampedIntegerValue)
-            } else {
-                throw apology("multiplication",
-                        otherMainType = Pair::class,
-                        otherTypeA = rhs.first::class,
-                        otherTypeB = rhs.second::class)
-            })
+            when {
+                rhs.first.isNativeInteger -> IntegerSize(width * (rhs.first.integerValue),
+                                                         height * (rhs.second.integerValue))
+                rhs.first.isNativeFraction -> IntegerSize((width * (rhs.first.fractionValue)).clampedIntegerValue,
+                                                          (height * (rhs.second.fractionValue)).clampedIntegerValue)
+                else -> throw apology("multiplication",
+                                      otherMainType = Pair::class,
+                                      otherTypeA = rhs.first::class,
+                                      otherTypeB = rhs.second::class)
+            }
 
 
     override infix operator fun <OtherType> div(rhs: Pair<OtherType, OtherType>): IntegerSize
             where OtherType : Number, OtherType : Comparable<OtherType>
             =
-            (if (rhs.first.isNativeInteger) {
-                IntegerSize(width / (rhs.first.integerValue), height / (rhs.second.integerValue))
-            } else if (rhs.first.isNativeFraction) {
-                IntegerSize((width / (rhs.first.fractionValue)).clampedIntegerValue,
-                        (height / (rhs.second.fractionValue)).clampedIntegerValue)
-            } else {
-                throw apology("division",
-                        otherMainType = Pair::class,
-                        otherTypeA = rhs.first::class,
-                        otherTypeB = rhs.second::class)
-            })
+            when {
+                rhs.first.isNativeInteger -> IntegerSize(width / (rhs.first.integerValue),
+                                                         height / (rhs.second.integerValue))
+                rhs.first.isNativeFraction -> IntegerSize((width / (rhs.first.fractionValue)).clampedIntegerValue,
+                                                          (height / (rhs.second.fractionValue)).clampedIntegerValue)
+                else -> throw apology("division",
+                                      otherMainType = Pair::class,
+                                      otherTypeA = rhs.first::class,
+                                      otherTypeB = rhs.second::class)
+            }
 
 
     override val minDimension: Integer by lazy { min(width, height) }
     override val maxDimension: Integer by lazy { max(width, height) }
+
+
+    override fun forEach(scanningApproach: RectangleScanningApproach,
+                         iterator: (coordinate: ComputablePoint<Integer>, didRollOver: Boolean) -> Unit) =
+            rectangularIteratorTemplate(scanningApproach,
+                                        yIterator = minY until maxY,
+                                        xIterator = minX until maxX,
+                                        pointGenerator = ::IntegerPoint,
+                                        iterator = iterator)
 }
 
 typealias Int64Size = IntegerSize
@@ -332,9 +450,9 @@ class Int8Size(width: Int8, height: Int8) : ComputableSize<Int8>(width, height) 
             =
             when {
                 rhs.first.isNativeInteger -> Int8Size(width + (rhs.first.int8Value),
-                                                         height + (rhs.second.int8Value))
+                                                      height + (rhs.second.int8Value))
                 rhs.first.isNativeFraction -> Int8Size((width + (rhs.first.fractionValue)).clampedInt8Value,
-                                                          (height + (rhs.second.fractionValue)).clampedInt8Value)
+                                                       (height + (rhs.second.fractionValue)).clampedInt8Value)
                 else -> throw apology("addition",
                                       otherMainType = Pair::class,
                                       otherTypeA = rhs.first::class,
@@ -349,7 +467,7 @@ class Int8Size(width: Int8, height: Int8) : ComputableSize<Int8>(width, height) 
                 Int8Size(width - (rhs.first.int8Value), height - (rhs.second.int8Value))
             } else if (rhs.first.isNativeFraction) {
                 Int8Size((width - (rhs.first.fractionValue)).clampedInt8Value,
-                            (height - (rhs.second.fractionValue)).clampedInt8Value)
+                         (height - (rhs.second.fractionValue)).clampedInt8Value)
             } else {
                 throw apology("subtraction",
                               otherMainType = Pair::class,
@@ -365,7 +483,7 @@ class Int8Size(width: Int8, height: Int8) : ComputableSize<Int8>(width, height) 
                 Int8Size(width * (rhs.first.int8Value), height * (rhs.second.int8Value))
             } else if (rhs.first.isNativeFraction) {
                 Int8Size((width * (rhs.first.fractionValue)).clampedInt8Value,
-                            (height * (rhs.second.fractionValue)).clampedInt8Value)
+                         (height * (rhs.second.fractionValue)).clampedInt8Value)
             } else {
                 throw apology("multiplication",
                               otherMainType = Pair::class,
@@ -381,7 +499,7 @@ class Int8Size(width: Int8, height: Int8) : ComputableSize<Int8>(width, height) 
                 Int8Size(width / (rhs.first.int8Value), height / (rhs.second.int8Value))
             } else if (rhs.first.isNativeFraction) {
                 Int8Size((width / (rhs.first.fractionValue)).clampedInt8Value,
-                            (height / (rhs.second.fractionValue)).clampedInt8Value)
+                         (height / (rhs.second.fractionValue)).clampedInt8Value)
             } else {
                 throw apology("division",
                               otherMainType = Pair::class,
@@ -392,8 +510,16 @@ class Int8Size(width: Int8, height: Int8) : ComputableSize<Int8>(width, height) 
 
     override val minDimension: Int8 by lazy { min(width, height) }
     override val maxDimension: Int8 by lazy { max(width, height) }
-}
 
+
+    override fun forEach(scanningApproach: RectangleScanningApproach,
+                         iterator: (coordinate: ComputablePoint<Int8>, didRollOver: Boolean) -> Unit) =
+            rectangularIteratorTemplate(scanningApproach,
+                                        xIterator =  minX until maxX,
+                                        yIterator =  minY until maxY,
+                                        pointGenerator = ::Int8Point,
+                                        iterator =  iterator)
+}
 
 
 class FractionSize(width: Fraction, height: Fraction) : ComputableSize<Fraction>(width, height) {
@@ -517,6 +643,15 @@ class FractionSize(width: Fraction, height: Fraction) : ComputableSize<Fraction>
 
     override val minDimension: Fraction by lazy { min(width, height) }
     override val maxDimension: Fraction by lazy { max(width, height) }
+
+
+    override fun forEach(scanningApproach: RectangleScanningApproach,
+                         iterator: (coordinate: ComputablePoint<Fraction>, didRollOver: Boolean) -> Unit) =
+            rectangularIteratorTemplate(scanningApproach,
+                                        yIterator = minY.roundedIntegerValue until maxY.roundedIntegerValue,
+                                        xIterator = minX.roundedIntegerValue until maxX.roundedIntegerValue,
+                                        pointGenerator = ::FractionPoint,
+                                        iterator = iterator)
 }
 
 typealias Float64Size = FractionSize

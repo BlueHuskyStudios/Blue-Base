@@ -4,6 +4,7 @@ package org.bh.tools.base.math.geometry
 
 import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.math.*
+import org.bh.tools.base.struct.*
 
 
 /**
@@ -223,6 +224,10 @@ abstract class ComputableRect
 
         return copyWithExtremes(newMinX = newMinX, newMaxX = newMaxX, newMinY = newMinY, newMaxY = newMaxY)
     }
+
+
+    abstract fun forEach(scanningApproach: RectangleScanningApproach = RectangleScanningApproach.default,
+                         iterator: (coordinate: PointType, didRollOver: Boolean) -> Unit)
 }
 
 
@@ -348,6 +353,15 @@ open class IntegerRect(origin: ComputablePoint<Integer>, size: ComputableSize<In
 
 
     inline val integerValue: IntegerRect get() = this
+
+
+    override fun forEach(scanningApproach: RectangleScanningApproach,
+                         iterator: (coordinate: ComputablePoint<Integer>, didRollOver: Boolean) -> Unit) =
+            rectangularIteratorTemplate(scanningApproach,
+                                        yIterator = minY until maxY,
+                                        xIterator = minX until maxX,
+                                        pointGenerator = ::IntegerPoint,
+                                        iterator = iterator)
 }
 /** A [Rect] that uses [Int64]s */
 typealias Int64Rect = IntegerRect
@@ -481,6 +495,15 @@ open class FractionRect(origin: ComputablePoint<Fraction>, size: ComputableSize<
 
 
     inline val fractionValue: FractionRect get() = this
+
+
+    override fun forEach(scanningApproach: RectangleScanningApproach,
+                         iterator: (coordinate: ComputablePoint<Fraction>, didRollOver: Boolean) -> Unit) =
+            rectangularIteratorTemplate(scanningApproach,
+                                        yIterator = minY.roundedIntegerValue until maxY.roundedIntegerValue,
+                                        xIterator = minX.roundedIntegerValue until maxX.roundedIntegerValue,
+                                        pointGenerator = ::FractionPoint,
+                                        iterator = iterator)
 }
 /** A [Rect] that uses [Float64]s */
 typealias Float64Rect = FractionRect
