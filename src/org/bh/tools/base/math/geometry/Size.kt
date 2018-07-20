@@ -35,6 +35,10 @@ open class Size<out NumberType>(val width: NumberType, val height: NumberType) w
     override fun toString(): String {
         return "$width × $height"
     }
+
+
+    operator fun component1() = width
+    operator fun component2() = height
 }
 
 typealias Dimension<NumberType> = Size<NumberType>

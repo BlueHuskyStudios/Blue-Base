@@ -52,6 +52,10 @@ open class Point<out NumberType : Number>(val x: NumberType, val y: NumberType) 
 
     fun toTuple() = tupleValue
     val tupleValue by lazy { tuple(x, y) }
+
+
+    operator fun component1() = x
+    operator fun component2() = y
 }
 /**
  * Any kind of point, of any subclass, using any kind of number
@@ -61,6 +65,11 @@ typealias AnyPoint = Point<*>
 
 
 typealias Coordinate<NumberType> = Point<NumberType>
+
+
+
+val Coordinate<*>.row get() = y
+val Coordinate<*>.column get() = x
 
 
 
