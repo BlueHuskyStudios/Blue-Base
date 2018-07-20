@@ -61,6 +61,39 @@ operator fun <Element> List<Element>.get(index: Index, backup: (Index) -> Elemen
 
 
 /**
+ * If there is an element [at] the given index, and that index is within range of this list, then that element is
+ * returned. Else, this list is padded out until said index is within range, by using [paddingGenerator]. Once
+ * sufficiently padded, the new element is placed at the given index using [newElement].
+ *
+ * @param at               The index of the element to return, andor the element to insert
+ * @param newElement       The block which can generate the new element to place [at] the given index, if necessary
+ * @param paddingGenerator The generator which, if required, will generate dummy content to pad out this list until the
+ *                         given index is reachable. This will be called at least `0` and at most `n-1` times, where
+ *                         `n` is the distance outside the array [at] which the given index lies.
+ */
+fun <Element> MutableList<Element>.getOrSet(at: Index, newElement: (Index) -> Element, paddingGenerator: (Index) -> Element): Element {
+    val index = at
+    getOrNull(index)?.let {
+        return it
+    }
+
+    val backupValue = newElement(index)
+
+    if (this.size <= index) {
+        while (this.size < index) {
+            this.add(paddingGenerator(index))
+        }
+        this.add(backupValue)
+    }
+    else {
+        this[index] = backupValue
+    }
+
+    return backupValue
+}
+
+
+/**
  * If this list is large enough to contain an item at the given [index], that item is returned. Else, [backup] is returned
  *
  * @param index The index of the item to get
