@@ -5,6 +5,7 @@ package org.bh.tools.base.math.geometry
 import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.math.*
 import org.bh.tools.base.math.geometry.RectangleScanningApproach.*
+import org.bh.tools.base.math.geometry.RectangleScanningApproach.Companion.xUpThenYUp
 import kotlin.reflect.*
 
 
@@ -121,7 +122,7 @@ internal fun
         where NumberType: Number, NumberType: Comparable<NumberType>, PointType: ComputablePoint<NumberType>, IterableType : Iterable<IterableNumber>
 {
     when (scanningApproach) {
-        columnsAscendingThenRowsAscending -> {
+        xUpThenYUp -> {
             var didRollOver: Boolean
             yIterator.forEach { y ->
                 didRollOver = true
@@ -258,7 +259,7 @@ private fun Size<*>.apology(type: String,
 
 
 
-class IntegerSize(width: Integer, height: Integer) : ComputableSize<Integer>(width, height) {
+open class IntegerSize(width: Integer, height: Integer) : ComputableSize<Integer>(width, height) {
 
     companion object {
         val zero = IntegerSize(0, 0)
@@ -316,8 +317,7 @@ class IntegerSize(width: Integer, height: Integer) : ComputableSize<Integer>(wid
 
     override infix operator fun <OtherType> plus(rhs: Pair<OtherType, OtherType>): IntegerSize
             where OtherType : Number, OtherType : Comparable<OtherType>
-            =
-            when {
+            = when {
                 rhs.first.isNativeInteger -> IntegerSize(width + (rhs.first.integerValue),
                                                          height + (rhs.second.integerValue))
                 rhs.first.isNativeFraction -> IntegerSize((width + (rhs.first.fractionValue)).clampedIntegerValue,
@@ -331,24 +331,21 @@ class IntegerSize(width: Integer, height: Integer) : ComputableSize<Integer>(wid
 
     override infix operator fun <OtherType> minus(rhs: Pair<OtherType, OtherType>): IntegerSize
             where OtherType : Number, OtherType : Comparable<OtherType>
-            =
-            (if (rhs.first.isNativeInteger) {
-                IntegerSize(width - (rhs.first.integerValue), height - (rhs.second.integerValue))
-            } else if (rhs.first.isNativeFraction) {
-                IntegerSize((width - (rhs.first.fractionValue)).clampedIntegerValue,
-                        (height - (rhs.second.fractionValue)).clampedIntegerValue)
-            } else {
-                throw apology("subtraction",
-                        otherMainType = Pair::class,
-                        otherTypeA = rhs.first::class,
-                        otherTypeB = rhs.second::class)
-            })
+            = when {
+                rhs.first.isNativeInteger -> IntegerSize(width - (rhs.first.integerValue),
+                                                         height - (rhs.second.integerValue))
+                rhs.first.isNativeFraction -> IntegerSize((width - (rhs.first.fractionValue)).clampedIntegerValue,
+                                                          (height - (rhs.second.fractionValue)).clampedIntegerValue)
+                else -> throw apology("subtraction",
+                                      otherMainType = Pair::class,
+                                      otherTypeA = rhs.first::class,
+                                      otherTypeB = rhs.second::class)
+            }
 
 
     override infix operator fun <OtherType> times(rhs: Pair<OtherType, OtherType>): IntegerSize
             where OtherType : Number, OtherType : Comparable<OtherType>
-            =
-            when {
+            = when {
                 rhs.first.isNativeInteger -> IntegerSize(width * (rhs.first.integerValue),
                                                          height * (rhs.second.integerValue))
                 rhs.first.isNativeFraction -> IntegerSize((width * (rhs.first.fractionValue)).clampedIntegerValue,
@@ -362,8 +359,7 @@ class IntegerSize(width: Integer, height: Integer) : ComputableSize<Integer>(wid
 
     override infix operator fun <OtherType> div(rhs: Pair<OtherType, OtherType>): IntegerSize
             where OtherType : Number, OtherType : Comparable<OtherType>
-            =
-            when {
+            = when {
                 rhs.first.isNativeInteger -> IntegerSize(width / (rhs.first.integerValue),
                                                          height / (rhs.second.integerValue))
                 rhs.first.isNativeFraction -> IntegerSize((width / (rhs.first.fractionValue)).clampedIntegerValue,
@@ -393,7 +389,7 @@ typealias IntSize = IntegerSize
 
 
 
-class Int8Size(width: Int8, height: Int8) : ComputableSize<Int8>(width, height) {
+open class Int8Size(width: Int8, height: Int8) : ComputableSize<Int8>(width, height) {
 
     companion object {
         val zero = Int8Size(0, 0)
@@ -451,8 +447,7 @@ class Int8Size(width: Int8, height: Int8) : ComputableSize<Int8>(width, height) 
 
     override infix operator fun <OtherType> plus(rhs: Pair<OtherType, OtherType>): Int8Size
             where OtherType : Number, OtherType : Comparable<OtherType>
-            =
-            when {
+            = when {
                 rhs.first.isNativeInteger -> Int8Size(width + (rhs.first.int8Value),
                                                       height + (rhs.second.int8Value))
                 rhs.first.isNativeFraction -> Int8Size((width + (rhs.first.fractionValue)).clampedInt8Value,
@@ -466,50 +461,44 @@ class Int8Size(width: Int8, height: Int8) : ComputableSize<Int8>(width, height) 
 
     override infix operator fun <OtherType> minus(rhs: Pair<OtherType, OtherType>): Int8Size
             where OtherType : Number, OtherType : Comparable<OtherType>
-            =
-            (if (rhs.first.isNativeInteger) {
-                Int8Size(width - (rhs.first.int8Value), height - (rhs.second.int8Value))
-            } else if (rhs.first.isNativeFraction) {
-                Int8Size((width - (rhs.first.fractionValue)).clampedInt8Value,
-                         (height - (rhs.second.fractionValue)).clampedInt8Value)
-            } else {
-                throw apology("subtraction",
-                              otherMainType = Pair::class,
-                              otherTypeA = rhs.first::class,
-                              otherTypeB = rhs.second::class)
-            })
+            = when {
+                rhs.first.isNativeInteger -> Int8Size(width - (rhs.first.int8Value),
+                                                      height - (rhs.second.int8Value))
+                rhs.first.isNativeFraction -> Int8Size((width - (rhs.first.fractionValue)).clampedInt8Value,
+                                                       (height - (rhs.second.fractionValue)).clampedInt8Value)
+                else -> throw apology("subtraction",
+                                      otherMainType = Pair::class,
+                                      otherTypeA = rhs.first::class,
+                                      otherTypeB = rhs.second::class)
+            }
 
 
     override infix operator fun <OtherType> times(rhs: Pair<OtherType, OtherType>): Int8Size
             where OtherType : Number, OtherType : Comparable<OtherType>
-            =
-            (if (rhs.first.isNativeInteger) {
-                Int8Size(width * (rhs.first.int8Value), height * (rhs.second.int8Value))
-            } else if (rhs.first.isNativeFraction) {
-                Int8Size((width * (rhs.first.fractionValue)).clampedInt8Value,
-                         (height * (rhs.second.fractionValue)).clampedInt8Value)
-            } else {
-                throw apology("multiplication",
-                              otherMainType = Pair::class,
-                              otherTypeA = rhs.first::class,
-                              otherTypeB = rhs.second::class)
-            })
+            = when {
+                rhs.first.isNativeInteger -> Int8Size(width * (rhs.first.int8Value),
+                                                      height * (rhs.second.int8Value))
+                rhs.first.isNativeFraction -> Int8Size((width * (rhs.first.fractionValue)).clampedInt8Value,
+                                                       (height * (rhs.second.fractionValue)).clampedInt8Value)
+                else -> throw apology("multiplication",
+                                      otherMainType = Pair::class,
+                                      otherTypeA = rhs.first::class,
+                                      otherTypeB = rhs.second::class)
+            }
 
 
     override infix operator fun <OtherType> div(rhs: Pair<OtherType, OtherType>): Int8Size
             where OtherType : Number, OtherType : Comparable<OtherType>
-            =
-            (if (rhs.first.isNativeInteger) {
-                Int8Size(width / (rhs.first.int8Value), height / (rhs.second.int8Value))
-            } else if (rhs.first.isNativeFraction) {
-                Int8Size((width / (rhs.first.fractionValue)).clampedInt8Value,
-                         (height / (rhs.second.fractionValue)).clampedInt8Value)
-            } else {
-                throw apology("division",
-                              otherMainType = Pair::class,
-                              otherTypeA = rhs.first::class,
-                              otherTypeB = rhs.second::class)
-            })
+            = when {
+                rhs.first.isNativeInteger -> Int8Size(width / (rhs.first.int8Value),
+                                                      height / (rhs.second.int8Value))
+                rhs.first.isNativeFraction -> Int8Size((width / (rhs.first.fractionValue)).clampedInt8Value,
+                                                       (height / (rhs.second.fractionValue)).clampedInt8Value)
+                else -> throw apology("division",
+                                      otherMainType = Pair::class,
+                                      otherTypeA = rhs.first::class,
+                                      otherTypeB = rhs.second::class)
+            }
 
 
     override val minDimension: Int8 by lazy { min(width, height) }
@@ -526,7 +515,7 @@ class Int8Size(width: Int8, height: Int8) : ComputableSize<Int8>(width, height) 
 }
 
 
-class FractionSize(width: Fraction, height: Fraction) : ComputableSize<Fraction>(width, height) {
+open class FractionSize(width: Fraction, height: Fraction) : ComputableSize<Fraction>(width, height) {
 
     companion object {
         val zero = FractionSize(0, 0)

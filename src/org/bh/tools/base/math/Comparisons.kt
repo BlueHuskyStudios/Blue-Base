@@ -240,7 +240,7 @@ interface TolerableEquality<Self: TolerableEquality<Self>> {
 }
 
 /**
- * An unambiguous way to check if two things are approximately qual
+ * An unambiguous way to check if two things are approximately equal
  */
 fun <Self: TolerableEquality<Self>> TolerableEquality<Self>.isApproximately(other: Self, tolerance: Tolerance = defaultCalculationTolerance): Boolean
         = this.equals(other, tolerance = tolerance)
@@ -252,7 +252,7 @@ fun <Self: TolerableEquality<Self>> TolerableEquality<Self>.isApproximately(othe
  *
  * @param rhs       The other fraction to compare to this one
  * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
- *                  Defaults to [defaultFractionCalculationTolerance]
+ *                  Defaults to [defaultFloat64CalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
 fun Float64.equals(rhs: Float64, tolerance: Float64 = defaultFloat64CalculationTolerance) = when {
@@ -269,7 +269,7 @@ fun Float64.equals(rhs: Float64, tolerance: Float64 = defaultFloat64CalculationT
  *
  * @param rhs       The other fraction to compare to this one
  * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
- *                  Defaults to [defaultFractionCalculationTolerance]
+ *                  Defaults to [defaultFloat64CalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
 fun Float64.isApproximately(rhs: Float64, tolerance: Float64 = defaultFloat64CalculationTolerance)
@@ -309,7 +309,7 @@ fun Float32.isApproximately(rhs: Float32, tolerance: Float32 = defaultFloat32Cal
  *
  * @param rhs       The other fraction to compare to this one
  * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
- *                  Defaults to [defaultFractionCalculationTolerance]
+ *                  Defaults to [defaultCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
 fun Float64.equals(rhs: Float32, tolerance: Tolerance = defaultCalculationTolerance): Boolean = when {
@@ -325,7 +325,7 @@ fun Float64.equals(rhs: Float32, tolerance: Tolerance = defaultCalculationTolera
  *
  * @param rhs       The other fraction to compare to this one
  * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
- *                  Defaults to [defaultFractionCalculationTolerance]
+ *                  Defaults to [defaultCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
 fun Float64.isApproximately(rhs: Float32, tolerance: Tolerance = defaultCalculationTolerance): Boolean
@@ -337,7 +337,7 @@ fun Float64.isApproximately(rhs: Float32, tolerance: Tolerance = defaultCalculat
  *
  * @param rhs       The other fraction to compare to this one
  * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
- *                  Defaults to [defaultFractionCalculationTolerance]
+ *                  Defaults to [defaultCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
 fun Float32.equals(rhs: Float64, tolerance: Tolerance = defaultCalculationTolerance): Boolean
@@ -349,7 +349,7 @@ fun Float32.equals(rhs: Float64, tolerance: Tolerance = defaultCalculationTolera
  *
  * @param rhs       The other fraction to compare to this one
  * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
- *                  Defaults to [defaultFractionCalculationTolerance]
+ *                  Defaults to [defaultCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
 fun Float32.isApproximately(rhs: Float64, tolerance: Tolerance = defaultCalculationTolerance): Boolean
@@ -361,7 +361,7 @@ fun Float32.isApproximately(rhs: Float64, tolerance: Tolerance = defaultCalculat
  *
  * @param rhs       The other integer to compare to this one
  * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
- *                  Defaults to [defaultFractionCalculationTolerance]
+ *                  Defaults to [defaultCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
 fun Int8.equals(rhs: Int8, tolerance: Tolerance = defaultCalculationTolerance): Boolean = abs(rhs - this) <= tolerance
@@ -372,7 +372,7 @@ fun Int8.equals(rhs: Int8, tolerance: Tolerance = defaultCalculationTolerance): 
  *
  * @param rhs       The other integer to compare to this one
  * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
- *                  Defaults to [defaultFractionCalculationTolerance]
+ *                  Defaults to [defaultCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
 fun Int16.equals(rhs: Int16, tolerance: Tolerance = defaultCalculationTolerance): Boolean = abs(rhs - this) <= tolerance
@@ -383,7 +383,7 @@ fun Int16.equals(rhs: Int16, tolerance: Tolerance = defaultCalculationTolerance)
  *
  * @param rhs       The other integer to compare to this one
  * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
- *                  Defaults to [defaultFractionCalculationTolerance]
+ *                  Defaults to [defaultCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
 fun Int32.equals(rhs: Int32, tolerance: Tolerance = defaultCalculationTolerance): Boolean = abs(rhs - this) <= tolerance
@@ -394,7 +394,7 @@ fun Int32.equals(rhs: Int32, tolerance: Tolerance = defaultCalculationTolerance)
  *
  * @param rhs       The other integer to compare to this one
  * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
- *                  Defaults to [defaultFractionCalculationTolerance]
+ *                  Defaults to [defaultCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
 fun Int64.equals(rhs: Int64, tolerance: Tolerance = defaultCalculationTolerance): Boolean = abs(rhs - this) <= tolerance
@@ -405,7 +405,7 @@ fun Int64.equals(rhs: Int64, tolerance: Tolerance = defaultCalculationTolerance)
  *
  * @param rhs       The other fraction to compare to this one
  * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
- *                  Defaults to [defaultFractionCalculationTolerance]
+ *                  Defaults to [defaultCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
 fun Fraction.isLessThanOrEqualTo(rhs: Fraction, tolerance: Fraction = defaultFractionCalculationTolerance): Boolean = (this - tolerance) <= rhs
@@ -451,7 +451,7 @@ fun Fraction.isGreaterThan(rhs: Fraction, tolerance: Fraction = defaultFractionC
  *
  * @param rhs       The other integer to compare to this one
  * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
- *                  Defaults to [defaultFractionCalculationTolerance]
+ *                  Defaults to [defaultIntegerCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
 fun Integer.isLessThanOrEqualTo(rhs: Integer, tolerance: Integer = defaultIntegerCalculationTolerance): Boolean = (this - tolerance) <= rhs
@@ -462,7 +462,7 @@ fun Integer.isLessThanOrEqualTo(rhs: Integer, tolerance: Integer = defaultIntege
  *
  * @param rhs       The other integer to compare to this one
  * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
- *                  Defaults to [defaultFractionCalculationTolerance]
+ *                  Defaults to [defaultIntegerCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
 fun Integer.isGreaterThanOrEqualTo(rhs: Integer, tolerance: Integer = defaultIntegerCalculationTolerance): Boolean = (this + tolerance) >= rhs
@@ -473,7 +473,7 @@ fun Integer.isGreaterThanOrEqualTo(rhs: Integer, tolerance: Integer = defaultInt
  *
  * @param rhs       The other integer to compare to this one
  * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
- *                  Defaults to [defaultFractionCalculationTolerance]
+ *                  Defaults to [defaultIntegerCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
 fun Integer.isLessThan(rhs: Integer, tolerance: Integer = defaultIntegerCalculationTolerance): Boolean = (this - tolerance) < rhs
@@ -484,7 +484,7 @@ fun Integer.isLessThan(rhs: Integer, tolerance: Integer = defaultIntegerCalculat
  *
  * @param rhs       The other integer to compare to this one
  * @param tolerance `optional` - The amount by which the values can be off. It's nonsense to make this negative.
- *                  Defaults to [defaultFractionCalculationTolerance]
+ *                  Defaults to [defaultIntegerCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
 fun Integer.isGreaterThan(rhs: Integer, tolerance: Integer = defaultIntegerCalculationTolerance): Boolean = (this + tolerance) > rhs

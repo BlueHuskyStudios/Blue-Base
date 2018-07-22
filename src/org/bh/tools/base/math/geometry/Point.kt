@@ -68,8 +68,8 @@ typealias Coordinate<NumberType> = Point<NumberType>
 
 
 
-val Coordinate<*>.row get() = y
-val Coordinate<*>.column get() = x
+inline val Coordinate<*>.row get() = y
+inline val Coordinate<*>.column get() = x
 
 
 
@@ -351,7 +351,7 @@ typealias FloatPoint = FractionPoint
 
 
 
-class Int8Point(x: Int8, y: Int8) : ComputablePoint<Int8>(x, y) {
+open class Int8Point(x: Int8, y: Int8) : ComputablePoint<Int8>(x, y) {
 
     constructor(x: Int32, y: Int32) : this(x = x.int8Value, y = y.int8Value)
 
