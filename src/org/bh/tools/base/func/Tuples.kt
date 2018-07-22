@@ -3,7 +3,7 @@
 package org.bh.tools.base.func
 
 /*
- * To make functional programming easier
+ * To make tuples easier
  *
  * @author Kyli Rouge
  * @since 2017-02-04

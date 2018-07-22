@@ -3,6 +3,7 @@
 package org.bh.tools.base.collections.extensions
 
 import org.bh.tools.base.abstraction.*
+import org.bh.tools.base.func.*
 import org.bh.tools.base.math.*
 
 /*
@@ -121,6 +122,9 @@ inline fun <ElementType> Iterable<ElementType>.firstOrNullComparingTriads(crossi
 
 
 
+/**
+ * Allows you to compare pairs
+ */
 typealias PairComparator<Type> = (pair: Pair<Type, Type>) -> Boolean
 
 
@@ -162,6 +166,9 @@ inline fun <ElementType> Iterable<ElementType>.firstOrNullComparingPairs(crossin
 
 
 
+/**
+ * Reduces many values down into a single value
+ */
 typealias Reducer<ElementType, ResultType> = (runningValue: ResultType, currentValue: ElementType) -> ResultType
 
 
@@ -190,6 +197,7 @@ inline fun <ElementType, StartingType: ResultType, ResultType>
 }
 
 
+
 /**
  * Allows you to reduce a possibly-empty array. If the array is empty, the block is never called and `null` is always returned
  */
@@ -197,11 +205,13 @@ inline fun <S, T: S> Iterable<T>.safeReduce(operation: (S, T) -> S): S?
         = if (count() < 1) null else reduce(operation)
 
 
+
 /**
  * Allows you to reduce a possibly-empty array. If the array is empty, the block is never called and `null` is always returned
  */
 inline fun <S, T: S> Collection<T>.safeReduce(operation: (S, T) -> S): S?
         = if (isEmpty()) null else reduce(operation)
+
 
 
 /**
@@ -213,6 +223,45 @@ fun <ElementType> Iterable<ElementType>.toString(prefix: CharSequence = "", glue
 }
 
 
+
+/**
+ * Returns this iterable if and only if it is not empty. If it is empty, `null` is returned.
+ */
 @Suppress("NOTHING_TO_INLINE")
 inline fun <ElementType, IterableType: Iterable<ElementType>> IterableType.nonEmpty(): IterableType? = if (count() > 0) this else null
+
+
+
+/**
+ * Returns this iterable if and only if it is not empty. If it is empty, `null` is returned.
+ */
 inline val <ElementType, IterableType: Iterable<ElementType>> IterableType.nonEmpty get() = nonEmpty()
+
+
+
+/**
+ * Allows you to iterate through each and every combination of elements in a pair of iterables, where the second
+ * iterable is iterated over completely for each element in the first
+ */
+fun <A, B, ElementA, ElementB>
+        Tuple2<A, B>
+        .forEach(iterator: (ElementA, ElementB) -> Unit)
+        where A : Iterable<ElementA>, B : Iterable<ElementB>
+        = first.forEach { a ->
+            second.forEach { b ->
+                iterator(a, b)
+            }
+        }
+
+
+
+fun <Self, OldElement, NewElement>
+        Self.firstMappedOrNull(mapper : FlatMapper<OldElement, NewElement>) : NewElement?
+        where Self : Iterable<OldElement>{
+
+    forEach { each ->
+        mapper(each)?.let { return it }
+    }
+
+    return null
+}
