@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+@file:Suppress("unused", "NOTHING_TO_INLINE")
 
 package org.bh.tools.base.math
 
@@ -219,6 +219,14 @@ inline val Int16.absoluteValue get() = abs(this)
  * Finds the absolute value of this integer
  */
 inline val Int8.absoluteValue get() = abs(this)
+
+
+inline fun Float64.invertedSign() = -this
+inline fun Float32.invertedSign() = -this
+inline fun Int64.invertedSign() = -this
+inline fun Int32.invertedSign() = -this
+inline fun Int16.invertedSign() = -this
+inline fun Int8.invertedSign() = -this
 
 
 inline fun inverseSquareRoot(x: Float64): Float64 = inverseSquareRoot_allInOne_accuracy2(x)
