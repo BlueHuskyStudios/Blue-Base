@@ -197,8 +197,23 @@ enum class ComparisonResult(
          * Indicates that the **left** item is less/lower than the right
          */
         val lessThan: ComparisonResult get() = ascending
+
+        /**
+         * Indicates that **it cannot be determined** which item is greater/higher than the other
+         */
+        val indeterminate: ComparisonResult get() = same
     }
 }
+
+
+
+interface SemanticComparable<in Self> {
+    fun compare(to: Self): ComparisonResult
+}
+
+
+
+fun <T> Comparable<T>.compare(to: T) = ComparisonResult(this.compareTo(to))
 
 
 

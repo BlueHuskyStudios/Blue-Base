@@ -41,13 +41,12 @@ object TimeConversion {
     /** The number of days in a week */
     const val daysPerWeek: TimeInterval = 7.0
     /**
-     * The mean number of ephemeris days in a tropical Earth year, as of 2017: `365.242188792`
+     * The mean number of SI days in a tropical Earth year, as of 2017: `365.242189`
      *
      * **See also:**
      *  - [_Tropical year_ - Wikipedia](https://en.wikipedia.org/wiki/Tropical_year)
-     *  - [_Convert 1 tropical year to ephemeral days_ - Wolfram|Alpha](http://www.wolframalpha.com/input/?i=convert+1+tropical+year+to+ephemeral+days)
      */
-    const val daysPerYear: TimeInterval = 365.242188792
+    const val daysPerYear: TimeInterval = 365.242189
 
     /** The number of weeks in a [tropical year][daysPerYear] */
     const val weeksPerYear: TimeInterval = daysPerYear / daysPerWeek
@@ -254,8 +253,11 @@ enum class TimeUnit: Comparable<TimeUnit> {
     minutes,
     /** Hours: 3,600 SI [seconds], 24 of which make up a [day][days] */
     hours,
+    /** Days: 86,400 SI [seconds], 7 of which make up a [week][weeks], `365.242188792` of which make up a [year][years]; 24 [hours] */
     days,
+    /** Weeks: 172,800 [seconds]; 7 [days] */
     weeks,
+    /** Years: 1 Mean Tropical Year; 365.24219 [days] */
     years;
 
     /** Finds the number of `this` units in an [other]. For instance, [`seconds`][seconds]`.`[`per`][per]`(`[`minute`][minute]`)` == `60.0` */
@@ -388,8 +390,28 @@ enum class TimeUnit: Comparable<TimeUnit> {
 
         /** Syntactic alias for [years] */
         inline val year get() = years
+
+
+
+        /** Syntactic alias for [seconds] */
+        inline val interval get() = seconds
+
+        /** Syntactic alias for [seconds] */
+        inline val timeInterval get() = seconds
     }
 }
 
 
 data class TimeAmount(val amount: TimeInterval, val unit: TimeUnit)
+
+
+
+val TimeInterval.asMilliseconds get() = TimeAmount(this, TimeUnit.milliseconds)
+val TimeInterval.asNanoseconds get() = TimeAmount(this, TimeUnit.nanoseconds)
+
+
+val TimeAmount.seconds get() = this.convert(to= TimeUnit.seconds)
+val TimeAmount.timeIntervalValue get() = this.convert(to= TimeUnit.timeInterval).amount
+
+
+fun TimeAmount.convert(to: TimeUnit): TimeAmount = TimeConversion.convert(this, to)

@@ -3,7 +3,7 @@
 package org.bh.tools.base.collections.extensions
 
 import org.bh.tools.base.collections.Index
-import org.bh.tools.base.math.int32Value
+import org.bh.tools.base.math.*
 import org.bh.tools.base.struct.IntegerRange
 import org.bh.tools.base.util.*
 
@@ -107,6 +107,10 @@ operator fun <Element> List<Element>.get(index: Index, backup: Element) = get(in
 @Suppress("NOTHING_TO_INLINE")
 inline fun <ElementType, IterableType: List<ElementType>> IterableType.nonEmpty(): IterableType? = if (isEmpty()) null else this
 inline val <ElementType, IterableType: List<ElementType>> IterableType.nonEmpty get() = nonEmpty()
+
+
+
+fun <ElementType> List<ElementType>.indexOrNull(of: ElementType) = indexOf(of).positiveOrNull
 
 
 

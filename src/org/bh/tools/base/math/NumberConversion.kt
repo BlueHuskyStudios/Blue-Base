@@ -444,6 +444,20 @@ inline val Float32.clampToPositive: Float32 get() = if (this < 0.0f) 0.0f else t
 inline val Float64.clampToPositive: Float64 get() = if (this < 0.0)  0.0  else this
 
 
+/** Returns this integer if it is positive, else `null`. */
+inline val Int8.positiveOrNull   : Int8?    get() = if (this < 0)    null else this
+/** Returns this integer if it is positive, else `null`. */
+inline val Int16.positiveOrNull  : Int16?   get() = if (this < 0)    null else this
+/** Returns this integer if it is positive, else `null`. */
+inline val Int32.positiveOrNull  : Int32?   get() = if (this < 0)    null else this
+/** Returns this integer if it is positive, else `null`. */
+inline val Int64.positiveOrNull  : Int64?   get() = if (this < 0)    null else this
+/** Returns this fraction if it is positive, else `null`. */
+inline val Float32.positiveOrNull: Float32? get() = if (this < 0.0f) null else this
+/** Returns this fraction if it is positive, else `null`. */
+inline val Float64.positiveOrNull: Float64? get() = if (this < 0.0)  null else this
+
+
 
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
 @Throws(NumberFormatException::class)
