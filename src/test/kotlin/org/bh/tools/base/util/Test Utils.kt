@@ -12,7 +12,7 @@ import org.bh.tools.base.util.Assertion.*
 import org.bh.tools.base.util.TimeConversion.nanosecondsToTimeInterval
 import org.junit.Assert.*
 import kotlin.system.*
-import kotlin.test.*
+//import kotlin.test.*
 
 /*
  * To aid in testing
@@ -304,7 +304,7 @@ inline fun <TE: TolerableEquality<TE>> assertEquals(expected: TE,
                                                     actual: TE,
                                                     tolerance: Tolerance,
                                                     message: String = "Expected no farther than ($tolerance) from ($expected), but got ($actual)")
-        = assertTrue(expected.equals(actual, tolerance = tolerance), message)
+        = assert(expected.equals(actual, tolerance = tolerance), message)
 
 
 

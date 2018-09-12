@@ -6,7 +6,7 @@ package org.bh.tools.base.math
 import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.util.*
 import org.junit.jupiter.api.*
-import kotlin.test.*
+//import kotlin.test.*
 
 
 /**
@@ -163,7 +163,7 @@ internal class BasicMathFunctionsTest {
 
 
         if (!results.all(FractionFunctionTestResult::success)) {
-            assertTrue(false, "Final results: ${results.humanReadableString()}")
+            assertionFailure("Final results: ${results.humanReadableString()}")
         }
     }
 
