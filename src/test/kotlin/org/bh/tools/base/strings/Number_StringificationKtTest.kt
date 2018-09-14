@@ -3,8 +3,8 @@ package org.bh.tools.base.strings
 
 import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.util.*
-import org.junit.*
-import org.junit.Assert.*
+import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions.*
 
 
 /**
@@ -30,7 +30,7 @@ class Number_StringificationKtTest {
                 Assertion.valid(123.4, "123"),
                 Assertion.valid(123.5, "124")
         ))
-        assertTrue(zeroFractionDigits.message, zeroFractionDigits.wasSuccessful)
+        assertTrue(zeroFractionDigits.wasSuccessful, zeroFractionDigits.message)
 
         val oneFractionDigit = expect("Float64.toString(fractionDigits = 1)", ::toString_1FractionDigits, listOf(
                 Assertion.valid(0.0, "0.0"),
@@ -39,7 +39,7 @@ class Number_StringificationKtTest {
                 Assertion.valid(123.4, "123.4"),
                 Assertion.valid(123.5, "123.5")
         ))
-        assertTrue(oneFractionDigit.message, oneFractionDigit.wasSuccessful)
+        assertTrue(oneFractionDigit.wasSuccessful, oneFractionDigit.message)
 
         val twoFractionDigits = expect("Float64.toString(fractionDigits = 2)", ::toString_2FractionDigits, listOf(
                 Assertion.valid(0.0, "0.00"),
@@ -48,7 +48,7 @@ class Number_StringificationKtTest {
                 Assertion.valid(123.4, "123.40"),
                 Assertion.valid(123.5, "123.50")
         ))
-        assertTrue(twoFractionDigits.message, twoFractionDigits.wasSuccessful)
+        assertTrue(twoFractionDigits.wasSuccessful, twoFractionDigits.message)
 
         val threeFractionDigits = expect("Float64.toString(fractionDigits = 3)", ::toString_3FractionDigits, listOf(
                 Assertion.valid(0.0, "0.000"),
@@ -57,7 +57,7 @@ class Number_StringificationKtTest {
                 Assertion.valid(123.4, "123.400"),
                 Assertion.valid(123.5, "123.500")
         ))
-        assertTrue(threeFractionDigits.message, threeFractionDigits.wasSuccessful)
+        assertTrue(threeFractionDigits.wasSuccessful, threeFractionDigits.message)
     }
 
 
@@ -75,7 +75,7 @@ class Number_StringificationKtTest {
                 Assertion.valid(1234L, "1,234"),
                 Assertion.valid(123L, "123")
         ))
-        assertTrue(comma_groupSize3.message, comma_groupSize3.wasSuccessful)
+        assertTrue(comma_groupSize3.wasSuccessful, comma_groupSize3.message)
 
         val dot_groupSize3 = expect("Int64.toString(separator = \".\", groupSize = 3)", ::toString_dot_groupSize3, listOf(
                 Assertion.valid(0L, "0"),
@@ -84,7 +84,7 @@ class Number_StringificationKtTest {
                 Assertion.valid(1234L, "1.234"),
                 Assertion.valid(123L, "123")
         ))
-        assertTrue(dot_groupSize3.message, dot_groupSize3.wasSuccessful)
+        assertTrue(dot_groupSize3.wasSuccessful, dot_groupSize3.message)
 
         val comma_groupSize4 = expect("Int64.toString(separator = \",\", groupSize = 4)", ::toString_comma_groupSize4, listOf(
                 Assertion.valid(0L, "0"),
@@ -93,7 +93,7 @@ class Number_StringificationKtTest {
                 Assertion.valid(1234L, "1234"),
                 Assertion.valid(123L, "123")
         ))
-        assertTrue(comma_groupSize4.message, comma_groupSize4.wasSuccessful)
+        assertTrue(comma_groupSize4.wasSuccessful, comma_groupSize4.message)
     }
 
 
@@ -111,7 +111,7 @@ class Number_StringificationKtTest {
                 Assertion.valid(1234, "1,234"),
                 Assertion.valid(123, "123")
         ))
-        assertTrue(comma_groupSize3.message, comma_groupSize3.wasSuccessful)
+        assertTrue(comma_groupSize3.wasSuccessful, comma_groupSize3.message)
 
         val dot_groupSize3 = expect("Int32.toString(separator = \".\", groupSize = 3)", ::toString_dot_groupSize3, listOf(
                 Assertion.valid(0, "0"),
@@ -120,7 +120,7 @@ class Number_StringificationKtTest {
                 Assertion.valid(1234, "1.234"),
                 Assertion.valid(123, "123")
         ))
-        assertTrue(dot_groupSize3.message, dot_groupSize3.wasSuccessful)
+        assertTrue(dot_groupSize3.wasSuccessful, dot_groupSize3.message)
 
         val comma_groupSize4 = expect("Int32.toString(separator = \",\", groupSize = 4)", ::toString_comma_groupSize4, listOf(
                 Assertion.valid(0, "0"),
@@ -129,6 +129,6 @@ class Number_StringificationKtTest {
                 Assertion.valid(1234, "1234"),
                 Assertion.valid(123, "123")
         ))
-        assertTrue(comma_groupSize4.message, comma_groupSize4.wasSuccessful)
+        assertTrue(comma_groupSize4.wasSuccessful, comma_groupSize4.message)
     }
 }

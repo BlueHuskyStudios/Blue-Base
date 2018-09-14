@@ -1,12 +1,8 @@
 package org.bh.tools.base.strings
 
 
-import org.bh.tools.base.func.Tuple2
-import org.bh.tools.base.func.tuple
 import org.bh.tools.base.util.assertListEquals
-import org.junit.Test
-
-import org.junit.Assert.*
+import org.junit.jupiter.api.*
 
 
 /**

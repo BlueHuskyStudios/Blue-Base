@@ -4,8 +4,8 @@ import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.math.RoundingDirection.*
 import org.bh.tools.base.math.RoundingThreshold.*
 import org.bh.tools.base.util.*
-import org.junit.*
-import org.junit.Assert.*
+import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions.*
 
 /**
  * @author Kyli Rouge
@@ -15,15 +15,15 @@ import org.junit.Assert.*
 class FractionUtilitiesTest {
     @Test
     fun getHasFractionComponent() {
-        assertTrue("Expected -9999999999999.9 to have a fraction component", (-9999999999999.9).hasFractionComponent)
-        assertTrue("Expected -1.1 to have a fraction component", (-1.1).hasFractionComponent)
-        assertTrue("Expected 1.1 to have a fraction component", 1.1.hasFractionComponent)
-        assertTrue("Expected 9999999999999.9 to have a fraction component", 9999999999999.9.hasFractionComponent)
+        assertTrue((-9999999999999.9).hasFractionComponent, "Expected -9999999999999.9 to have a fraction component")
+        assertTrue((-1.1).hasFractionComponent, "Expected -1.1 to have a fraction component")
+        assertTrue(1.1.hasFractionComponent, "Expected 1.1 to have a fraction component")
+        assertTrue(9999999999999.9.hasFractionComponent, "Expected 9999999999999.9 to have a fraction component")
 
-        assertFalse("Expected -9999999999999.0 to not have a fraction component", (-9999999999999.0).hasFractionComponent)
-        assertFalse("Expected -1.0 to not have a fraction component", (-1.0).hasFractionComponent)
-        assertFalse("Expected 1.0 to not have a fraction component", 1.0.hasFractionComponent)
-        assertFalse("Expected 9999999999999.0 to not have a fraction component", 9999999999999.0.hasFractionComponent)
+        assertFalse((-9999999999999.0).hasFractionComponent, "Expected -9999999999999.0 to not have a fraction component")
+        assertFalse((-1.0).hasFractionComponent, "Expected -1.0 to not have a fraction component")
+        assertFalse(1.0.hasFractionComponent, "Expected 1.0 to not have a fraction component")
+        assertFalse(9999999999999.0.hasFractionComponent, "Expected 9999999999999.0 to not have a fraction component")
     }
 
     @Test
@@ -206,7 +206,7 @@ class FractionUtilitiesTest {
 
 fun assertRounded(expected: Fraction, beforeRounding: Fraction, direction: RoundingDirection = RoundingDirection.default, threshold: RoundingThreshold = RoundingThreshold.default) {
     val message = "$beforeRounding rounded ${direction.humanReadableTestString} with $threshold threshold should be $expected"
-    assertEquals(message, expected, beforeRounding.rounded(direction, threshold), defaultFractionCalculationTolerance)
+    assertEquals(expected, beforeRounding.rounded(direction, threshold), tolerance = defaultFractionCalculationTolerance, message = message)
 }
 
 
@@ -217,7 +217,7 @@ fun assertCeil(expected: Fraction, beforeRounding: Fraction) {
 
 fun assertFracFun(expected: Fraction, beforeRounding: Fraction, funcName: String, fracFun: FracFun) {
     val actual = fracFun(beforeRounding)
-    assertEquals("Expected $beforeRounding.$funcName() to be $expected, but was $actual", expected, actual, defaultFractionCalculationTolerance)
+    assertEquals(expected, actual, tolerance = defaultFractionCalculationTolerance, message = "Expected $beforeRounding.$funcName() to be $expected, but was $actual")
 }
 
 

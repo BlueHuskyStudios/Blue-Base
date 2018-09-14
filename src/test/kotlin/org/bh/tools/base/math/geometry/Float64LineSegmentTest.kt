@@ -8,7 +8,7 @@ import org.bh.tools.base.math.*
 import org.bh.tools.base.math.geometry.FractionPoint.Companion.zero
 import org.bh.tools.base.math.geometry.IntersectionDescription.*
 import org.bh.tools.base.util.*
-import org.junit.*
+import org.junit.jupiter.api.*
 
 
 private data class Intersection(
@@ -34,6 +34,8 @@ private inline fun p(x: Integer, y: Integer) = FractionPoint(x, y)
 
 @Suppress("NOTHING_TO_INLINE")
 private inline infix fun FractionPoint.lineTo(other: FractionPoint) = FractionLineSegment(this, other)
+
+
 
 
 /**
@@ -148,19 +150,18 @@ class Float64LineSegmentTest {
 @Suppress("NOTHING_TO_INLINE")
 @JvmName("assertFractionPointsEqual")
 private inline fun assertEquals(message: String, expected: ComputablePoint<Fraction>?, actual: ComputablePoint<Fraction>?, tolerance: Tolerance = defaultCalculationTolerance) {
-    val fail: Boolean
-    if (actual != null) {
+    val fail = if (actual != null) {
         if (expected != null) {
-            fail = !expected.equals(actual, tolerance)
+            !expected.equals(actual, tolerance)
         } else { // if expected == null
-            fail = true
+            true
         }
     } else { // if actual == null
-        fail = expected != null
+        expected != null
     }
+
     if (fail) {
-        @Suppress("DEPRECATION")
-        junit.framework.Assert.failNotEquals(message, expected, actual)
+        assertionFailure("Expected $expected, got $actual: $message")
     }
 }
 
@@ -180,8 +181,7 @@ private inline fun assertEquals(message: String, expected: ComputablePoint<Integ
         expected != null
     }
     if (fail) {
-        @Suppress("DEPRECATION")
-        junit.framework.Assert.failNotEquals(message, expected, actual)
+        assertionFailure("Expected $expected, got $actual: $message")
     }
 }
 
@@ -201,7 +201,6 @@ private inline fun assertEquals(message: String, expected: IntersectionDescripti
         }
     }
     if (fail) {
-        @Suppress("DEPRECATION")
-        junit.framework.Assert.failNotEquals(message, expected, actual)
+        assertionFailure("Expected $expected, got $actual: $message")
     }
 }
