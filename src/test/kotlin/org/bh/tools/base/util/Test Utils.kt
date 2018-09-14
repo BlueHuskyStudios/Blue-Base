@@ -10,7 +10,8 @@ import org.bh.tools.base.math.*
 import org.bh.tools.base.math.geometry.*
 import org.bh.tools.base.util.Assertion.*
 import org.bh.tools.base.util.TimeConversion.nanosecondsToTimeInterval
-import org.junit.Assert.*
+import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions.*
 import kotlin.system.*
 //import kotlin.test.*
 
@@ -139,9 +140,9 @@ fun <T> blackHole(x: T) {
 
 @Suppress("NOTHING_TO_INLINE")
 //@JvmOverloads
-inline fun assertionFailure(message: String? = null) = assertTrue(message, false)
+inline fun assertionFailure(message: String? = null) = assertTrue(false, message)
 
-inline fun assertionFailure(message: StringSupplier) = assertTrue(message(), false)
+inline fun assertionFailure(message: StringSupplier) = assertTrue(false, message())
 
 
 //@JvmOverloads
@@ -171,7 +172,7 @@ fun <Element,
         assertListEquals(message: String? = null, listA: ListA, listB: ListB) {
     if (listA.length == listB.length) {
         listA.zip(listB).forEach { (aElement, bElement) ->
-            assertEquals(message, aElement, bElement)
+            assertEquals(aElement, bElement, message)
         }
     } else {
         assertionFailure(message)
@@ -203,7 +204,7 @@ fun <Element,
                     assertionFailure(message)
                 }
             } else {
-                assertEquals(message, aElement, bElement)
+                assertEquals(aElement, bElement, message)
             }
         }
     } else {
@@ -307,6 +308,28 @@ inline fun <TE: TolerableEquality<TE>> assertEquals(expected: TE,
         = assert(expected.equals(actual, tolerance = tolerance), message)
 
 
+/**
+ * Asserts that the given two items of tolerable equality are equal within a given tolerance
+ */
+@Suppress("NOTHING_TO_INLINE")
+inline fun assertEquals(expected: Float64,
+                        actual: Float64,
+                        tolerance: Tolerance,
+                        message: String = "Expected no farther than ($tolerance) from ($expected), but got ($actual)")
+        = assert(expected.equals(actual, tolerance = tolerance), message)
+
+
+/**
+ * Asserts that the given two items of tolerable equality are equal within a given tolerance
+ */
+@Suppress("NOTHING_TO_INLINE")
+inline fun assertEquals(expected: Float32,
+                        actual: Float32,
+                        tolerance: Tolerance,
+                        message: String = "Expected no farther than ($tolerance) from ($expected), but got ($actual)")
+        = assert(expected.equals(actual, tolerance = tolerance), message)
+
+
 
 // MARK: -
 
@@ -361,7 +384,7 @@ fun Collection<FractionFunctionTestResult>.humanReadableString(): String =
 //@JvmOverloads
 fun <C, Element> assertContains(message: String? = null, collection: C, element: Element)
         where C: Collection<Element> {
-    assertTrue(message, collection.contains(element))
+    assertTrue(collection.contains(element), message)
 }
 
 
@@ -378,5 +401,5 @@ fun <Size, Point, NumberType> assertContains(message: String? = null, size: Size
               Point : ComputablePoint<NumberType>,
               NumberType : Number,
               NumberType : Comparable<NumberType> {
-    assertTrue(message, size.contains(point))
+    assertTrue(size.contains(point), message)
 }

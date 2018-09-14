@@ -355,7 +355,7 @@ fun Float64.isApproximately(rhs: Float32, tolerance: Tolerance = defaultCalculat
  *                  Defaults to [defaultCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
-fun Float32.equals(rhs: Float64, tolerance: Tolerance = defaultCalculationTolerance): Boolean
+fun Float32.equals(rhs: Float32, tolerance: Tolerance = defaultCalculationTolerance): Boolean
         = rhs.equals(this, tolerance = tolerance)
 
 
@@ -367,7 +367,7 @@ fun Float32.equals(rhs: Float64, tolerance: Tolerance = defaultCalculationTolera
  *                  Defaults to [defaultCalculationTolerance]
  * @return `true` iff this value and the other are equal within the given tolerance
  */
-fun Float32.isApproximately(rhs: Float64, tolerance: Tolerance = defaultCalculationTolerance): Boolean
+fun Float32.isApproximately(rhs: Float32, tolerance: Tolerance = defaultCalculationTolerance): Boolean
         = this.equals(rhs, tolerance = tolerance)
 
 
