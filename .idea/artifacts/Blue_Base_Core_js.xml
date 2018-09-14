@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact build-on-make="true" name="Blue Base/Core:js">
-    <output-path>$PROJECT_DIR$/out/artifacts/Blue_Base_Core_js</output-path>
-    <root id="root">
-      <element id="module-output" name="Blue Base Core" />
-    </root>
-  </artifact>
-</component>
