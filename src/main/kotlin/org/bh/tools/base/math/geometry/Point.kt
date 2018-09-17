@@ -6,7 +6,6 @@ import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.basics.Cloneable
 import org.bh.tools.base.func.*
 import org.bh.tools.base.math.*
-import org.bh.tools.base.math.RoundingDirection.*
 import kotlin.reflect.*
 
 

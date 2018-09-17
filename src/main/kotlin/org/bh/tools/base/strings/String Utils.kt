@@ -3,10 +3,10 @@
 package org.bh.tools.base.strings
 
 import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.collections.Index
-import org.bh.tools.base.collections.extensions.reduceTo
+import org.bh.tools.base.collections.*
+import org.bh.tools.base.collections.extensions.*
 import org.bh.tools.base.math.*
-import org.bh.tools.base.struct.int32Value
+import org.bh.tools.base.struct.*
 
 /*
  * Copyright BHStudios ©2016 BH-1-PS. Made for BH Tic Tac Toe IDEA Project.

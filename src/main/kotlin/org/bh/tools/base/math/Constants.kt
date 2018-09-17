@@ -2,8 +2,7 @@
 
 package org.bh.tools.base.math
 
-import org.bh.tools.base.abstraction.Float32
-import org.bh.tools.base.abstraction.Float64
+import org.bh.tools.base.abstraction.*
 
 /*
  * Some constants at convenient places

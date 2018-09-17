@@ -3,7 +3,7 @@
 package org.bh.tools.base.util
 
 import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.math.fractionValue
+import org.bh.tools.base.math.*
 import org.bh.tools.base.util.TimeConversion.daysPerYear
 import org.bh.tools.base.util.TimeConversion.nanosecondsPerMillisecond
 import org.bh.tools.base.util.TimeConversion.nanosecondsPerSecond

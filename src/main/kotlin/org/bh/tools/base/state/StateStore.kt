@@ -2,7 +2,7 @@
 
 package org.bh.tools.base.state
 
-import org.bh.tools.base.collections.DeltaStack
+import org.bh.tools.base.collections.*
 
 /**
  * Copyright BHStudios ©2016 BH-1-PS. Made for Snek.

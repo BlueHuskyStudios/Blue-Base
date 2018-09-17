@@ -1,7 +1,7 @@
 package org.bh.tools.base.math.geometry
 
-import org.bh.tools.base.abstraction.Fraction
-import org.bh.tools.base.math.double_π
+import org.bh.tools.base.abstraction.*
+import org.bh.tools.base.math.*
 
 /*
  * Makes geometry easier

@@ -2,12 +2,10 @@
 
 package org.bh.tools.base.struct
 
-import org.bh.tools.base.abstraction.Int32
-import org.bh.tools.base.abstraction.Int64
-import org.bh.tools.base.abstraction.Integer
-import org.bh.tools.base.collections.extensions.toString
+import org.bh.tools.base.abstraction.*
+import org.bh.tools.base.collections.extensions.*
 import org.bh.tools.base.math.*
-import org.bh.tools.base.struct.VersionChannel.stable
+import org.bh.tools.base.struct.VersionChannel.*
 
 typealias VersionStage = Integer
 

@@ -2,9 +2,8 @@
 
 package org.bh.tools.base.struct
 
-import org.bh.tools.base.abstraction.Fraction
-import org.bh.tools.base.abstraction.Integer
-import org.bh.tools.base.collections.Index
+import org.bh.tools.base.abstraction.*
+import org.bh.tools.base.collections.*
 import org.bh.tools.base.math.*
 
 /**

@@ -3,10 +3,8 @@
 package org.bh.tools.base.collections.extensions
 
 import org.bh.tools.base.collections.*
-import org.bh.tools.base.math.max
-import org.bh.tools.base.math.min
-import org.bh.tools.base.struct.ClosedRange
-import org.bh.tools.base.struct.IndexRange
+import org.bh.tools.base.math.*
+import org.bh.tools.base.struct.*
 
 /*
  * Array Extensions, made for Blue Base, is copyright Blue Husky Software ©2016 BH-1-PS.

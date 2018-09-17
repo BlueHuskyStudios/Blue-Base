@@ -3,9 +3,6 @@
 package org.bh.tools.base.math
 
 import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.math.RoundingDirection.up
-import org.bh.tools.base.math.RoundingThreshold.integer
-import kotlin.jvm.*
 
 /*
  * Assists in doing algebra

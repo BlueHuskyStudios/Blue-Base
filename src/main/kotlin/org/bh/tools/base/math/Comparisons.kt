@@ -207,12 +207,22 @@ enum class ComparisonResult(
 
 
 
+/**
+ * A comparable which returns a semantic object that describes the result of comparison
+ */
 interface SemanticComparable<in Self> {
+
+    /**
+     * Compares this object to the given one and returns a semantic object that describes the result of comparison
+     */
     fun compare(to: Self): ComparisonResult
 }
 
 
 
+/**
+ * Compares this object to the other and returns a semantic object that describes the result of comparison
+ */
 fun <T> Comparable<T>.compare(to: T) = ComparisonResult(this.compareTo(to))
 
 

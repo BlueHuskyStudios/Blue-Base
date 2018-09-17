@@ -2,9 +2,9 @@
 
 package org.bh.tools.base.collections.extensions
 
-import org.bh.tools.base.collections.Index
+import org.bh.tools.base.collections.*
 import org.bh.tools.base.math.*
-import org.bh.tools.base.struct.IntegerRange
+import org.bh.tools.base.struct.*
 import org.bh.tools.base.util.*
 
 /*
@@ -109,7 +109,9 @@ inline fun <ElementType, IterableType: List<ElementType>> IterableType.nonEmpty(
 inline val <ElementType, IterableType: List<ElementType>> IterableType.nonEmpty get() = nonEmpty()
 
 
-
+/**
+ * If the given item is in this list, its index is returned. Else, `null` is returned.
+ */
 fun <ElementType> List<ElementType>.indexOrNull(of: ElementType) = indexOf(of).positiveOrNull
 
 
@@ -124,7 +126,10 @@ fun <Element> List<Element>.subList(range: IntegerRange): List<Element>
 //inline fun <reified Element> List<Element>.copy(): List<Element> = List(*toTypedArray())
 
 
-
+/**
+ * Creates a string which is a list of all items in this list, separated by commas if necessary, with the given
+ * conjunction before the last one
+ */
 fun List<*>.humanReadableList(conjunction: Conjunction): String {
     return when (this.size) {
         0 -> ""
@@ -136,6 +141,9 @@ fun List<*>.humanReadableList(conjunction: Conjunction): String {
 
 
 
+/**
+ * An English conjunction, to separate two words or phrases
+ */
 enum class Conjunction {
     and,
     or,
