@@ -45,3 +45,9 @@ fabric.properties
 
 
 *.jar
+
+\.gradle/
+
+build/
+
+\.DS_Store
