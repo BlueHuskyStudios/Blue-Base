@@ -78,3 +78,8 @@ jobs:
         path: /tmp/circleci-artifacts
     - store_artifacts:
         path: /tmp/circleci-test-results
+deployment:
+  staging:
+    branch: master
+    heroku:
+      appname: blue-base-test-1
