@@ -17,10 +17,10 @@ class Number_StringificationKtTest {
 
     @Test
     fun Float64_toString() {
-        fun toString_0FractionDigits(receiver: Float64): String = receiver.toString(fractionDigits = 0)
-        fun toString_1FractionDigits(receiver: Float64): String = receiver.toString(fractionDigits = 1)
-        fun toString_2FractionDigits(receiver: Float64): String = receiver.toString(fractionDigits = 2)
-        fun toString_3FractionDigits(receiver: Float64): String = receiver.toString(fractionDigits = 3)
+        fun toString_0FractionDigits(receiver: Float64) = receiver.toString(fractionDigits = 0)
+        fun toString_1FractionDigits(receiver: Float64) = receiver.toString(fractionDigits = 1)
+        fun toString_2FractionDigits(receiver: Float64) = receiver.toString(fractionDigits = 2)
+        fun toString_3FractionDigits(receiver: Float64) = receiver.toString(fractionDigits = 3)
 
 
         val zeroFractionDigits = expect("Float64.toString(fractionDigits = 0)", ::toString_0FractionDigits, listOf(

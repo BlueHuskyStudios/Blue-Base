@@ -42,3 +42,9 @@ typealias AlwaysThrows = Nothing
 typealias Dictionary<Key, Value> = HashMap<Key, Value>
 
 typealias AssociativeArray<Key, Value> = Map<Key, Value>
+
+
+
+// MARK: - Array
+
+typealias MutableArray<Element> = Array<Element>

@@ -43,18 +43,4 @@ open class MutableStack<Element>
     fun pop(): Element = core.removeAt(0)
 
     fun clear(): Unit = core.clear()
-
-
-    // MARK: Collection
-
-    override val size: Int get() = core.size
-
-    override fun contains(element: Element) = core.contains(element)
-
-    override fun containsAll(elements: Collection<Element>) = core.containsAll(elements)
-
-    override fun isEmpty() = core.isEmpty()
-
-    override fun iterator() = core.iterator()
 }
-

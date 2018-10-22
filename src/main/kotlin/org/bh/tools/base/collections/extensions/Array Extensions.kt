@@ -2,12 +2,13 @@
 
 package org.bh.tools.base.collections.extensions
 
+import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.collections.*
 import org.bh.tools.base.math.*
 import org.bh.tools.base.struct.*
 
 /*
- * Array Extensions, made for Blue Base, is copyright Blue Husky Software ©2016 BH-1-PS.
+ * MutableArray Extensions, made for Blue Base, is copyright Blue Husky Software ©2016 BH-1-PS.
  *
  * This replaces `BHArray` (previously `ArrayPP`), which was used in BHToolbox and Blue Base from 2011 to 2017
  *
@@ -16,7 +17,7 @@ import org.bh.tools.base.struct.*
  */
 
 
-/*fun <ElementType> Array<ElementType>.removing(at: IndexSet): Array<ElementType> {
+/*fun <ElementType> MutableArray<ElementType>.removing(at: IndexSet): MutableArray<ElementType> {
     val oldArray = this
     val oldArrayLength = oldArray.size
     val newArrayLength = oldArray.size - at.size
@@ -33,48 +34,53 @@ import org.bh.tools.base.struct.*
     return newArray
 }*/
 
-inline val Array<*>.count: Int get() = this.size
-inline val Array<*>.length: Int get() = this.size
+inline val MutableArray<*>.count: Int get() = this.size
+inline val MutableArray<*>.length: Int get() = this.size
 
 inline val Collection<*>.count: Int get() = this.size
 inline val Collection<*>.length: Int get() = this.size
 
 
-fun <ElementType> Array<ElementType>.inserting(elements: ElementType, index: Index): Array<ElementType> {
+fun <ElementType> MutableArray<ElementType>.inserting(elements: ElementType, index: Index): MutableArray<ElementType> {
     val left = this.sliceArray(IntRange(start = 0, endInclusive = index - 1))
     val right = this.sliceArray(kotlin.ranges.IntRange(start = index - 1, endInclusive = length - 1))
 
     return left + elements + right
 }
 
-fun <ElementType> Array<ElementType>.removing(index: Index): Array<ElementType> {
+
+fun <ElementType> MutableArray<ElementType>.removing(index: Index): MutableArray<ElementType> {
     return removing(ClosedRange(onlyValue = index))
 }
 
-fun <ElementType> Array<ElementType>.removing(range: IndexRange): Array<ElementType> {
+
+fun <ElementType> MutableArray<ElementType>.removing(range: IndexRange): MutableArray<ElementType> {
     val left = this.sliceArray(IntRange(start = 0, endInclusive = max(0, range.start - 1)))
     val right = this.sliceArray(IntRange(start = min(length - 1, range.endInclusive - 1), endInclusive = length - 1))
 
     return left + right
 }
 
-fun <ElementType> Array<ElementType>.removing(indices: IndexSet): Array<ElementType> {
+
+fun <ElementType> MutableArray<ElementType>.removing(indices: IndexSet): MutableArray<ElementType> {
     var ret = this.copyOf()
     indices.ranges.forEach { ret = ret.removing(it) }
     return ret
 }
 
-fun <ElementType> Array<ElementType>.removing(indices: IntArray): Array<ElementType> {
+
+fun <ElementType> MutableArray<ElementType>.removing(indices: IntArray): MutableArray<ElementType> {
     return removing(indices.indexSetValue)
 }
 
+
+
 /**
- * Returns an array where those you decide to keep are kept, and then transformed as you decide to transform them.
- * Like `flatMap` but allows you to keep `null`s
+ * Returns a `MutableArray` where those you decide to keep are kept, and then transformed as you decide to transform
+ * them. Like `flatMap` but allows you to keep `null`s
  */
-@Suppress("ConvertLambdaToReference")
 fun <ElementType, OutputType>
-        Array<ElementType>.filterMap(predicateTransform: (ElementType) -> Pair<Boolean, () -> OutputType?>)
+        MutableArray<ElementType>.filterMap(predicateTransform: (ElementType) -> Pair<Boolean, () -> OutputType?>)
         : List<OutputType?>
         = this
         .map { predicateTransform(it) }

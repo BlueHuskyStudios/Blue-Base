@@ -14,7 +14,6 @@ import org.bh.tools.base.math.*
 import org.bh.tools.base.math.geometry.*
 import org.bh.tools.base.util.Assertion.*
 import org.bh.tools.base.util.TimeConversion.nanosecondsToTimeInterval
-import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
 import kotlin.system.*
 
@@ -78,7 +77,7 @@ inline fun averageTimeInterval(trials: Integer = defaultMeasurementTrialCount,
     val averager = Averager()
 
     for (i in 0..trials) {
-        averager.average(nanosecondsToTimeInterval(measureNanoTime({blackHole(block())})))
+        averager.average(nanosecondsToTimeInterval(measureNanoTime {blackHole(block())}))
     }
 
     return averager.currentAverage
@@ -129,6 +128,8 @@ enum class TimeTrialMeasurementMode {
 
 
 private var blackHoleValueHolder: Any? = null
+
+
 /**
  * Takes in the value you give it and places it into a black hole, from which it will never be accessed.
  *
@@ -339,13 +340,29 @@ inline fun assertEquals(expected: Float32,
 // MARK: -
 
 interface TestCase
+
+
+
 interface TestResult
 
+
+
+/**
+ * A single test case for a function which processes `Fraction`s, ready to be performed
+ */
 @Suppress("unused", "MemberVisibilityCanPrivate")
-data class FractionFunctionTestCase(val input: Fraction,
-                                    val expectedOutput: Fraction,
-                                    val tolerance: Tolerance = defaultCalculationTolerance,
-                                    val message: String = "Input of $input should yield $expectedOutput (within a tolerance of $tolerance)"
+data class FractionFunctionTestCase(
+        /** The input for this test case */
+        val input: Fraction,
+
+        /** The output which will allow this test case to pass */
+        val expectedOutput: Fraction,
+
+        /** The amount by which the output can be off from the expected value while still passing */
+        val tolerance: Tolerance = defaultCalculationTolerance,
+
+        /** The message to print when performing the test */
+        val message: String = "Input of $input should yield $expectedOutput (within a tolerance of $tolerance)"
 ) : TestCase {
 
     // TODO: Place expected output here:
@@ -361,17 +378,35 @@ data class FractionFunctionTestCase(val input: Fraction,
 }
 
 
+
+/**
+ * Describes the result of a test of a function which evaluates `Fraction`s
+ */
 data class FractionFunctionTestResult(
+        /** The case which was tested */
         val testCase: FractionFunctionTestCase,
+
+        /**
+         * Iff the test at runtime required a tolerance other that at setup, that's stored here.
+         * Otherwise, this is the same as `testCase.tolerance`.
+         */
         val specialTolerance: Fraction,
+
+        /**
+         * The output of the test case after it was run
+         */
         val actualOutput: Fraction,
+
+        /** Whether the test case actually gave an output which was within tolerance of the expected output */
         val success: Boolean,
+
+        /** The message to print when describing the test result */
         val message: String = "Input of ${testCase.input} should yield ${testCase.expectedOutput} (within a tolerance of ${specialTolerance}), actually yielded $actualOutput"
 ) : TestResult
 
-    fun FractionFunctionTestResult.humanReadableString(): String = "${if (success) "[OK]" else "[FAIL]"}: $message"
 
 
+fun FractionFunctionTestResult.humanReadableString(): String = "${if (success) "[OK]  " else "[FAIL]"}: $message"
 
 
 fun Collection<FractionFunctionTestResult>.humanReadableString(): String =

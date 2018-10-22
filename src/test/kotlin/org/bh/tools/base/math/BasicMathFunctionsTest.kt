@@ -3,11 +3,9 @@
 package org.bh.tools.base.math
 
 
-
 import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.util.*
 import org.junit.jupiter.api.*
-
 
 
 /**
@@ -47,22 +45,22 @@ internal class BasicMathFunctionsTest {
 
 
     private val inverseSequareRootTests: List<FractionFunctionTestCase> = listOf(
-            FractionFunctionTestCase(input = 125348.0, expectedOutput = 0.00282449815593580),
-            FractionFunctionTestCase(input = 152.2756, expectedOutput = 0.08103727714748784),
-            FractionFunctionTestCase(input = 2.0, expectedOutput = 0.70711356243812756),
+        FractionFunctionTestCase(input = 125348.0, expectedOutput = 0.00282449815593580),
+        FractionFunctionTestCase(input = 152.2756, expectedOutput = 0.08103727714748784),
+        FractionFunctionTestCase(input = 2.0, expectedOutput = 0.70711356243812756),
 
-            FractionFunctionTestCase(input = 303.74, expectedOutput = 0.0573785),
-            FractionFunctionTestCase(input = 394.973, expectedOutput = 0.0503172),
-            FractionFunctionTestCase(input = 934.62, expectedOutput = 0.0327101),
+        FractionFunctionTestCase(input = 303.74, expectedOutput = 0.0573785),
+        FractionFunctionTestCase(input = 394.973, expectedOutput = 0.0503172),
+        FractionFunctionTestCase(input = 934.62, expectedOutput = 0.0327101),
 
-            FractionFunctionTestCase(input = 0.67726, expectedOutput = 1.21513),
-            FractionFunctionTestCase(input = 0.6994, expectedOutput = 1.19574),
-            FractionFunctionTestCase(input = 0.98364, expectedOutput = 1.00828),
+        FractionFunctionTestCase(input = 0.67726, expectedOutput = 1.21513),
+        FractionFunctionTestCase(input = 0.6994, expectedOutput = 1.19574),
+        FractionFunctionTestCase(input = 0.98364, expectedOutput = 1.00828),
 
 
-            FractionFunctionTestCase(input = 0.00657, expectedOutput = 12.33722016996),
-            FractionFunctionTestCase(input = 0.0091190, expectedOutput = 10.471921841553163),
-            FractionFunctionTestCase(input = 0.0023800, expectedOutput = 20.49800154227)
+        FractionFunctionTestCase(input = 0.00657, expectedOutput = 12.33722016996),
+        FractionFunctionTestCase(input = 0.0091190, expectedOutput = 10.471921841553163),
+        FractionFunctionTestCase(input = 0.0023800, expectedOutput = 20.49800154227)
     )
 
     /**
