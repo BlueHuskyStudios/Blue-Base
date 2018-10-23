@@ -43,3 +43,11 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+
+*.jar
+
+\.gradle/
+
+build/
+
+\.DS_Store
