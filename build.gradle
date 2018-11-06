@@ -31,3 +31,19 @@ compileKotlin {
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
+
+idea.project.settings {
+    ideArtifacts {
+        ArtifactName {
+            archive("main.jar") {                 // pack stuff into archive
+                moduleOutput(idea.module.name)      // module production classes
+                dir("META-INF") {
+                    file("Mainfest.MF")               // file(..) arguments will be resolved according to Project.files(..)
+                }
+            }
+            directory("lib") {                    // "directory" and "archive" can be nested
+                libraryFiles(configurations.myCfg)  // will collect idea libraries from dependencies of a configuration
+            }
+        }
+    }
+}
