@@ -181,7 +181,7 @@ open class OpenRange<NumberType: Comparable<NumberType>>
 
     open fun intersection(other: OpenRange<NumberType>): OpenRange<NumberType> {
         if (!intersects(other)) {
-            return empty()
+            return emptyRange()
         }
 
         val newStart: NumberType?
@@ -274,7 +274,7 @@ open class OpenRange<NumberType: Comparable<NumberType>>
         fun<NumberType: Comparable<NumberType>> infiniteRange(): OpenRange<NumberType> = OpenRange(openStart, openEnd)
 
         /** A special range that does not an can not contain any value */
-        fun<NumberType: Comparable<NumberType>> empty(): OpenRange<NumberType> = _EmptyOpenRange()
+        fun<NumberType: Comparable<NumberType>> emptyRange(): OpenRange<NumberType> = _EmptyOpenRange()
     }
 }
 
@@ -447,7 +447,7 @@ open class FractionOpenRange(startInclusive: Fraction?, endInclusive: Fraction?)
     companion object {
         fun from(other: OpenRange<Fraction>): FractionOpenRange {
             if (other.isEmpty) {
-                return empty()
+                return emptyRange()
             } else {
                 return FractionOpenRange(startInclusive = other.startInclusive, endInclusive = other.endInclusive)
             }
@@ -462,7 +462,7 @@ open class FractionOpenRange(startInclusive: Fraction?, endInclusive: Fraction?)
          *
          * A union of this and another range results in the other range exactly.
          */
-        fun empty(): FractionOpenRange = empty
+        fun emptyRange(): FractionOpenRange = empty
 
 
         /**

@@ -17,6 +17,11 @@ import org.bh.tools.base.struct.*
  * @since 2016-10-09
  */
 
+
+fun Char.isUpperCase() = toLowerCase() != this
+fun Char.isLowerCase() = toUpperCase() != this
+
+
 /**
  * Converts this string to an abbreviation, optionally with a delimiter after each character of the result. For
  * example, `"Quick brown fox"` would become `"QBC"`.
@@ -147,10 +152,10 @@ fun CharSequence.differingCharacters(other: CharSequence): List<DifferingCharact
 
     if (this.length > other.length) {
         val offset = other.length
-        endList += this.substring(offset).toCharArray().asList().mapIndexed { index, character -> DifferingCharacter(index + offset, character, null) }
+        endList += this.substring(offset).mapIndexed { index, character -> DifferingCharacter(index + offset, character, null) }
     } else if (other.length > this.length) {
         val offset = this.length
-        endList += other.substring(offset).toCharArray().asList().mapIndexed { index, character -> DifferingCharacter(index + offset, null, character) }
+        endList += other.substring(offset).mapIndexed { index, character -> DifferingCharacter(index + offset, null, character) }
     }
 
     return endList
@@ -166,9 +171,23 @@ data class DifferingCharacter(
         val right: Char?
 ) {
     override fun toString(): String {
-        var sb = "{index: $index"
-        if (left != null) sb += ", left: '$left'"
-        if (right != null) sb += ", right: '$right'"
-        return sb + "}"
+        var description = "{index: $index"
+        if (left != null) description += ", left: '$left'"
+        if (right != null) description += ", right: '$right'"
+        return "$description}"
     }
 }
+
+
+/**
+ * If this string is null, or if this string is empty, then this returns `false`. Else, this returns `true`.
+ */
+@Suppress("NOTHING_TO_INLINE")
+inline fun String?.isNeitherNullNorEmpty(): Boolean = !isNullOrEmpty()
+
+
+/**
+ * If this string is null, or if this string is blank, then this returns `false`. Else, this returns `true`.
+ */
+@Suppress("NOTHING_TO_INLINE")
+inline fun String?.isNeitherNullNorBlank(): Boolean = !isNullOrBlank()

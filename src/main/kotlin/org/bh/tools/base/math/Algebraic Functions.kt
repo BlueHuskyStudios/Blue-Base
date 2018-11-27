@@ -3,6 +3,7 @@
 package org.bh.tools.base.math
 
 import org.bh.tools.base.abstraction.*
+import kotlin.jvm.*
 
 /*
  * Assists in doing algebra
@@ -87,7 +88,6 @@ inline fun Integer.isCoprimeWith(other: Integer): Boolean = isCoprime(this, othe
 /**
  * Finds the number of digits in this integer, not including a `-` sign
  */
-@JvmOverloads
 fun Int64.numberOfDigits(radix: Int = 10): Int8 = when (this) {
     Int64.min -> 19
     else -> absoluteValue.toString(radix).length.int8Value
@@ -97,7 +97,6 @@ fun Int64.numberOfDigits(radix: Int = 10): Int8 = when (this) {
 /**
  * Finds the number of digits in this integer, not including a `-` sign
  */
-@JvmOverloads
 fun Int32.numberOfDigits(radix: Int = 10): Int8 = when (this) {
     Int32.min -> 10
     else -> absoluteValue.toString(radix).length.int8Value
@@ -107,7 +106,6 @@ fun Int32.numberOfDigits(radix: Int = 10): Int8 = when (this) {
 /**
  * Finds the number of digits in this integer, not including a `-` sign
  */
-@JvmOverloads
 fun Int16.numberOfDigits(radix: Int = 10): Int8 = when (this) {
     Int16.min -> 5
     else -> absoluteValue.toString(radix).length.int8Value
@@ -117,7 +115,6 @@ fun Int16.numberOfDigits(radix: Int = 10): Int8 = when (this) {
 /**
  * Finds the number of digits in this integer, not including a `-` sign
  */
-@JvmOverloads
 fun Int8.numberOfDigits(radix: Int = 10): Int8 = when (this) {
     Int8.min -> 3
     else -> absoluteValue.toString(radix).length.int8Value

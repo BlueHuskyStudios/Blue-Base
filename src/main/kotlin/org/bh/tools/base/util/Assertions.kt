@@ -1,5 +1,7 @@
 package org.bh.tools.base.util
 
+import org.bh.tools.base.shim.*
+
 
 /*
  * Basic convenience wrappers around assertions

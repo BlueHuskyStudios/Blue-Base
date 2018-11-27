@@ -12,17 +12,24 @@ package org.bh.tools.base.struct
  *
  * See also: https://github.com/BlueHuskyStudios/Blue-Husky-Software-Structure
  *
- * @param RepresentedType The type of object that this view can represent. This is required because all views should
+ * @param Represented The type of object that this view can represent. This is required because all views should
  * contain no data, but instead directly represent them. For examples, an image view represents its image, a text view
  * represents its text, a menu might represent the array it presents, a slider would represent the value it
  * manipulates, an "OK" button represents the function that is called when it is pressed, etc.
  */
-interface UIView<RepresentedType> {
+interface UIView<Represented> {
     /**
      * The object that this view represents
      */
-    var representedObject: RepresentedType // TODO: Reconsider whether this belongs in the view
+    var representedObject: Represented // TODO: Reconsider whether this belongs in the view
+
+
+    fun onRepresentedObjectDidChange(onRepresentedObjectChange: OnRepresentedObjectChange<Represented>)
 }
+
+
+
+typealias OnRepresentedObjectChange<RO> = (oldObject: RO?, newObject: RO) -> Unit
 
 
 

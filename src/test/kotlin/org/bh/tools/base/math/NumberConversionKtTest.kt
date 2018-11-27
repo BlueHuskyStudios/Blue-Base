@@ -1,8 +1,11 @@
+@file:Suppress("UnusedImport")
+
 package org.bh.tools.base.math
 
 
 import org.bh.tools.base.abstraction.*
 import org.bh.tools.base.collections.extensions.*
+import org.bh.tools.base.js.*
 import org.bh.tools.base.strings.*
 import org.bh.tools.base.util.*
 import org.junit.*
@@ -20,8 +23,8 @@ open class NumberConversionKtTest {
     val sampleInt32s: List<Int32> = sampleInt16s.map(Int16::toInt) + listOf(Int32.min, Int32.max, (Int32.min / 2), (Int32.max / 2))
     val sampleInt64s: List<Int64> = sampleInt32s.map(Int32::toLong) + listOf(Int64.min, Int64.max, (Int64.min / 2), (Int64.max / 2))
 
-    val sampleFloat32s: List<Float32> = sampleInt64s.map(Int64::toFloat) + listOf(Float32.leastNonzeroMagnitude, Float32.greatestFiniteMagnitude, -Float32.leastNonzeroMagnitude, -Float32.greatestFiniteMagnitude)
-    val sampleFloat64s: List<Float64> = sampleFloat32s.map(Float32::toDouble) + listOf(Float64.leastNonzeroMagnitude, Float64.greatestFiniteMagnitude, -Float64.leastNonzeroMagnitude, -Float64.greatestFiniteMagnitude)
+    val sampleFloat32s: List<Float32> = sampleInt64s.map(Int64::toFloat32) + listOf(Float32.leastNonzeroMagnitude, Float32.greatestFiniteMagnitude, -Float32.leastNonzeroMagnitude, -Float32.greatestFiniteMagnitude)
+    val sampleFloat64s: List<Float64> = sampleFloat32s.map(Float32::toFloat64) + listOf(Float64.leastNonzeroMagnitude, Float64.greatestFiniteMagnitude, -Float64.leastNonzeroMagnitude, -Float64.greatestFiniteMagnitude)
 
 //    BigDecimals and BigIntegers in Blue Base/JVM
 

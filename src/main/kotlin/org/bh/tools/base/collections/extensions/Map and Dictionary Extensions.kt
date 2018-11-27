@@ -1,5 +1,6 @@
 package org.bh.tools.base.collections.extensions
 
+import org.bh.tools.base.shim.*
 import org.bh.tools.base.func.*
 
 /*

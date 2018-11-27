@@ -3,6 +3,7 @@
 package org.bh.tools.base.math
 
 import org.bh.tools.base.abstraction.*
+import org.bh.tools.base.shim.*
 import kotlin.DeprecationLevel.*
 
 /*
@@ -111,6 +112,12 @@ inline fun Int16.toInt8(): Int8 = this.toByte()
 inline fun Int32.toInt8(): Int8 = this.toByte()
 inline fun Int64.toInt8(): Int8 = this.toByte()
 
+@Deprecated("This does nothing", ReplaceWith("this"), level = WARNING)
+inline fun Int8.toInt8Checked() = this
+inline fun Int16.toInt8Checked() = this.toInt8()
+inline fun Int32.toInt8Checked() = this.toInt8()
+inline fun Int64.toInt8Checked() = this.toInt8()
+
 
 // MARK: toInt16()
 
@@ -121,6 +128,12 @@ inline fun Int16.toInt16(): Int16 = this
 inline fun Int8.toInt16(): Int16 = this.toShort()
 inline fun Int32.toInt16(): Int16 = this.toShort()
 inline fun Int64.toInt16(): Int16 = this.toShort()
+
+@Deprecated("This does nothing", ReplaceWith("this"), level = WARNING)
+inline fun Int16.toInt16Checked(): Int16 = this
+inline fun Int8.toInt16Checked(): Int16 = this.toInt16()
+inline fun Int32.toInt16Checked(): Int16 = this.toInt16()
+inline fun Int64.toInt16Checked(): Int16 = this.toInt16()
 
 
 // MARK: toInt32()
@@ -133,6 +146,12 @@ inline fun Int8.toInt32(): Int32 = this.toInt()
 inline fun Int16.toInt32(): Int32 = this.toInt()
 inline fun Int64.toInt32(): Int32 = this.toInt()
 
+@Deprecated("This does nothing", ReplaceWith("this"), level = WARNING)
+inline fun Int32.toInt32Checked(): Int32 = this
+inline fun Int8.toInt32Checked(): Int32 = this.toInt32()
+inline fun Int16.toInt32Checked(): Int32 = this.toInt32()
+inline fun Int64.toInt32Checked(): Int32 = this.toInt32()
+
 
 // MARK: toInt64()
 
@@ -144,11 +163,27 @@ inline fun Int8.toInt64(): Int64 = this.toLong()
 inline fun Int16.toInt64(): Int64 = this.toLong()
 inline fun Int32.toInt64(): Int64 = this.toLong()
 
+@Deprecated("This does nothing", ReplaceWith("this"), level = WARNING)
+inline fun Int64.toInt64Checked(): Int64 = this
+inline fun Int8.toInt64Checked(): Int64 = this.toInt64()
+inline fun Int16.toInt64Checked(): Int64 = this.toInt64()
+inline fun Int32.toInt64Checked(): Int64 = this.toInt64()
 
+
+@Deprecated("This does nothing", ReplaceWith("this"), level = WARNING)
+inline fun Integer.toInteger(): Integer = this
 inline fun <N: Number> N.toInteger(): Integer = this.toInt64()
 
+@Deprecated("This does nothing", ReplaceWith("this"), level = WARNING)
+inline fun Float32.toFloat32(): Float32 = this
 inline fun <N: Number> N.toFloat32(): Float32 = this.toFloat()
+
+@Deprecated("This does nothing", ReplaceWith("this"), level = WARNING)
+inline fun Float64.toFloat64(): Float64 = this
 inline fun <N: Number> N.toFloat64(): Float64 = this.toDouble()
+
+@Deprecated("This does nothing", ReplaceWith("this"), level = WARNING)
+inline fun Fraction.toFraction(): Fraction = this
 inline fun <N: Number> N.toFraction(): Fraction = this.toFloat64()
 
 inline fun <N: Number> N.toIntegerChecked(): Integer = this.toInt64Checked()
@@ -466,39 +501,55 @@ inline fun Integer(from: String, radix: Int8 = 10): Integer = from.toInteger(rad
 
 // MARK: Collections
 
+@Suppress("NOTHING_TO_INLINE")
 inline fun int8ArrayOf(vararg int8: Int8): Int8Array = byteArrayOf(*int8)
 
+@Suppress("NOTHING_TO_INLINE")
 inline fun int16ArrayOf(vararg int16: Int16): Int16Array = shortArrayOf(*int16)
 
+@Suppress("NOTHING_TO_INLINE")
 inline fun int32ArrayOf(vararg int32: Int32): Int32Array = intArrayOf(*int32)
 
+@Suppress("NOTHING_TO_INLINE")
 inline fun int64ArrayOf(vararg int64: Int64): Int64Array = longArrayOf(*int64)
 
+@Suppress("NOTHING_TO_INLINE")
 inline fun integerArrayOf(vararg integers: Integer): IntegerArray = int64ArrayOf(*integers)
 
 
+@Suppress("NOTHING_TO_INLINE")
 inline fun float32ArrayOf(vararg float32s: Float32): Float32Array = floatArrayOf(*float32s)
 
+@Suppress("NOTHING_TO_INLINE")
 inline fun float64ArrayOf(vararg float64s: Float64): Float64Array = doubleArrayOf(*float64s)
 
+@Suppress("NOTHING_TO_INLINE")
 inline fun fractionArrayOf(vararg fractions: Fraction): FractionArray = float64ArrayOf(*fractions)
 
 
+@Suppress("NOTHING_TO_INLINE")
 inline fun Collection<Int8>.toInt8Array(): Int8Array = toByteArray()
 
+@Suppress("NOTHING_TO_INLINE")
 inline fun Collection<Int16>.toInt16Array(): Int16Array = toShortArray()
 
+@Suppress("NOTHING_TO_INLINE")
 inline fun Collection<Int32>.toInt32Array(): Int32Array = toIntArray()
 
+@Suppress("NOTHING_TO_INLINE")
 inline fun Collection<Int64>.toInt64Array(): Int64Array = toLongArray()
 
+@Suppress("NOTHING_TO_INLINE")
 inline fun Collection<Integer>.toIntegerArray(): IntegerArray = toInt64Array()
 
 
+@Suppress("NOTHING_TO_INLINE")
 inline fun Collection<Float32>.toFloat32Array(): Float32Array = toFloatArray()
 
+@Suppress("NOTHING_TO_INLINE")
 inline fun Collection<Float64>.toFloat64Array(): Float64Array = toDoubleArray()
 
+@Suppress("NOTHING_TO_INLINE")
 inline fun Collection<Fraction>.toFractionArray(): FractionArray = toFloat64Array()
 
 

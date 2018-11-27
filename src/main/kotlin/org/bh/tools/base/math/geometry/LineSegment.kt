@@ -475,7 +475,6 @@ sealed class LineSegmentDirection(val exactRadians: Fraction) {
 
 
     companion object {
-        @JvmStatic
         fun fromRadians(radians: Fraction): LineSegmentDirection = when (anyRadiansToNormalizedRadians(radians)) {
             in Fraction.quarter_pi..Fraction.three_quarter_pi -> yIncreasesMost(radians)
             in Fraction.three_quarter_pi..Fraction.five_quarter_pi -> xDecreasesMost(radians)

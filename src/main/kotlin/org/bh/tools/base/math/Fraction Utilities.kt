@@ -30,6 +30,21 @@ fun Fraction.integerComponent(): Fraction {
 }
 
 
+///**
+// * Shifts the bits in this number to determine its floored value.
+// * If this is infinite or not a number, it's returned unchanged.
+// *
+// * This is based on https://www.codeproject.com/Tips/700780/Fast-floor-ceiling-functions
+// */
+//fun Float64.floor_shifting(): Float64 {
+//    return when {
+//        isInfinite
+//                || isNaN -> this
+//        else -> (this + Int64.max) - Int64.max
+//    }
+//}
+
+
 /** Removes the fractional part of this number. If this is infinite or not a number, it's returned unchanged. */
 @Suppress("NOTHING_TO_INLINE")
 inline fun Float64.floor() = kotlin.math.floor(this)

@@ -170,6 +170,9 @@ inline fun <ElementType> Iterable<ElementType>.firstOrNullComparingPairs(crossin
  * Reduces many values down into a single value
  */
 typealias Reducer<ElementType, ResultType> = (runningValue: ResultType, currentValue: ElementType) -> ResultType
+typealias FastReducer<ElementType, ResultType> = (runningValue: ResultType, currentValue: ElementType) -> Unit
+typealias Processor<Element> = (element: Element) -> Unit
+typealias IndexedProcessor<Element> = (index: Int32, element: Element) -> Unit
 
 
 
@@ -196,6 +199,29 @@ inline fun <ElementType, StartingType: ResultType, ResultType>
     return runningValue
 }
 
+
+
+/**
+ * Reduces this Iterable of one type to a single value of the same type, starting with a value of the same type as the
+ * starting value. This is faster than other versions of reduce, according to studies show that mutating the starting
+ * value is faster than creating and returning a new value each time.
+ * ( for instance: http://stackoverflow.com/q/33750636/453435 )
+ *
+ * @param startingValue The first value to pass to the reducer
+ * @param reducer       The block to call for each element, which will take in that element and the current reduced
+ *                      value, and mutate the current reduced value accordingly.
+ *
+ * @return This Iterable, reduced to a single value
+ */
+fun <ElementType, StartingType: ResultType, ResultType>
+        Iterable<ElementType>
+        .reduceInto(startingValue: StartingType, reducer: FastReducer<ElementType, ResultType>)
+        : ResultType {
+    forEach { currentValue ->
+        reducer(startingValue, currentValue)
+    }
+    return startingValue
+}
 
 
 /**
@@ -264,4 +290,20 @@ fun <Self, OldElement, NewElement>
     }
 
     return null
+}
+
+
+fun <Element, Self> Self.forEachReversedIndexed(processor: IndexedProcessor<Element>)
+        where Self: Collection<Element> {
+    (count() downTo 0).forEach {
+        processor(it, this.elementAt(it))
+    }
+}
+
+
+fun <Element, Self> Self.forEachReversed(processor: Processor<Element>)
+        where Self: Collection<Element> {
+    forEachReversedIndexed { _, element ->
+        processor(element)
+    }
 }
