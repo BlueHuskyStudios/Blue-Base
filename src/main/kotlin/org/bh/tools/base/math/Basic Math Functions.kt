@@ -230,6 +230,10 @@ inline fun Int8.invertedSign() = -this
 
 
 inline fun inverseSquareRoot(x: Float64): Float64 = inverseSquareRoot_allInOne_accuracy2(x)
+inline fun inverseSquareRoot(x: Float32): Float32 = inverseSquareRoot_allInOne_accuracy2(x)
+
+inline val Float64.inverseSquareRoot get() = inverseSquareRoot(this)
+inline val Float32.inverseSquareRoot get() = inverseSquareRoot(this)
 
 
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
@@ -338,13 +342,52 @@ fun inverseSquareRoot_allInOne_accuracy4(x: Float64): Float64 {
 }
 
 
-fun inverseSquareRoot(x: Float32): Float32 {
+fun inverseSquareRoot_allInOne_accuracy1(x: Float32): Float32 {
     @Suppress("NAME_SHADOWING")
     var x = x
     val xhalf = 0.5f * x
     var i = x.toRawBits()
     i = 0x5f3759df - (i shr 1)
     x = Float.fromBits(i)
+    x *= 1.5f - xhalf * x * x
+    return x
+}
+
+fun inverseSquareRoot_allInOne_accuracy2(x: Float32): Float32 {
+    @Suppress("NAME_SHADOWING")
+    var x = x
+    val xhalf = 0.5f * x
+    var i = x.toRawBits()
+    i = 0x5f3759df - (i shr 1)
+    x = Float.fromBits(i)
+    x *= 1.5f - xhalf * x * x
+    x *= 1.5f - xhalf * x * x
+    return x
+}
+
+fun inverseSquareRoot_allInOne_accuracy3(x: Float32): Float32 {
+    @Suppress("NAME_SHADOWING")
+    var x = x
+    val xhalf = 0.5f * x
+    var i = x.toRawBits()
+    i = 0x5f3759df - (i shr 1)
+    x = Float.fromBits(i)
+    x *= 1.5f - xhalf * x * x
+    x *= 1.5f - xhalf * x * x
+    x *= 1.5f - xhalf * x * x
+    return x
+}
+
+fun inverseSquareRoot_allInOne_accuracy4(x: Float32): Float32 {
+    @Suppress("NAME_SHADOWING")
+    var x = x
+    val xhalf = 0.5f * x
+    var i = x.toRawBits()
+    i = 0x5f3759df - (i shr 1)
+    x = Float.fromBits(i)
+    x *= 1.5f - xhalf * x * x
+    x *= 1.5f - xhalf * x * x
+    x *= 1.5f - xhalf * x * x
     x *= 1.5f - xhalf * x * x
     return x
 }
