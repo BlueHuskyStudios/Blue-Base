@@ -1,11 +1,8 @@
 @file:Suppress("unused", "EnumEntryName", "MemberVisibilityCanBePrivate")
 
-package org.bh.tools.base.struct
+package BlueBase
 
-import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.collections.extensions.*
-import org.bh.tools.base.math.*
-import org.bh.tools.base.struct.VersionChannel.*
+import BlueBase.VersionChannel.*
 
 typealias VersionStage = Integer
 

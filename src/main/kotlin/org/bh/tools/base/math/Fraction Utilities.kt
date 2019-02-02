@@ -1,10 +1,9 @@
 @file:Suppress("unused")
 
-package org.bh.tools.base.math
+package BlueBase
 
-import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.math.RoundingDirection.*
-import org.bh.tools.base.math.RoundingThreshold.*
+import BlueBase.RoundingDirection.*
+import BlueBase.RoundingThreshold.*
 
 /*
  * For using fractions easier

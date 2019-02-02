@@ -1,7 +1,6 @@
 @file:Suppress("unused")
 
-import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.math.*
+import BlueBase.*
 
 /* Magic Numbers, made for Blue Base, is copyright Blue Husky Software ©2016 BH-1-PS.
 *

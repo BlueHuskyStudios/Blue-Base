@@ -1,9 +1,6 @@
-package org.bh.tools.base.math
+package BlueBase
 
 
-import org.bh.tools.base.abstraction.Int32
-import org.bh.tools.base.abstraction.Int64
-import org.bh.tools.base.util.*
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
 

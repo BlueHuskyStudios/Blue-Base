@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package org.bh.tools.base.func
+package BlueBase
 
 /*
  * To make tuples easier

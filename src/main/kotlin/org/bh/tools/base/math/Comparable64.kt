@@ -1,6 +1,4 @@
-package org.bh.tools.base.math
-
-import org.bh.tools.base.abstraction.*
+package BlueBase
 
 /**
  * Comparable64, made for BHToolbox, is made by and copyrighted to Blue Husky Software, ©2012 BH-1-PS <hr/>

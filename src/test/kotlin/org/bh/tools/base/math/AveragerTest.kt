@@ -1,10 +1,8 @@
 @file:Suppress("DEPRECATION")
 
-package org.bh.tools.base.math
+package BlueBase
 
 
-import org.bh.tools.base.abstraction.Fraction
-import org.bh.tools.base.util.*
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
 

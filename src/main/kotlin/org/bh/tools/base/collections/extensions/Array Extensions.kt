@@ -1,11 +1,6 @@
 @file:Suppress("unused")
 
-package org.bh.tools.base.collections.extensions
-
-import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.collections.*
-import org.bh.tools.base.math.*
-import org.bh.tools.base.struct.*
+package BlueBase
 
 /*
  * MutableArray Extensions, made for Blue Base, is copyright Blue Husky Software ©2016 BH-1-PS.

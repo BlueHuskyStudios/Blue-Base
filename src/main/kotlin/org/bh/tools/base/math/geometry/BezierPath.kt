@@ -1,9 +1,6 @@
 @file:Suppress("unused", "PropertyName")
 
-package org.bh.tools.base.math.geometry
-
-import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.math.*
+package BlueBase
 
 /**
  * A path comprised of Bézier points. For behavior, see: https://en.wikipedia.org/wiki/B%C3%A9zier_curve

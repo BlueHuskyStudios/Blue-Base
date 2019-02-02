@@ -1,10 +1,6 @@
 @file:Suppress("unused")
 
-package org.bh.tools.base.struct
-
-import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.collections.*
-import org.bh.tools.base.math.*
+package BlueBase
 
 /**
  * OpenRange, made for Blue Base, is copyright Blue Husky Software ©2016 BH-1-PS <hr/>

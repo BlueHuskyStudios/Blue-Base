@@ -1,6 +1,4 @@
-package org.bh.tools.base.collections
-
-import org.bh.tools.base.state.*
+package BlueBase
 
 
 

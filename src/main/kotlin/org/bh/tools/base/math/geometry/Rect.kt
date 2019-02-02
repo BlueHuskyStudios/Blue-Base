@@ -1,10 +1,6 @@
 @file:Suppress("unused", "KDocMissingDocumentation")
 
-package org.bh.tools.base.math.geometry
-
-import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.math.*
-import org.bh.tools.base.struct.*
+package BlueBase
 
 
 /**

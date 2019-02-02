@@ -1,11 +1,6 @@
 @file:Suppress("unused")
 
-package org.bh.tools.base.collections.extensions
-
-import org.bh.tools.base.collections.*
-import org.bh.tools.base.math.*
-import org.bh.tools.base.struct.*
-import org.bh.tools.base.util.*
+package BlueBase
 
 /*
  * To help you work with lists

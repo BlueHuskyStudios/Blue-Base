@@ -1,8 +1,6 @@
 @file:Suppress("MemberVisibilityCanPrivate", "unused")
 
-package org.bh.tools.base.math
-
-import org.bh.tools.base.abstraction.*
+package BlueBase
 
 /* Comparisons, made for Blue Base, is copyright Blue Husky Software ©2016 BH-1-PS.
  *

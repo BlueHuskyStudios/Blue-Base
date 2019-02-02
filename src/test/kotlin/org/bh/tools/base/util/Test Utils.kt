@@ -3,17 +3,12 @@
 
 
 
-package org.bh.tools.base.util
+package BlueBase
 
 
 
-import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.collections.extensions.*
-import org.bh.tools.base.func.StringSupplier
-import org.bh.tools.base.math.*
-import org.bh.tools.base.math.geometry.*
-import org.bh.tools.base.util.Assertion.*
-import org.bh.tools.base.util.TimeConversion.nanosecondsToTimeInterval
+import BlueBase.Assertion.*
+import BlueBase.TimeConversion.nanosecondsToTimeInterval
 import org.junit.jupiter.api.Assertions.*
 import kotlin.system.*
 

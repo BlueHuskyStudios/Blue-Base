@@ -1,12 +1,6 @@
 @file:Suppress("unused")
 
-package org.bh.tools.base.util
-
-import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.math.*
-import org.bh.tools.base.util.TimeConversion.daysPerYear
-import org.bh.tools.base.util.TimeConversion.nanosecondsPerMillisecond
-import org.bh.tools.base.util.TimeConversion.nanosecondsPerSecond
+package BlueBase
 
 /*
  * To make time easier to deal with
@@ -265,8 +259,8 @@ enum class TimeUnit: Comparable<TimeUnit> {
         nanoseconds -> when (other) {
             nanoseconds -> 1.0
             microseconds -> TimeConversion.nanosecondsPerMicrosecond
-            milliseconds -> nanosecondsPerMillisecond
-            seconds -> nanosecondsPerSecond
+            milliseconds -> TimeConversion.nanosecondsPerMillisecond
+            seconds -> TimeConversion.nanosecondsPerSecond
             minutes -> TimeConversion.nanosecondsPerMinute
             hours -> TimeConversion.nanosecondsPerHour
             days -> TimeConversion.nanosecondsPerDay

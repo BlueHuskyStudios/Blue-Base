@@ -1,13 +1,10 @@
 @file:Suppress("unused")
 
-package org.bh.tools.base.math.geometry
+package BlueBase
 
-import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.collections.*
-import org.bh.tools.base.collections.extensions.*
-import org.bh.tools.base.math.geometry.IntegerPath.Companion.pathFromGenericSegments
-import org.bh.tools.base.math.geometry.IntersectionDescription.*
-import org.bh.tools.base.math.geometry.OtherSegmentRelationshipToCurrent.*
+import BlueBase.IntegerPath.Companion.pathFromGenericSegments
+import BlueBase.IntersectionDescription.*
+import BlueBase.OtherSegmentRelationshipToCurrent.*
 
 /**
  * A path comprised of a set of points

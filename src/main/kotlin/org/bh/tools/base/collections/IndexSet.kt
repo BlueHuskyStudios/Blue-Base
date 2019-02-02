@@ -1,12 +1,6 @@
 @file:Suppress("unused", "MemberVisibilityCanPrivate")
 
-package org.bh.tools.base.collections
-
-import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.basics.Cloneable
-import org.bh.tools.base.collections.extensions.*
-import org.bh.tools.base.math.*
-import org.bh.tools.base.struct.*
+package BlueBase
 
 typealias Index = Int32
 typealias IndexArray = Int32Array

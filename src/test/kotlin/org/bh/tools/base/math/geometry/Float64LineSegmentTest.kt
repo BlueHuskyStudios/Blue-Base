@@ -1,13 +1,9 @@
 @file:Suppress("unused")
 
-package org.bh.tools.base.math.geometry
+package BlueBase
 
-import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.logging.*
-import org.bh.tools.base.math.*
-import org.bh.tools.base.math.geometry.FractionPoint.Companion.zero
-import org.bh.tools.base.math.geometry.IntersectionDescription.*
-import org.bh.tools.base.util.*
+import BlueBase.FractionPoint.Companion.zero
+import BlueBase.IntersectionDescription.*
 import org.junit.jupiter.api.*
 
 

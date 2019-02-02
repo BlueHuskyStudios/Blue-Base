@@ -1,12 +1,6 @@
 @file:Suppress("unused", "MemberVisibilityCanPrivate")
 
-package org.bh.tools.base.strings
-
-import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.collections.*
-import org.bh.tools.base.collections.extensions.*
-import org.bh.tools.base.math.*
-import org.bh.tools.base.struct.*
+package BlueBase
 
 /*
  * Copyright BHStudios ©2016 BH-1-PS. Made for BH Tic Tac Toe IDEA Project.

@@ -1,8 +1,6 @@
 @file:Suppress("unused")
 
-package org.bh.tools.base.math
-
-import org.bh.tools.base.abstraction.*
+package BlueBase
 
 /**
  * Averager, made for BHToolbox, is made by and copyrighted to Blue Husky Programming, ©2017 [BH-0-PD](https://github.com/BlueHuskyStudios/Licenses/blob/master/Licenses/BH-0-PD.txt).

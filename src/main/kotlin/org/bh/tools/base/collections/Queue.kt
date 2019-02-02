@@ -1,10 +1,6 @@
 @file:Suppress("unused", "MemberVisibilityCanBePrivate")
 
-package org.bh.tools.base.collections
-
-import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.collections.extensions.*
-import org.bh.tools.base.math.*
+package BlueBase
 
 /**
  * A basic queue of items, where new ones are placed on the back and items can only be read from the front

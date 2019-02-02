@@ -1,4 +1,4 @@
-package org.bh.tools.base.struct
+package BlueBase
 
 /*
  * Copyright BHStudios ©2016 BH-1-PS. Made for Snek.

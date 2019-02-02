@@ -1,8 +1,6 @@
 @file:Suppress("unused")
 
-package org.bh.tools.base.state
-
-import org.bh.tools.base.collections.*
+package BlueBase
 
 /**
  * Copyright BHStudios ©2016 BH-1-PS. Made for Snek.

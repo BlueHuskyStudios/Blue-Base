@@ -1,4 +1,4 @@
-package org.bh.tools.base.func
+package BlueBase
 
 /*
  * A collection of pre-defined functions, like mappers

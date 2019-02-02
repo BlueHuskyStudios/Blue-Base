@@ -1,10 +1,6 @@
 @file:Suppress("unused")
 
-package org.bh.tools.base.collections.extensions
-
-import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.func.*
-import org.bh.tools.base.math.*
+package BlueBase
 
 /*
  * Copyright BHStudios ©2016 BH-1-PS. Made for Snek.

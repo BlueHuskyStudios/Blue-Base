@@ -1,8 +1,7 @@
 @file:Suppress("unused", "NOTHING_TO_INLINE")
 
-package org.bh.tools.base.math
+package BlueBase
 
-import org.bh.tools.base.abstraction.*
 import kotlin.DeprecationLevel.*
 
 /*

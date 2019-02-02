@@ -1,8 +1,7 @@
 @file:Suppress("unused", "NOTHING_TO_INLINE")
 
-package org.bh.tools.base.math
+package BlueBase
 
-import org.bh.tools.base.abstraction.*
 import kotlin.math.*
 
 /* Basic Math Functions, made for Blue Base, is copyright Blue Husky Software ©2016 BH-1-PS.
