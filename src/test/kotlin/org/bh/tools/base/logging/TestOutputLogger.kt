@@ -1,4 +1,4 @@
-package org.bh.tools.base.logging
+package BlueBase
 
 /**
  * @author Ben

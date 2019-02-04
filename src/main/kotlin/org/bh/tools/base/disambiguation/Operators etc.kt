@@ -1,9 +1,6 @@
 @file:Suppress("unused")
 
-package org.bh.tools.base.disambiguation
-
-import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.math.*
+package BlueBase
 
 /*
  * More clarity for less-clear names

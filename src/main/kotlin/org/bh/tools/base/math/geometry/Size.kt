@@ -1,10 +1,8 @@
 @file:Suppress("unused")
 
-package org.bh.tools.base.math.geometry
+package BlueBase
 
-import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.math.*
-import org.bh.tools.base.math.geometry.RectangleScanningApproach.Companion.xUpThenYUp
+import BlueBase.RectangleScanningApproach.Companion.xUpThenYUp
 import kotlin.reflect.*
 
 

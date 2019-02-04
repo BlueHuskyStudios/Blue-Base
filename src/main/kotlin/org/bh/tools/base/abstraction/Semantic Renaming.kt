@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package org.bh.tools.base.abstraction
+package BlueBase
 
 /*
  * In case the default naming is confusing or doesn't quite fit the circumstance, here are some alternate names

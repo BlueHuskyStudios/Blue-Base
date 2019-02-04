@@ -1,11 +1,7 @@
 @file:Suppress("unused")
 
-package org.bh.tools.base.math.geometry
+package BlueBase
 
-import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.basics.Cloneable
-import org.bh.tools.base.func.*
-import org.bh.tools.base.math.*
 import kotlin.reflect.*
 
 

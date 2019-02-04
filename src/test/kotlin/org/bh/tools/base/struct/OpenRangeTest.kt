@@ -1,10 +1,7 @@
-package org.bh.tools.base.struct
+package BlueBase
 
-import org.bh.tools.base.abstraction.Fraction
-import org.bh.tools.base.abstraction.Integer
-import org.bh.tools.base.struct.OpenRange.Companion.openEnd
-import org.bh.tools.base.util.TimeTrialMeasurementMode.total
-import org.bh.tools.base.util.measureTimeInterval
+import BlueBase.OpenRange.Companion.openEnd
+import BlueBase.TimeTrialMeasurementMode.*
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
 

@@ -1,4 +1,4 @@
-package org.bh.tools.base.basics
+package BlueBase
 
 /**
  * @author Ben Leggiero

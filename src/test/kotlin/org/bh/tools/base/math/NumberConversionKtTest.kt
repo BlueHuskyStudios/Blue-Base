@@ -1,11 +1,6 @@
-package org.bh.tools.base.math
+package BlueBase
 
 
-import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.collections.extensions.*
-import org.bh.tools.base.strings.*
-import org.bh.tools.base.util.*
-import org.junit.*
 import org.junit.jupiter.api.*
 
 

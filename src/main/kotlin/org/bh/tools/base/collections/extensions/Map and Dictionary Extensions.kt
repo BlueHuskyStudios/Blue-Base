@@ -1,6 +1,4 @@
-package org.bh.tools.base.collections.extensions
-
-import org.bh.tools.base.func.*
+package BlueBase
 
 /*
  * Makes dictionaries and maps easier

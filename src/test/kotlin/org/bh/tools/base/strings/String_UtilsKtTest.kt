@@ -1,7 +1,6 @@
-package org.bh.tools.base.strings
+package BlueBase
 
 
-import org.bh.tools.base.util.assertListEquals
 import org.junit.jupiter.api.*
 
 

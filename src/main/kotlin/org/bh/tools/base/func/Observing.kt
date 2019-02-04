@@ -1,4 +1,4 @@
-package org.bh.tools.base.func
+package BlueBase
 
 import kotlin.properties.*
 import kotlin.reflect.*

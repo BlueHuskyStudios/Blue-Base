@@ -1,9 +1,7 @@
-package org.bh.tools.base.math
+package BlueBase
 
-import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.math.RoundingDirection.*
-import org.bh.tools.base.math.RoundingThreshold.*
-import org.bh.tools.base.util.*
+import BlueBase.RoundingDirection.*
+import BlueBase.RoundingThreshold.*
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
 

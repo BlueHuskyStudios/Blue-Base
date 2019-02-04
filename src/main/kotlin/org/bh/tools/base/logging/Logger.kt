@@ -1,8 +1,6 @@
 @file:Suppress("NOTHING_TO_INLINE", "unused")
 
-package org.bh.tools.base.logging
-
-import org.bh.tools.base.collections.extensions.*
+package BlueBase
 
 /**
  * @author Ben

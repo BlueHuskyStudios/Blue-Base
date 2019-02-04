@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package org.bh.tools.base.math
+package BlueBase
 
 /*
  * Copyright BHStudios ©2016 BH-1-PS. Made for Blue Base for JVM.

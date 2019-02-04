@@ -1,10 +1,8 @@
 @file:Suppress("LocalVariableName")
 
-package org.bh.tools.base.math
+package BlueBase
 
 
-import org.bh.tools.base.abstraction.*
-import org.bh.tools.base.util.*
 import org.junit.jupiter.api.*
 
 
